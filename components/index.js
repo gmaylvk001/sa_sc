@@ -596,12 +596,12 @@ ${
               {[
                 {
                   name: "Karate",
-                  imageSrc: "/images/sports-activities/karate.jpg",
+                  imageSrc: "/images/sports-activities/Karate.jpg",
                   description: "Discipline, strength, and focus training for students.",
                 },
                 {
                   name: "Silambam",
-                  imageSrc: "/images/sports-activities/silambam.jpg",
+                  imageSrc: "/images/sports-activities/Silambam.jpg",
                   description: "Traditional martial art enhancing agility and coordination.",
                 },
                 {
@@ -616,12 +616,12 @@ ${
                 },
                 {
                   name: "Art & Craft",
-                  imageSrc: "/images/sports-activities/art-craft.jpg",
+                  imageSrc: "/images/sports-activities/Art-craft.jpg",
                   description: "Hands-on activities to nurture imagination.",
                 },
                 {
                   name: "Singing",
-                  imageSrc: "/images/sports-activities/singing.jpg",
+                  imageSrc: "/images/sports-activities/Singing.jpg",
                   description: "Enhancing voice and confidence through music.",
                 },
                 {
@@ -631,7 +631,7 @@ ${
                 },
                 {
                   name: "Cookery",
-                  imageSrc: "/images/sports-activities/cookery.png",
+                  imageSrc: "/images/sports-activities/Cookery.png",
                   description: "Fun cooking sessions to develop creativity and life skills.",
                 },
               ].map((activity, i) => (
@@ -878,6 +878,8 @@ ${
             </div>
           </div>
         </section>
+
+
 
       </main>
     </>
