@@ -199,13 +199,13 @@ export default function HomeComponent() {
       <main className="w-full overflow-hidden ">
 
         {/* HERO SECTION */}
-         <section
+        <section
             ref={containerRef}
             className="relative h-screen w-full overflow-hidden"
           >
           {/* BACKGROUND VIDEO */}
           <video
-            className="absolute inset-0 w-full h-full object-cover filter contrast-140"
+            className="absolute inset-0 w-full h-full object-cover filter contrast-125"
             autoPlay
             muted
             loop
@@ -265,7 +265,6 @@ ${
           </div>
         </section>
 
-
         {/* ABOUT SECTION */}
         <section id="about" className="py-20 bg-gradient-to-r from-pink-100 via-blue-100 to-white">
 
@@ -281,16 +280,16 @@ ${
                 {/* Right Image */}
                  <div className="relative p-5">
                   <img
-                    src="/images/home-page-img/about-img-one.jpg"
+                    src="/images/home-page-img/about-img-one.png"
                     alt="School Campus"
-                    className="rounded-3xl shadow-xl w-full"
+                    className="rounded-3xl shadow-xl w-full border-4 border-white"
                   />
 
                   {/* FLOATING IMAGE */}
                   <img
-                    src="/images/home-page-img/about-img-two.jpg"
+                    src="/images/home-page-img/about-img-two.png"
                     alt="Classroom Learning"
-                    className="absolute -bottom-5 -right-10 w-48 md:w-64 rounded-2xl shadow-2xl border-4 border-white hidden sm:block"
+                    className="absolute -bottom-10 -right-10 w-48 md:w-64 rounded-2xl shadow-2xl border-4 border-white hidden sm:block"
                   />
                 </div>
 
@@ -314,17 +313,17 @@ ${
                 <div className="grid grid-cols-2 gap-4 items-center order-1 lg:order-2">
                   <img
                     src="/images/home-page-img/about-img-three.jpg"
-                    className="row-span-2 h-full rounded-3xl shadow-xl"
+                    className="row-span-2 h-full rounded-3xl shadow-xl border-4 border-white"
                     alt=""
                   />
                   <img
-                    src="/images/home-page-img/about-img-four.jpg"
-                    className="rounded-2xl w-full h-full shadow-lg"
+                    src="/images/home-page-img/about-img-four.png"
+                    className="rounded-2xl w-full h-full shadow-lg border-4 border-white"
                     alt=""
                   />
                   <img
                     src="/images/home-page-img/about-img-five.jpg"
-                    className="rounded-2xl w-full h-full shadow-lg"
+                    className="rounded-2xl w-full h-full shadow-lg border-4 border-white"
                     alt=""
                   />
                 </div>
@@ -335,7 +334,7 @@ ${
                   <h3 className="text-xl font-semibold text-gray-800 mb-4">
                     Learning Beyond Books
                   </h3>
-                  
+
                   <p className="text-gray-600 mb-2 leading-relaxed">
                     Our learning approach combines structured academics with creative thinking, cultural awareness, and life skills. With caring teachers, modern teaching practices, and a student-centric environment, Sathya School helps children grow into responsible individuals who are prepared for both life and learning beyond the classroom. At Sathya School, education is a journey—guided by values, strengthened by knowledge, and shaped by care.
                   </p>
@@ -582,42 +581,91 @@ ${
         </section>
 
         {/* ACTIVITIES */}
-        <section id="ACTIVITIES" className="py-20 bg-white">
+        <section id="ACTIVITIES" className="py-20 bg-gray-50">
           <div className="max-w-7xl mx-auto px-6">
-            <h2 className="text-4xl font-bold text-center mb-12 text-gray-800">
+            {/* Section Title */}
+            <h2 className="text-4xl font-bold text-center mb-4 text-gray-800">
               Sports & Activities
             </h2>
-        
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8">
-        
-              {/* Card Array */}
+            <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+              Our diverse sports and co-curricular programs help children develop confidence, creativity, and teamwork.
+            </p>
+
+            {/* Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
               {[
-                { name: "Karate", icon: FaRunning, bg: "bg-red-100", color: "text-red-600" },
-                { name: "Silambam", icon: FaFistRaised, bg: "bg-yellow-100", color: "text-yellow-600" },
-                { name: "Bharathanatyam", icon: FaUsers, bg: "bg-pink-100", color: "text-pink-600" },
-                { name: "Western Dance", icon: FaMusic, bg: "bg-purple-100", color: "text-purple-600" },
-                { name: "Art & Craft", icon: FaPaintBrush, bg: "bg-green-100", color: "text-green-600" },
-                { name: "Singing", icon: FaGuitar, bg: "bg-blue-100", color: "text-blue-600" },
-                { name: "Music", icon: FaDrum, bg: "bg-indigo-100", color: "text-indigo-600" },
-                { name: "Cookery", icon: FaUtensils, bg: "bg-orange-100", color: "text-orange-600" },
-              ].map((activity, i) => {
-                const Icon = activity.icon;
-                return (
-                  <div
-                    key={i}
-                    className={`flex flex-col items-center p-6 rounded-2xl  transition cursor-pointer`}
-                  >
-                    <div className={`w-20 h-20 mb-4 flex items-center  shadow-lg border-2 border-red-500  hover:scale-105 justify-center rounded-full ${activity.bg} ${activity.color} text-3xl`}>
-                      <Icon />
+                {
+                  name: "Karate",
+                  imageSrc: "/images/sports-activities/karate.jpg",
+                  description: "Discipline, strength, and focus training for students.",
+                },
+                {
+                  name: "Silambam",
+                  imageSrc: "/images/sports-activities/silambam.jpg",
+                  description: "Traditional martial art enhancing agility and coordination.",
+                },
+                {
+                  name: "Bharathanatyam",
+                  imageSrc: "/images/sports-activities/bharatham.png",
+                  description: "Classical dance to boost expression and rhythm.",
+                },
+                {
+                  name: "Western Dance",
+                  imageSrc: "/images/sports-activities/western-dance.png",
+                  description: "Modern dance promoting creativity and teamwork.",
+                },
+                {
+                  name: "Art & Craft",
+                  imageSrc: "/images/sports-activities/art-craft.jpg",
+                  description: "Hands-on activities to nurture imagination.",
+                },
+                {
+                  name: "Singing",
+                  imageSrc: "/images/sports-activities/singing.jpg",
+                  description: "Enhancing voice and confidence through music.",
+                },
+                {
+                  name: "Music",
+                  imageSrc: "/images/sports-activities/music.jpg",
+                  description: "Enhancing voice and confidence through music.",
+                },
+                {
+                  name: "Cookery",
+                  imageSrc: "/images/sports-activities/cookery.png",
+                  description: "Fun cooking sessions to develop creativity and life skills.",
+                },
+              ].map((activity, i) => (
+                <div
+                  key={i}
+                  className="group bg-white rounded-3xl shadow-md hover:shadow-2xl overflow-hidden transform transition hover:-translate-y-1 cursor-default border-2 border-red-500"
+                >
+                  <div className="relative">
+                    <img
+                      src={activity.imageSrc}
+                      alt={activity.name}
+                      className="w-full"
+                    />
+
+                    {/* Hover overlay */}
+                    <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                      <span className="text-white font-semibold text-lg">
+                        {activity.name}
+                      </span>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-800 text-center">
+                  </div>
+
+                  <div className="p-5">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
                       {activity.name}
                     </h3>
+                    <p className="text-gray-600 text-sm">
+                      {activity.description}
+                    </p>
                   </div>
-                );
-              })}
-        
+                </div>
+              ))}
             </div>
+
           </div>
         </section>
 
@@ -642,6 +690,7 @@ ${
           </div>
         </section>
 
+        {/*insta stories */}
         <section className=" bg-white">
           <div className="max-w-7xl mx-auto px-4 py-6 text-center">
             {/* Heading */}
@@ -740,6 +789,7 @@ ${
           </div>
         </section>
 
+        {/* contact section */}
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-6">
             {/* Heading */}
@@ -809,10 +859,13 @@ ${
                     </a>
                   </div>
 
-                  <div className="flex items-center gap-3 text-green-600 font-medium">
+                 <div className="flex items-center gap-3 text-green-600 font-medium flex-wrap">
                     <FaMapMarkerAlt />
-                      Rajapalayam,Melalangaarathattu,Thoothukudi
+                    <span className="break-words">
+                      Rajapalayam, Melalangaarathattu, Thoothukudi
+                    </span>
                   </div>
+
 
                 </div>
 
