@@ -293,10 +293,10 @@ const capitalizeFirstLetter = (str) =>
         {/* School Info */}
         <div>
          <img
-                  src="/user/sathya-school-logo.png"
+                  src="/user/logo.png"
                   alt="Logo"
                   style={{ imageRendering: 'auto' }}  // Optional, keeps smooth rendering
-                  className="object-contain mb-3"
+                  className="object-contain w-20 mb-3"
                 />
           <p className="text-sm text-white">
             CBSE Pattern School focused on quality education and holistic
@@ -310,10 +310,10 @@ const capitalizeFirstLetter = (str) =>
             Quick Links
           </h4>
           <ul className="space-y-2 text-sm text-white">
-            <li><a href="#about" className="text-white hover:text-red-800">About Us</a></li>
-            <li><a href="#grade" className="text-white hover:text-red-800">Grade</a></li>
-            <li><a href="#why" className="text-white hover:text-red-800">Why Choose Us</a></li>
-            <li><a href="#ACTIVITIES" className="text-white hover:text-red-800">Activities</a></li>
+            <li><Link href="/#about" className="text-white hover:text-red-800">About Us</Link></li>
+            <li><Link href="/#grade" className="text-white hover:text-red-800">Grade</Link></li>
+            <li><Link href="/#why" className="text-white hover:text-red-800">Why Choose Us</Link></li>
+            <li><Link href="/#ACTIVITIES" className="text-white hover:text-red-800">Activities</Link></li>
           </ul>
         </div>
 
@@ -334,43 +334,15 @@ const capitalizeFirstLetter = (str) =>
         {/* Contact Info */}
         <div className="space-y-2">
           <h4 className="text-md font-semibold mb-3 text-white">
-            Contact Us
+            Follow Us
           </h4>
 
-          {/* Address */}
-          <p className="text-sm text-white flex items-start gap-2">
-            <FaMapMarkerAlt className="mt-1 text-white" />
-            Rajapalayam,<br />
-            Melalangaarathattu,<br />
-            Thoothukudi
-          </p>
-
-          {/* Phone */}
-          <p className="text-sm text-white flex items-center gap-2">
-            <FaPhoneAlt className="text-white" />
-            <a href="tel:+919597701985" className="hover:text-red-500 transition">
-              95977 01985
-            </a>
-          </p>
-
-          {/* Email */}
-          <p className="text-sm text-white flex items-center gap-2">
-            <FaEnvelope className="text-white" />
-            <a
-              href="mailto:info@sathya.school"
-              className="hover:text-red-500 transition"
-            >
-              info@sathya.school
-            </a>
-          </p>
-          <div className="py-3 flex items-center gap-3">
-            <p className="font-medium text-white">Follow Us :</p>
-
+          <div className="flex items-center">
             <Link
               href="https://www.instagram.com/sathyaschooltuty?igsh=MXhibWQ2eGh5cTdhMw%3D%3D"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-3 rounded-full shadow flex items-center justify-center"
+              className="pr-4 rounded-full shadow flex items-center justify-center"
             >
               <FaInstagram size={22} className="text-red-500" />
             </Link>
@@ -379,19 +351,49 @@ const capitalizeFirstLetter = (str) =>
               href="https://www.youtube.com/@sathyaschooltuty"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-3 rounded-full shadow flex items-center justify-center"
+              className="pr-4 rounded-full shadow flex items-center justify-center"
             >
               <FaYoutube size={22} className="text-red-500" />
             </Link>
+            
             <Link
               href="https://www.facebook.com/sathyaschooltuty/"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-3 rounded-full shadow flex items-center justify-center"
+              className="pr-4 rounded-full shadow flex items-center justify-center"
             >
               <FaFacebook size={22} className="text-red-500" />
             </Link>
           </div>
+
+
+          {/* Address */}
+          {/* <p className="text-sm text-white flex items-start gap-2">
+            <FaMapMarkerAlt className="mt-1 text-white" />
+            Rajapalayam,<br />
+            Melalangaarathattu,<br />
+            Thoothukudi
+          </p> */}
+
+          {/* Phone */}
+          {/* <p className="text-sm text-white flex items-center gap-2">
+            <FaPhoneAlt className="text-white" />
+            <a href="tel:+919597701985" className="hover:text-red-500 transition">
+              95977 01985
+            </a>
+          </p> */}
+
+          {/* Email */}
+          {/* <p className="text-sm text-white flex items-center gap-2">
+            <FaEnvelope className="text-white" />
+            <a
+              href="mailto:info@sathya.school"
+              className="hover:text-red-500 transition"
+            >
+              info@sathya.school
+            </a>
+          </p> */}
+        
         </div>
 
       </div>

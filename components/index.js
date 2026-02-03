@@ -14,7 +14,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { HiArrowRight } from "react-icons/hi";
 import { FiChevronLeft, FiChevronRight, FiShoppingCart } from "react-icons/fi";
-import {FaBicycle,FaPhoneAlt,FaShieldAlt,FaHeadset,FaCreditCard,FaUsers,FaChild,FaFistRaised,FaLaptop,FaSnowflake,FaAward,FaFutbol,FaRunning,FaTheaterMasks,FaMusic,FaPaintBrush,FaGuitar,FaDrum,FaUtensils,FaSchool, FaProjectDiagram, FaUserCheck,FaInstagram, FaYoutube,FaFacebook,FaCheckCircle,FaHandshake,FaStar,FaHeart } from "react-icons/fa";
+import {FaPhoneAlt,FaShieldAlt,FaHeadset,FaUsers,FaChild,FaFistRaised,FaLaptop,FaSnowflake,FaAward,FaRunning,FaMusic,FaPaintBrush,FaGuitar,FaDrum,FaUtensils,FaSchool, FaUserCheck,FaCheckCircle,FaHandshake,FaStar,FaHeart, 
+  FaUserGraduate,FaMapMarkerAlt,FaEnvelope  } from "react-icons/fa";
 import { Heart, ShoppingCart } from "lucide-react";
 import Addtocart from "@/components/AddToCart";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -36,6 +37,57 @@ export default function HomeComponent() {
     "https://www.instagram.com/p/DNm8vtpO5Gy/"
   ];
 
+  function FaqItem({ question, answer }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div
+      className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all overflow-hidden"
+    >
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex justify-between items-center px-6 py-5 text-left focus:outline-none"
+      >
+        <span className="text-lg font-semibold text-gray-800">
+          {question}
+        </span>
+        <span
+          className={`transform transition-transform duration-300 ${
+            open ? "rotate-180" : ""
+          }`}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 text-red-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </span>
+      </button>
+
+      <div
+        className={`px-6 overflow-hidden transition-all duration-300 ${
+          open ? "max-h-40 pb-6" : "max-h-0"
+        }`}
+      >
+        <p className="text-gray-600 leading-relaxed text-sm">
+          {answer}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+  const [isVisible, setIsVisible] = useState(false);
+  const containerRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasMounted, setHasMounted] = useState(false);
   const [navigating, setNavigating] = useState(false);
@@ -114,9 +166,25 @@ export default function HomeComponent() {
     };
   }, [router]);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setIsVisible(true);
+        else setIsVisible(false);
+      },
+      { threshold: 0.3 }
+    );
+
+    if (containerRef.current) observer.observe(containerRef.current);
+
+    return () => {
+      if (containerRef.current) observer.unobserve(containerRef.current);
+    };
+  }, []);
+
   return (
     <>
-      {navigating && (
+      {/* {navigating && (
         <div className="fixed inset-0 z-[9999] flex justify-center items-center bg-black bg-opacity-30">
           <div className="p-4  shadow-lg">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600 mx-auto"></div>
@@ -127,76 +195,160 @@ export default function HomeComponent() {
         <div className="preloader fixed inset-0 z-[9999] flex justify-center items-center bg-white">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
         </div>
-      )}
-      <main className="w-full overflow-hidden pt-16 mt-3">
+      )} */}
+      <main className="w-full overflow-hidden ">
 
         {/* HERO SECTION */}
-        <section
-        className="relative text-white bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/sathya-school-bg-scaled.png')" }}
-      >
-        {/* Darker Overlay */}
-        <div className="absolute inset-0 bg-black/70 pointer-events-none"></div>
-
-        <div className="relative max-w-7xl mx-auto px-6 py-24 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">Sathya School</h1>
-
-          <p className="text-lg md:text-2xl mb-6">
-            Nurturing Minds • Shaping Futures
-          </p>
-
-          <p className="max-w-2xl mx-auto mb-8 text-sm md:text-base">
-            CBSE Pattern | Air Conditioned Campus | PreKG to 5th Standard
-          </p>
-
-          {/* Button */}
-          <Link
-            href="/admission"
-            className="relative z-10 inline-block bg-white text-red-500 px-8 py-3 rounded-full font-semibold
-                      transform hover:scale-105 transition-transform duration-300 ease-in-out"
+         <section
+            ref={containerRef}
+            className="relative h-screen w-full overflow-hidden"
           >
-            Admission Open
-          </Link>
-        </div>
-      </section>
+          {/* BACKGROUND VIDEO */}
+          <video
+            className="absolute inset-0 w-full h-full object-cover filter contrast-140"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            loading="lazy"
+              webkit-playsinline="true"  // iOS specific
+              disablePictureInPicture
+          >
+            <source src="/videos/Img 9014 (3).mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
 
+          {/* DARK OVERLAY */}
+          <div className="absolute inset-0 bg-black/70 z-10"></div>
+
+          {/* CONTENT */}
+          <div className="relative z-20 max-w-7xl mx-auto px-6 h-full flex flex-col items-center justify-center text-center text-white">
+            <h1
+              className={`text-5xl md:text-7xl mb-4 fade-up font-serif
+${
+                isVisible ? "show" : ""
+              }`}
+              style={{ transitionDelay: "100ms" }}
+            >
+              Sathya School
+            </h1>
+
+            <p
+              className={`text-lg md:text-2xl mb-6 font-extralight fade-up font-sans ${
+                isVisible ? "show" : ""
+              }`}
+              style={{ transitionDelay: "300ms" }}
+            >
+              Nurturing Minds • Shaping Futures
+            </p>
+
+            <p
+              className={`max-w-2xl mx-auto mb-8 text-sm md:text-base fade-up font-extralight font-sans  ${
+                isVisible ? "show" : ""
+              }`}
+              style={{ transitionDelay: "500ms" }}
+            >
+              CBSE Pattern | Air Conditioned Campus | PreKG to 5th Standard
+            </p>
+
+            <Link
+              href="/admission"
+              className={`inline-block bg-red-500 hover:bg-red-400 text-white px-8 py-3 rounded-full font-semibold
+                          transform hover:scale-105 transition-transform duration-300 ease-in-out fade-up ${
+                            isVisible ? "show" : ""
+                          }`}
+              style={{ transitionDelay: "700ms" }}
+            >
+              Admission Open
+            </Link>
+          </div>
+        </section>
 
 
         {/* ABOUT SECTION */}
         <section id="about" className="py-20 bg-gradient-to-r from-pink-100 via-blue-100 to-white">
+
+            {/* heading */}
+            <div className="max-w-7xl mx-auto px-6 text-center">
+                <h2 className="text-4xl font-bold mb-4 text-gray-800">
+                        About <span className="text-red-500">Sathya School</span>
+                    </h2>
+            </div>
+
+            {/* about first content */}
             <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 {/* Right Image */}
-                <div className="relative"> 
-                <img
-                    src="/images/about-imgs.png"
-                    alt="About Sathya School"
-                    className="rounded-2xl shadow-lg w-full"
-                />
+                 <div className="relative p-5">
+                  <img
+                    src="/images/home-page-img/about-img-one.jpg"
+                    alt="School Campus"
+                    className="rounded-3xl shadow-xl w-full"
+                  />
+
+                  {/* FLOATING IMAGE */}
+                  <img
+                    src="/images/home-page-img/about-img-two.jpg"
+                    alt="Classroom Learning"
+                    className="absolute -bottom-5 -right-10 w-48 md:w-64 rounded-2xl shadow-2xl border-4 border-white hidden sm:block"
+                  />
                 </div>
 
                 {/* Left Content */}
                 <div>
-                  <h2 className="text-4xl font-bold mb-4 text-gray-800">
-                      About <span className="text-red-500">Sathya School</span>
-                  </h2>
 
+                  {/* Small Heading */}
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                    Values That Inspire
+                  </h3>
                   {/* Intro Paragraph */}
                   <p className="text-gray-600 mb-2 leading-relaxed">
                       Sathya School is a value-driven educational institution run by Sathya Agencies, a trusted name known for integrity, quality, and service excellence across South India. Inspired by the belief that strong values create strong futures, Sathya School is dedicated to providing a nurturing and inspiring environment where children feel safe, supported, and motivated to learn. We focus on developing not only academic excellence, but also character, confidence, and compassion in every child.
                   </p>
+                </div>
+            </div>
 
+            {/* about second content */}
+             <div className="mt-16 max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                {/* Left Content (Images) */}
+                <div className="grid grid-cols-2 gap-4 items-center order-1 lg:order-2">
+                  <img
+                    src="/images/home-page-img/about-img-three.jpg"
+                    className="row-span-2 h-full rounded-3xl shadow-xl"
+                    alt=""
+                  />
+                  <img
+                    src="/images/home-page-img/about-img-four.jpg"
+                    className="rounded-2xl w-full h-full shadow-lg"
+                    alt=""
+                  />
+                  <img
+                    src="/images/home-page-img/about-img-five.jpg"
+                    className="rounded-2xl w-full h-full shadow-lg"
+                    alt=""
+                  />
+                </div>
+                {/* Right Image (Text) */}
+                <div className="order-2 lg:order-1">
+
+                  {/* Small Heading */}
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                    Learning Beyond Books
+                  </h3>
+                  
                   <p className="text-gray-600 mb-2 leading-relaxed">
-                      Our learning approach combines structured academics with creative thinking, cultural awareness, and life skills. With caring teachers, modern teaching practices, and a student-centric environment, Sathya School helps children grow into responsible individuals who are prepared for both life and learning beyond the classroom. At Sathya School, education is a journey—guided by values, strengthened by knowledge, and shaped by care.
+                    Our learning approach combines structured academics with creative thinking, cultural awareness, and life skills. With caring teachers, modern teaching practices, and a student-centric environment, Sathya School helps children grow into responsible individuals who are prepared for both life and learning beyond the classroom. At Sathya School, education is a journey—guided by values, strengthened by knowledge, and shaped by care.
                   </p>
                   <p className="text-gray-600 mb-5 leading-relaxed">
-                       At Sathya School, education is a journey—guided by values, strengthened by knowledge, and shaped by care.
+                    At Sathya School, education is a journey—guided by values, strengthened by knowledge, and shaped by care.
                   </p>
                 </div>
             </div>
+
       
     
             {/* VISION & MISSION */}
-            <div className="relative mb-10 max-w-7xl mx-auto px-6">
+            <div className="mt-16 relative mb-10 max-w-7xl mx-auto px-6">
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
                 
@@ -543,6 +695,137 @@ export default function HomeComponent() {
 
           </div>
         </section>
+
+        {/* faq section */}
+        <section id="faq" className="py-20 bg-gradient-to-r from-pink-100 via-blue-100 to-white">
+          <div className="max-w-5xl mx-auto px-6">
+
+            {/* Heading */}
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-800 mb-3">
+                Frequently Asked <span className="text-red-500">Questions</span>
+              </h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Find answers to common questions about admissions, curriculum, and campus facilities.
+              </p>
+            </div>
+
+
+            <div className="space-y-6">
+              {[
+                {
+                  q: "What curriculum does Sathya School follow?",
+                  a: "Sathya School follows the CBSE pattern, focusing on strong academics, values, and holistic development.",
+                },
+                {
+                  q: "Which grades are offered at Sathya School?",
+                  a: "We offer classes from Pre KG to 5th Standard with age-appropriate learning approaches.",
+                },
+                {
+                  q: "Is the campus fully air-conditioned?",
+                  a: "Yes, our entire campus is fully air-conditioned to ensure a comfortable learning environment for students.",
+                },
+                {
+                  q: "What facilities are available for students?",
+                  a: "We provide modern classrooms, computer lab, activity-based learning spaces, sports facilities, and a safe campus.",
+                },
+                {
+                  q: "How can I apply for admission?",
+                  a: "You can apply online through our Admission page or visit the school campus for direct assistance.",
+                },
+              ].map((item, index) => (
+                <FaqItem key={index} question={item.q} answer={item.a} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-6">
+            {/* Heading */}
+            <div className="mb-10">
+              <h2 className="text-4xl font-bold text-gray-900">
+                Contact <span className="text-red-500">Us</span>
+              </h2>
+              <p className="text-gray-600 mt-2">10am – 7pm weekdays</p>
+            </div>
+
+            {/* Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+              {/* Admission Enquiry */}
+              <div className="flex items-center justify-between bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                    Admission Enquiry
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-4">
+                    (Admissions & general enquiries)
+                  </p>
+
+                  <div className="flex items-center gap-3 text-green-600 font-medium mb-2">
+                    <FaPhoneAlt />
+                    <Link href="tel:+919944899771" className="hover:underline">
+                      +91 99448 99771
+                    </Link>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-green-600 font-medium">
+                    <FaEnvelope  />
+                    <Link href="mailto:info@sathya.school" className="hover:underline">
+                      info@sathya.school
+                    </Link>
+                  </div>
+
+                </div>
+                
+                {/* Right FA Icon */}
+                <div className="ml-6 flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600 text-3xl">
+                  <FaUserGraduate />
+                </div>
+              </div>
+
+              {/* School Office */}
+              <div className="flex items-center justify-between bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                    School Office
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-4">
+                    (Office & academic support)
+                  </p>
+
+                  <div className="flex items-center gap-3 text-green-600 font-medium mb-2">
+                    <FaPhoneAlt />
+                    <a href="tel:+919597701985" className="hover:underline">
+                      +91 95977 01985
+                    </a>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-green-600 font-medium mb-2">
+                    <FaEnvelope  />
+                    <a href="mailto:info@sathya.school" className="hover:underline">
+                      info@sathya.school
+                    </a>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-green-600 font-medium">
+                    <FaMapMarkerAlt />
+                      Rajapalayam,Melalangaarathattu,Thoothukudi
+                  </div>
+
+                </div>
+
+                {/* Right FA Icon */}
+                <div className="ml-6 flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 text-3xl">
+                  <FaSchool />
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
       </main>
     </>
   );

@@ -4,6 +4,7 @@
 @tailwind utilities;
 
 
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -389,3 +390,15 @@ body::-webkit-scrollbar {
 :root {
   --swiper-theme-color: rgb(206, 34, 34) !important; /* Replace with your desired color */
 }
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-up.show {
+  opacity: 1;
+  transform: translateY(0); 
+}
+

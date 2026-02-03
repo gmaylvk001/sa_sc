@@ -110,7 +110,7 @@ export default function ContactForm() {
   return (
     <>
 
-      <div className="max-w-4xl mx-auto py-16 mt-2">
+      <div className="max-w-4xl mx-auto pt-36 py-8 mt-2">
 				<div className="p-10 py-5">
 					<div className="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
 						<div className="bg-red-600 py-3 text-center">
