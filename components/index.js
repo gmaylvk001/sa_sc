@@ -24,9 +24,33 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { v4 as uuidv4 } from "uuid";
-import ProductCard from "@/components/ProductCard";
+import IndexGallery from "@/components/gallery/Indexgallery";
+
+
+// Shuffle function
+function shuffleArray(array) {
+  const newArr = [...array];
+  for (let i = newArr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+  }
+  return newArr;
+}
 
 export default function HomeComponent() {
+
+  // Original activities
+  const activitiesData = [
+    { name: "Karate", imageSrc: "/images/sports-activities/Karate.jpg", description: "Discipline, strength, and focus training for students." },
+    { name: "Silambam", imageSrc: "/images/sports-activities/Silambam.jpg", description: "Traditional martial art enhancing agility and coordination." },
+    { name: "Bharathanatyam", imageSrc: "/images/sports-activities/bharatham.png", description: "Classical dance to boost expression and rhythm." },
+    { name: "Western Dance", imageSrc: "/images/sports-activities/western-dance.png", description: "Modern dance promoting creativity and teamwork." },
+    { name: "Art & Craft", imageSrc: "/images/sports-activities/Art-craft.jpg", description: "Hands-on activities to nurture imagination." },
+    { name: "Singing", imageSrc: "/images/sports-activities/Singing.jpg", description: "Enhancing voice and confidence through music." },
+    { name: "Music", imageSrc: "/images/sports-activities/music.png", description: "Enhancing voice and confidence through music." },
+    { name: "Cookery", imageSrc: "/images/sports-activities/Cookery.png", description: "Fun cooking sessions to develop creativity and life skills." },
+  ];
+
 
   const reels = [
     "https://www.instagram.com/p/DSmwY8UCP5d/",
@@ -58,7 +82,7 @@ export default function HomeComponent() {
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 text-red-500"
+            className="h-6 w-6 text-red-600"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -182,6 +206,53 @@ export default function HomeComponent() {
     };
   }, []);
 
+  const [activities, setActivities] = useState(activitiesData);
+  const sectionRef = useRef(null);
+
+  // Track previous positions for FLIP effect
+  const positionsRef = useRef({});
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          // Trigger shuffle when section comes into view
+          setActivities((prev) => shuffleArray(prev));
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (sectionRef.current) observer.observe(sectionRef.current);
+
+    return () => {
+      if (sectionRef.current) observer.unobserve(sectionRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    // FLIP animation
+    const cards = document.querySelectorAll(".activity-card");
+    cards.forEach((card) => {
+      const rect = card.getBoundingClientRect();
+      const prev = positionsRef.current[card.dataset.key];
+      if (prev) {
+        const dx = prev.left - rect.left;
+        const dy = prev.top - rect.top;
+        if (dx || dy) {
+          card.style.transform = `translate(${dx}px, ${dy}px)`;
+          card.style.transition = "transform 0s";
+          requestAnimationFrame(() => {
+            card.style.transition = "transform 0.5s ease";
+            card.style.transform = "";
+          });
+        }
+      }
+      positionsRef.current[card.dataset.key] = rect;
+    });
+  }, [activities]);
+  
+
   return (
     <>
       {/* {navigating && (
@@ -254,7 +325,7 @@ ${
 
             <Link
               href="/admission"
-              className={`inline-block bg-red-500 hover:bg-red-400 text-white px-8 py-3 rounded-full font-semibold
+              className={`inline-block bg-red-600 hover:bg-red-400 text-white px-8 py-3 rounded-full font-semibold
                           transform hover:scale-105 transition-transform duration-300 ease-in-out fade-up ${
                             isVisible ? "show" : ""
                           }`}
@@ -271,7 +342,7 @@ ${
             {/* heading */}
             <div className="max-w-7xl mx-auto px-6 text-center">
                 <h2 className="text-4xl font-bold mb-4 text-gray-800">
-                        About <span className="text-red-500">Sathya School</span>
+                        About <span className="text-red-600">Sathya School</span>
                     </h2>
             </div>
 
@@ -343,9 +414,6 @@ ${
                   </p>
                 </div>
             </div>
-
-      
-    
             {/* VISION & MISSION */}
             <div className="mt-16 relative mb-10 max-w-7xl mx-auto px-6">
 
@@ -370,7 +438,7 @@ ${
 
                 {/* Mission */}
                 <div className="group relative p-8 bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg hover:shadow-2xl transition-all">
-                  <div className="absolute -top-6 left-6 bg-red-500 text-white p-4 rounded-2xl shadow-lg">
+                  <div className="absolute -top-6 left-6 bg-red-600 text-white p-4 rounded-2xl shadow-lg">
                     <FaCheckCircle className="text-xl" />
                   </div>
 
@@ -444,7 +512,7 @@ ${
         <section  id="grade" className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-6">
             <h2 className="text-4xl font-bold text-center mb-4 text-gray-800">
-              <span className="text-red-500">Grades</span> We Offer
+              <span className="text-red-600">Grades</span> We Offer
             </h2>
             <p className="text-center text-gray-600 mb-12">
               A joyful learning journey from foundation to primary education
@@ -507,7 +575,7 @@ ${
         >
           <div className="max-w-7xl mx-auto px-6">
             <h2 className="text-4xl font-bold text-center mb-12 text-gray-800">
-               Why Parent Trust <span className="text-red-500">Sathya School?</span>
+               Why Parent Trust <span className="text-red-600">Sathya School?</span>
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -581,9 +649,8 @@ ${
         </section>
 
         {/* ACTIVITIES */}
-        <section id="ACTIVITIES" className="py-20 bg-gray-50">
+        <section ref={sectionRef} className="py-20 bg-gray-50">
           <div className="max-w-7xl mx-auto px-6">
-            {/* Section Title */}
             <h2 className="text-4xl font-bold text-center mb-4 text-gray-800">
               Sports & Activities
             </h2>
@@ -591,88 +658,36 @@ ${
               Our diverse sports and co-curricular programs help children develop confidence, creativity, and teamwork.
             </p>
 
-            {/* Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-              {[
-                {
-                  name: "Karate",
-                  imageSrc: "/images/sports-activities/Karate.jpg",
-                  description: "Discipline, strength, and focus training for students.",
-                },
-                {
-                  name: "Silambam",
-                  imageSrc: "/images/sports-activities/Silambam.jpg",
-                  description: "Traditional martial art enhancing agility and coordination.",
-                },
-                {
-                  name: "Bharathanatyam",
-                  imageSrc: "/images/sports-activities/bharatham.png",
-                  description: "Classical dance to boost expression and rhythm.",
-                },
-                {
-                  name: "Western Dance",
-                  imageSrc: "/images/sports-activities/western-dance.png",
-                  description: "Modern dance promoting creativity and teamwork.",
-                },
-                {
-                  name: "Art & Craft",
-                  imageSrc: "/images/sports-activities/Art-craft.jpg",
-                  description: "Hands-on activities to nurture imagination.",
-                },
-                {
-                  name: "Singing",
-                  imageSrc: "/images/sports-activities/Singing.jpg",
-                  description: "Enhancing voice and confidence through music.",
-                },
-                {
-                  name: "Music",
-                  imageSrc: "/images/sports-activities/music.jpg",
-                  description: "Enhancing voice and confidence through music.",
-                },
-                {
-                  name: "Cookery",
-                  imageSrc: "/images/sports-activities/Cookery.png",
-                  description: "Fun cooking sessions to develop creativity and life skills.",
-                },
-              ].map((activity, i) => (
+              {activities.map((activity) => (
                 <div
-                  key={i}
-                  className="group bg-white rounded-3xl shadow-md hover:shadow-2xl overflow-hidden transform transition hover:-translate-y-1 cursor-default border-2 border-red-500"
+                  key={activity.name}
+                  data-key={activity.name} // used to track positions
+                  className="activity-card group bg-white rounded-3xl shadow-md
+                  overflow-hidden cursor-default border-2 border-red-600"
+                  style={{ transition: "all 0.5s ease" }}
                 >
                   <div className="relative">
-                    <img
-                      src={activity.imageSrc}
-                      alt={activity.name}
-                      className="w-full"
-                    />
-
-                    {/* Hover overlay */}
+                    <img src={activity.imageSrc} alt={activity.name} className="w-full transition-opacity duration-500" />
                     <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                      <span className="text-white font-semibold text-lg">
-                        {activity.name}
-                      </span>
+                      <span className="text-white font-semibold text-lg">{activity.name}</span>
                     </div>
                   </div>
 
                   <div className="p-5">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      {activity.name}
-                    </h3>
-                    <p className="text-gray-600 text-sm">
-                      {activity.description}
-                    </p>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{activity.name}</h3>
+                    <p className="text-gray-600 text-sm">{activity.description}</p>
                   </div>
                 </div>
               ))}
             </div>
-
           </div>
         </section>
 
         {/* CTA SECTION */}
-        <section className="py-16 bg-gradient-to-r from-pink-100 via-blue-100 to-white">
+        <section className="py-16 bg-white">
           <div className="max-w-4xl mx-auto px-6 text-center">
-            <h2 className="text-4xl font-extrabold mb-4 drop-shadow-md text-red-500">
+            <h2 className="text-4xl font-extrabold mb-4 drop-shadow-md text-red-600">
               Admission Open Now
             </h2>
             <p className="text-lg mb-6 drop-shadow-sm">
@@ -691,7 +706,7 @@ ${
         </section>
 
         {/*insta stories */}
-        <section className=" bg-white">
+        <section className="bg-gradient-to-r from-pink-100 via-blue-100 to-white">
           <div className="max-w-7xl mx-auto px-4 py-6 text-center">
             {/* Heading */}
             <h2 className="text-3xl font-bold mb-6">Instagram Stories</h2>
@@ -746,13 +761,13 @@ ${
         </section>
 
         {/* faq section */}
-        <section id="faq" className="py-20 bg-gradient-to-r from-pink-100 via-blue-100 to-white">
+        <section id="faq" className="py-20 bg-white">
           <div className="max-w-5xl mx-auto px-6">
 
             {/* Heading */}
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-gray-800 mb-3">
-                Frequently Asked <span className="text-red-500">Questions</span>
+                Frequently Asked <span className="text-red-600">Questions</span>
               </h2>
               <p className="text-gray-600 max-w-2xl mx-auto">
                 Find answers to common questions about admissions, curriculum, and campus facilities.
@@ -790,12 +805,12 @@ ${
         </section>
 
         {/* contact section */}
-        <section className="py-16 bg-white">
+        <section className="py-16 bg-gradient-to-r from-pink-100 via-blue-100 to-white">
           <div className="max-w-7xl mx-auto px-6">
             {/* Heading */}
             <div className="mb-10">
               <h2 className="text-4xl font-bold text-gray-900">
-                Contact <span className="text-red-500">Us</span>
+                Contact <span className="text-red-600">Us</span>
               </h2>
               <p className="text-gray-600 mt-2">10am – 7pm weekdays</p>
             </div>
@@ -878,8 +893,6 @@ ${
             </div>
           </div>
         </section>
-
-
 
       </main>
     </>
