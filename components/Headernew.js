@@ -1539,7 +1539,7 @@ const Header = () => {
       <>
          {/* Header */}
           <header className="absolute top-0 left-0 w-full z-40 bg-transparent text-white w-full">
-            <div className="max-w-7xl mx-auto px-6 py-3 flex items-center relative">
+            <div className="max-w-7xl mx-auto px-6 py-4 flex items-center relative">
 
               {/* Logo Centered */}
               <div className="absolute left-1/2 -translate-x-1/2 top-6">
@@ -1554,19 +1554,19 @@ const Header = () => {
               </div>
 
               {/* Admission Button */}
-              <div className="ml-auto ">
+              <div className="ml-auto">
                 <div className="flex">
                   {/* Icons Group */}
-                  <div className="flex items-center space-x-6 pl-3">
+                  <div className="flex items-center space-x-6 pl-3 mr-10">
                       {/* User Account */}
                       <div className="relative" >
                           {isLoggedIn ? (
                               <>
-                                <div className="flex items-center justify-center">
+                                <div className="flex items-center justify-center bg-white rounded-2xl shadow">
                                   <button onClick={() => setDropdownOpen(!dropdownOpen)} className="relative flex items-center justify-center w-8 h-8 rounded-full bg-red-500 hover:bg-red-400 transition">
                                       <FaUser size={18} className="text-white hover:text-white" />
                                   </button>
-                                  <span className="ml-1 font-bold text-xs sm:text-sm text-white hidden lg:inline pl-1 max-w-[80px] truncate">
+                                  <span className="ml-1 font-bold text-xs sm:text-sm text-black hidden lg:inline pl-1 max-w-[80px] truncate pr-3">
                                   Hi, {(userData?.name || userData?.username || "User").slice(0, 6)}
                                 </span>
 
@@ -1601,7 +1601,7 @@ const Header = () => {
                                   )}
                               </>
                           ) : (
-                              <button onClick={() => setShowAuthModal(true)} className="relative flex items-center justify-center w-8 h-8 rounded-full bg-red-500 hover:bg-red-400 transition">
+                              <button onClick={() => setShowAuthModal(true)} className="relative flex items-center justify-center w-8 h-8 rounded-full bg-red-500 hover:bg-red-400 transition p-2">
                                   <FaUser size={18} className="text-white" />
                                   {/* <span className="ml-1 font-bold text-xs sm:text-sm text-customBlue hidden lg:inline">Sign In</span> */}
                               </button>
@@ -1610,7 +1610,7 @@ const Header = () => {
                   </div>
                   {/* Mobile Hamburger */}
                   <button
-                    className="focus:outline-none bg-red-500 ml-3 text-white rounded"
+                    className="fixed top-3 right-2 md:right-5 z-50 focus:outline-none bg-red-500 text-white rounded p-1"
                     onClick={() => setIsOpen(!isOpen)}
                     aria-label="Toggle menu"
                   >
@@ -1646,52 +1646,53 @@ const Header = () => {
 
             {/* Mobile Menu */}
             {isOpen && (
-              <nav
-                className={`fixed inset-0 z-40 bg-red-700 text-white font-semibold flex justify-start items-start space-y-6 text-2xl transition-opacity duration-200 py-5 px-5 ${
-                  isOpen ? "opacity-100 translate-x-0 pointer-events-auto" : "opacity-0 translate-x-full pointer-events-none"
-                }`}
-              >
-                {/* Close Button */}
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="absolute top-6 right-6 text-white text-3xl hover:text-gray-200 transition"
-                  aria-label="Close menu"
-                >
-                  &times;
-                </button>
-                <div className="flex-1 flex flex-col justify-center space-y-8 px-5 md:px-12 text-3xl">
-                <a href="#" className="block hover:underline" onClick={() => setIsOpen(false)}>
-                  Home
-                </a>
-                <a href="/#about" className="block hover:underline" onClick={() => setIsOpen(false)}>
-                  About Us
-                </a>
-                <a href="/#grade" className="block hover:underline" onClick={() => setIsOpen(false)}>
-                  Grade
-                </a>
-                <a href="/#Why" className="block hover:underline" onClick={() => setIsOpen(false)}>
-                  Why Parent Trust Us
-                </a>
-                <a href="/#ACTIVITIES" className="block hover:underline" onClick={() => setIsOpen(false)}>
-                  Activities
-                </a>
-                <a
-                  href="/admission"
-                  className="block hover:underline"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Admission Open
-                </a>
-                </div>
+              <nav className="fixed inset-0 z-40 flex text-white font-semibold text-xl">
                 
-                {/* Wrapper div for visibility */}
-                <div className="hidden md:flex flex-1 items-center justify-center pr-12">
-                  <img
-                    src="user/logo.png"
-                    alt="Logo"
-                    className="max-w-[400px] opacity-30"
-                    style={{ userSelect: "none" }}
+                {/* LEFT MENU */}
+                <div
+                    className={`menu-slide-left flex flex-col space-y-8 px-6 pt-8 bg-red-600
+                    ${isOpen ? "menu-open" : ""}`}
+                  >
+                  <Link className="menu-item text-white" href="#" onClick={() => setIsOpen(false)}>
+                    <span className="menu-text text-white">Home</span>
+                  </Link>
+                  <Link className="menu-item" href="/#about" onClick={() => setIsOpen(false)}>
+                    <span className="menu-text text-white">About Us</span>
+                  </Link>
+                  <Link className="menu-item" href="/#grade" onClick={() => setIsOpen(false)}>
+                    <span className="menu-text text-white">Grade</span>
+                  </Link>
+                  <Link className="menu-item" href="/#Why" onClick={() => setIsOpen(false)}>
+                    <span className="menu-text text-white">Why Parent Trust Us</span>
+                  </Link>
+                  <Link className="menu-item" href="/#ACTIVITIES" onClick={() => setIsOpen(false)}>
+                    <span className="menu-text text-white">Activities</span>
+                  </Link>
+                  <Link className="menu-item" href="/admission" onClick={() => setIsOpen(false)}>
+                    <span className="menu-text text-white" >Admission Open</span>
+                  </Link>
+                </div>
+
+                {/* RIGHT IMAGE (hidden on mobile) */}
+                <div className="hidden md:flex flex-1 relative">
+                  <div
+                    className="absolute inset-0 bg-cover bg-center sidebar-bg-image"
+                    style={{
+                      backgroundImage:
+                        "url('/images/home-page-img/sidebar-menu.jpg')",
+                    }}
                   />
+                  <div className="absolute inset-0 bg-black/50" />
+
+                  {/* Optional logo */}
+                  <div className="absolute inset-0 top-5 flex items-start justify-center">
+                    <img
+                      src="user/logo.png"
+                      alt="Logo"
+                      className="w-20 opacity-100 select-none"
+                    />
+                  </div>
+
                 </div>
 
               </nav>
