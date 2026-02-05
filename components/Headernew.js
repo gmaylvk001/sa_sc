@@ -1534,6 +1534,7 @@ const Header = () => {
       setIsMobileMenuOpen(false);
     };
     const [isOpen, setIsOpen] = useState(false);
+    
 
     return (
       <>
@@ -1542,13 +1543,13 @@ const Header = () => {
             <div className="max-w-7xl mx-auto px-6 py-4 flex items-center relative">
 
               {/* Logo Centered */}
-              <div className="absolute left-1/2 -translate-x-1/2 top-6">
+              <div className="absolute left-1/2 -translate-x-1/2 top-3">
                 <Link href="/" className="mx-auto">
                   <img
                     src="/user/logo.png"
                     alt="Logo"
                     style={{ imageRendering: 'auto' }}
-                    className="object-contain w-32 h-auto" // Increase width
+                    className="object-contain w-28 h-auto" // Increase width
                   />
                 </Link>
               </div>
@@ -1998,3 +1999,4 @@ const Header = () => {
     );
 };
 export default Header;
+

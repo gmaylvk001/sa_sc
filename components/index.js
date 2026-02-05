@@ -306,7 +306,7 @@ export default function HomeComponent() {
             </h1>
 
             <p
-              className={`text-lg md:text-2xl mb-6 font-extralight fade-up font-sans ${
+              className={`text-xl md:text-2xl mb-6 font-extralight fade-up font-sans ${
                 isVisible ? "show" : ""
               }`}
               style={{ transitionDelay: "300ms" }}
@@ -337,19 +337,19 @@ export default function HomeComponent() {
         </section>
 
         {/* ABOUT SECTION */}
-        <section id="about" className="py-20 bg-gradient-to-r from-pink-100 via-blue-100 to-white">
+        <section id="about" className="py-16 bg-gradient-to-r from-pink-100 via-blue-100 to-white">
 
             {/* heading */}
             <div className="max-w-7xl mx-auto px-6 text-center">
                 <h2 className="text-4xl font-bold mb-4 text-gray-800">
-                        About <span className="text-red-600">Sathya School</span>
-                    </h2>
+                    About <span className="text-red-600">Sathya School</span>
+                </h2>
             </div>
 
             {/* about first content */}
             <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 {/* Right Image */}
-                 <div className="relative p-5">
+                 <div className="relative p-3">
                   <img
                     src="/images/home-page-img/about-img-one.png"
                     alt="School Campus"
@@ -360,7 +360,7 @@ export default function HomeComponent() {
                   <img
                     src="/images/home-page-img/about-img-two.png"
                     alt="Classroom Learning"
-                    className="absolute -bottom-10 -right-10 w-48 md:w-64 rounded-2xl shadow-2xl border-4 border-white hidden sm:block"
+                    className="absolute -bottom-12 -right-6 w-48 md:w-64 rounded-2xl shadow-2xl border-4 border-white hidden sm:block"
                   />
                 </div>
 
@@ -381,24 +381,55 @@ export default function HomeComponent() {
             {/* about second content */}
              <div className="mt-16 max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 {/* Left Content (Images) */}
-                <div className="grid grid-cols-2 gap-4 items-center order-1 lg:order-2">
-                  <img
-                    src="/images/home-page-img/about-img-three.jpg"
-                    className="row-span-2 h-full rounded-3xl shadow-xl border-4 border-white"
-                    alt=""
-                  />
-                  <img
-                    src="/images/home-page-img/about-img-four.png"
-                    className="rounded-2xl w-full h-full shadow-lg border-4 border-white"
-                    alt=""
-                  />
-                  <img
-                    src="/images/home-page-img/about-img-five.jpg"
-                    className="rounded-2xl w-full h-full shadow-lg border-4 border-white"
-                    alt=""
-                  />
+                <div className="flex flex-col lg:grid lg:grid-cols-1 gap-4 order-1 lg:order-2">
+
+                  {/* For mobile: show all 3 images in column */}
+                  <div className="flex flex-col gap-4 lg:hidden">
+                    <img
+                      src="/images/home-page-img/about-img-three.jpg"
+                      className="w-full rounded-3xl shadow-xl border-4 border-white lg:block hidden"
+                      alt=""
+                    />
+                    <img
+                      src="/images/home-page-img/about-img-four.png"
+                      className="w-full rounded-2xl shadow-lg border-4 border-white lg:block hidden"
+                      alt=""
+                    />
+                    <img
+                      src="/images/home-page-img/about-img-five.jpg"
+                      className="w-full rounded-2xl shadow-lg border-4 border-white"
+                      alt=""
+                    />
+                  </div>
+
+                  {/* For desktop: show grid with row-span */}
+                  <div className="hidden lg:grid lg:grid-cols-2 lg:gap-4">
+                    <div className="row-span-2">
+                      <img
+                        src="/images/home-page-img/about-img-three.jpg"
+                        className="w-full rounded-3xl shadow-xl border-4 border-white"
+                        alt=""
+                      />
+                    </div>
+                    <div>
+                      <img
+                        src="/images/home-page-img/about-img-four.png"
+                        className="w-full rounded-2xl shadow-lg border-4 border-white"
+                        alt=""
+                      />
+                    </div>
+                    <div>
+                      <img
+                        src="/images/home-page-img/about-img-five.jpg"
+                        className="w-full rounded-2xl shadow-lg border-4 border-white"
+                        alt=""
+                      />
+                    </div>
+                  </div>
+
                 </div>
-                {/* Right Image (Text) */}
+
+                {/* Right Contect (Text) */}
                 <div className="order-2 lg:order-1">
 
                   {/* Small Heading */}
@@ -509,20 +540,29 @@ export default function HomeComponent() {
         </section>
 
         {/* GRADES OFFERED */}
-        <section  id="grade" className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-6">
-            <h2 className="text-4xl font-bold text-center mb-4 text-gray-800">
-              <span className="text-red-600">Grades</span> We Offer
+        <section id="grade" className="relative bg-center bg-cover bg-scroll md:bg-fixed
+                      min-h-[70vh] md:min-h-[70vh]
+                      flex items-center"
+            style={{ backgroundImage: "url('/images/home-page-img/grade-bg.jpeg')" }}
+          >
+            {/* Black overlay */}
+            <div className="absolute inset-0 bg-black/60"></div>
+
+          {/* Content */}
+          <div className="relative max-w-7xl mx-auto px-6 w-full py-16">
+            <h2 className="text-5xl text-center mb-4 text-white font-serif">
+              <span className="text-white">Grades</span> We Offer
             </h2>
-            <p className="text-center text-gray-600 mb-12">
+
+            <p className="text-center text-gray-200 mb-12 font-sans text-lg">
               A joyful learning journey from foundation to primary education
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
 
               {/* Pre KG */}
-              <div className="group relative bg-white rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
-                <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-pink-100 text-pink-600 text-2xl font-bold">
+              <div className="bg-white/95 backdrop-blur rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
+                <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-pink-100 text-pink-600 text-2xl">
                   <FaChild />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Pre KG</h3>
@@ -532,8 +572,8 @@ export default function HomeComponent() {
               </div>
 
               {/* LKG */}
-              <div className="group relative bg-white rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
-                <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-600 text-2xl font-bold">
+              <div className="bg-white/95 backdrop-blur rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
+                <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-600 text-2xl">
                   <FaShieldAlt />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">LKG</h3>
@@ -543,8 +583,8 @@ export default function HomeComponent() {
               </div>
 
               {/* UKG */}
-              <div className="group relative bg-white rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
-                <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-green-100 text-green-600 text-2xl font-bold">
+              <div className="bg-white/95 backdrop-blur rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
+                <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-green-100 text-green-600 text-2xl">
                   <FaHeadset />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">UKG</h3>
@@ -554,8 +594,8 @@ export default function HomeComponent() {
               </div>
 
               {/* 1st – 5th Std */}
-              <div className="group relative bg-white rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
-                <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 text-2xl font-bold">
+              <div className="bg-white/95 backdrop-blur rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
+                <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 text-2xl">
                   <FaAward />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">1st – 5th Std</h3>
@@ -571,7 +611,7 @@ export default function HomeComponent() {
         {/* why choose section */}
         <section
           id="Why"
-          className="py-16 bg-gradient-to-r from-pink-100 via-blue-100 to-white"
+          className="py-14 bg-gradient-to-r from-pink-100 via-blue-100 to-white"
         >
           <div className="max-w-7xl mx-auto px-6">
             <h2 className="text-4xl font-bold text-center mb-12 text-gray-800">
@@ -649,12 +689,12 @@ export default function HomeComponent() {
         </section>
 
         {/* ACTIVITIES */}
-        <section ref={sectionRef} className="py-20 bg-white">
+        <section ref={sectionRef} className="py-14 bg-white" id="ACTIVITIES">
           <div className="max-w-7xl mx-auto px-6">
-            <h2 className="text-4xl font-bold text-center mb-4 text-gray-800">
+            <h2 className="text-4xl font-bold text-center mb-2 text-gray-800">
               Sports & Activities
             </h2>
-            <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+            <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
               Our diverse sports and co-curricular programs help children develop confidence, creativity, and teamwork.
             </p>
 
@@ -674,8 +714,8 @@ export default function HomeComponent() {
                     </div>
                   </div>
 
-                  <div className="p-5">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{activity.name}</h3>
+                  <div className="px-5 py-2">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1">{activity.name}</h3>
                     <p className="text-gray-600 text-sm">{activity.description}</p>
                   </div>
                 </div>
@@ -685,15 +725,25 @@ export default function HomeComponent() {
         </section>
 
         {/* CTA SECTION */}
-        <section className="py-16 bg-white">
-          <div className="max-w-4xl mx-auto px-6 text-center">
-            <h2 className="text-4xl font-extrabold mb-4 drop-shadow-md text-red-600">
+        <section className="relative bg-center bg-cover bg-scroll md:bg-fixed
+             min-h-[60vh] sm:min-h-[40vh] md:min-h-[60vh] lg:min-h-[80vh]
+             flex items-center"
+            style={{ backgroundImage: "url('/images/home-page-img/admission-bg.jpeg')" }}
+          >
+          {/* Black overlay */}
+          <div className="absolute inset-0 bg-black/60"></div>
+
+          {/* Content */}
+          <div className="relative max-w-4xl mx-auto px-6 text-center text-white">
+            <h2 className="md:text-5xl text-4xl mb-4 drop-shadow-md font-serif">
               Admission Open Now
             </h2>
-            <p className="text-lg mb-6 drop-shadow-sm">
+
+            <p className="md:text-xl text-lg mb-6 drop-shadow-sm font-sans">
               Rajapalayam, Melalangarathattu, Thoothukudi <br />
               Air Conditioned Campus | Quality Education
             </p>
+
             <div className="flex justify-center gap-6 flex-wrap">
               <Link
                 href="/admission"
@@ -707,7 +757,7 @@ export default function HomeComponent() {
 
         {/*insta stories */}
         <section className="bg-gradient-to-r from-pink-100 via-blue-100 to-white">
-          <div className="max-w-7xl mx-auto px-4 py-6 text-center">
+          <div className="max-w-7xl mx-auto px-4 py-14 text-center">
             {/* Heading */}
             <h2 className="text-3xl font-bold mb-6">Instagram Stories</h2>
            <div className="insta-swiper pb-[40px] mx-2 relative">
@@ -761,7 +811,7 @@ export default function HomeComponent() {
         </section>
 
         {/* faq section */}
-        <section id="faq" className="py-20 bg-white">
+        <section id="faq" className="py-14 bg-white">
           <div className="max-w-5xl mx-auto px-6">
 
             {/* Heading */}
@@ -805,7 +855,7 @@ export default function HomeComponent() {
         </section>
 
         {/* contact section */}
-        <section className="py-16 bg-gradient-to-r from-pink-100 via-blue-100 to-white">
+        <section className="py-14 bg-gradient-to-r from-pink-100 via-blue-100 to-white">
           <div className="max-w-7xl mx-auto px-6">
             {/* Heading */}
             <div className="mb-10">

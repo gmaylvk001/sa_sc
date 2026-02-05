@@ -106,11 +106,16 @@ export default function ContactForm() {
   }, []);
 
   const inputClass = "w-full border rounded-md px-3 py-2 focus:outline-none";
-
   return (
     <>
 
-      <div className="max-w-4xl mx-auto pt-36 py-8 mt-2">
+       <section className="relative bg-cover bg-center py-16">
+      {/* Overlay */}
+      <div className="absolute inset-0"></div>
+
+    </section>
+
+      <div className="max-w-4xl mx-auto pt-4 pb-8 mt-2">
 				<div className="p-10 py-5">
 					<div className="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
 						<div className="bg-red-600 py-3 text-center">
