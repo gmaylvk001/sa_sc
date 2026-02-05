@@ -24,7 +24,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { v4 as uuidv4 } from "uuid";
-import IndexGallery from "@/components/gallery/Indexgallery";
+
 
 
 // Shuffle function
@@ -297,7 +297,7 @@ export default function HomeComponent() {
           <div className="relative z-20 max-w-7xl mx-auto px-6 h-full flex flex-col items-center justify-center text-center text-white">
             <h1
               className={`text-5xl md:text-7xl mb-4 fade-up font-serif
-${
+              ${
                 isVisible ? "show" : ""
               }`}
               style={{ transitionDelay: "100ms" }}
@@ -649,7 +649,7 @@ ${
         </section>
 
         {/* ACTIVITIES */}
-        <section ref={sectionRef} className="py-20 bg-gray-50">
+        <section ref={sectionRef} className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-6">
             <h2 className="text-4xl font-bold text-center mb-4 text-gray-800">
               Sports & Activities
