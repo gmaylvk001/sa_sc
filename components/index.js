@@ -386,7 +386,7 @@ export default function HomeComponent() {
                   {/* For mobile: show all 3 images in column */}
                   <div className="flex flex-col gap-4 lg:hidden">
                     <img
-                      src="/images/home-page-img/about-img-three.jpg"
+                      src="/images/home-page-img/about-vertical-img.jpg"
                       className="w-full rounded-3xl shadow-xl border-4 border-white lg:block hidden"
                       alt=""
                     />
@@ -406,7 +406,7 @@ export default function HomeComponent() {
                   <div className="hidden lg:grid lg:grid-cols-2 lg:gap-4">
                     <div className="row-span-2">
                       <img
-                        src="/images/home-page-img/about-img-three.jpg"
+                        src="/images/home-page-img/about-vertical-img.jpg"
                         className="w-full rounded-3xl shadow-xl border-4 border-white"
                         alt=""
                       />
