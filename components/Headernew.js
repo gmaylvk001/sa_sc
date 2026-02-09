@@ -1539,11 +1539,11 @@ const Header = () => {
     return (
       <>
          {/* Header */}
-          <header className="absolute top-0 left-0 w-full z-40 bg-transparent text-white w-full">
+          <header className="absolute top-0 left-0 w-full z-40 bg-transparent  w-full">
             <div className="max-w-7xl mx-auto px-6 py-4 flex items-center relative">
 
               {/* Logo Centered */}
-              <div className="absolute left-1/2 -translate-x-1/2 top-3">
+              <div className="absolute left-1/2 -translate-x-1/2 top-2">
                 <Link href="/" className="mx-auto">
                   <img
                     src="/user/logo.png"
@@ -1583,7 +1583,7 @@ const Header = () => {
                                             </div>
                                               {isAdmin && (
                                                   <>
-                                                      <Link href="/admin/dashboard" className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm text-gray-700 hover:bg-[#e5484d63] transition-colors">
+                                                      <Link href="/admin/registration" className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm text-gray-700 hover:bg-[#e5484d63] transition-colors">
                                                           <span className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-[#000000] text-white">
                                                               <FaUserShield className="w-3 h-3 sm:w-4 sm:h-4" />
                                                           </span>
@@ -1699,301 +1699,301 @@ const Header = () => {
               </nav>
             )}
              {/* Auth Modal */}
-              {showAuthModal && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                      <div className="bg-white rounded-lg p-8 w-96 max-w-full relative">
-                          <button onClick={() => { setShowAuthModal(false); setFormError(''); setError(''); setErrors({ login: {}, register: {} }); setLoginData({ email: "", password: "" }); setRegisterData({ name: "", email: "", mobile: "", password: "" }); }} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl">
-                              &times;
-                          </button>
-                          <div className="flex gap-4 mb-6 border-b">
-                              <button className={`pb-2 px-1 ${activeTab === 'login' ? ' border-b-2 border-[#e5484d] text-[#000000]' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('login')}>
-                                  Login
-                              </button>
-                              <button className={`pb-2 px-1 ${activeTab === 'register' ? 'border-b-2 border-[#e5484d] text-[#000000]' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('register')}>
-                                  Register
-                              </button>
-                          </div>
-                          <form onSubmit={handleAuthSubmit} className="space-y-4">
-                            {/* Register Name Field */}
-                            {activeTab === "register" && (
-                              <>
-                                <input
-                                  type="text"
-                                  placeholder="Name"
-                                  value={registerData.name}
-                                  onChange={(e) =>
-                                    setRegisterData({ ...registerData, name: e.target.value })
-                                  }
-                                  className={`w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                    errors?.register?.name ? "border-red-500" : ""
-                                  }`}
-                                />
-                                {errors?.register?.name && (
-                                  <p className="text-red-500 text-sm">{errors.register.name}</p>
-                                )}
-                              </>
-                            )}
-
-                            {/* Email Field */}
-                            <input
-                              type="text"
-                              placeholder="Email"
-                              value={
-                                activeTab === "login" ? loginData.email : registerData.email
-                              }
-                              onChange={(e) =>
-                                activeTab === "login"
-                                  ? setLoginData({ ...loginData, email: e.target.value })
-                                  : setRegisterData({ ...registerData, email: e.target.value })
-                              }
-                              className={`w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                errors?.[activeTab]?.email ? "border-red-500" : ""
-                              }`}
-                            />
-                            {errors?.[activeTab]?.email && (
-                              <p className="text-red-500 text-sm">{errors[activeTab].email}</p>
-                            )}
-
-                            {/* Register Mobile Field */}
-                            {activeTab === "register" && (
-                              <>
-                                <input
-                                  type="tel"
-                                  placeholder="Mobile"
-                                  value={registerData.mobile}
-                                  onChange={(e) =>
-                                    setRegisterData({ ...registerData, mobile: e.target.value })
-                                  }
-                                  className={`w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                    errors?.register?.mobile ? "border-red-500" : ""
-                                  }`}
-                                />
-                                {errors?.register?.mobile && (
-                                  <p className="text-red-500 text-sm">{errors.register.mobile}</p>
-                                )}
-                              </>
-                            )}
-
-                            {/* Password Field */}
-                            <input
-                              type="password"
-                              placeholder="Password"
-                              value={
-                                activeTab === "login" ? loginData.password : registerData.password
-                              }
-                              onChange={(e) =>
-                                activeTab === "login"
-                                  ? setLoginData({ ...loginData, password: e.target.value })
-                                  : setRegisterData({ ...registerData, password: e.target.value })
-                              }
-                              className={`w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                errors?.[activeTab]?.password ? "border-red-500" : ""
-                              }`}
-                              minLength={6}
-                            />
-                            {errors?.[activeTab]?.password && (
-                              <p className="text-red-500 text-sm">{errors[activeTab].password}</p>
-                            )}
-
-                            {/* Global Form Error */}
-                            {(formError || error) && (
-                              <div className="text-red-500 text-sm">{formError || error}</div>
-                            )}
-
-                            {/* Submit Button */}
-                            <button
-                              type="submit"
-                              disabled={loadingAuth}
-                              className="w-full bg-[#e5484d] text-[#000000] hover:text-[#e5484d] py-2 px-4 rounded hover:bg-[#000000] disabled:bg-gray-400 transition-colors duration-200"
-                            >
-                              {loadingAuth
-                                ? "Processing..."
-                                : activeTab === "login"
-                                ? "Login"
-                                : "Register"}
+            {showAuthModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-8 w-96 max-w-full relative">
+                        <button onClick={() => { setShowAuthModal(false); setFormError(''); setError(''); setErrors({ login: {}, register: {} }); setLoginData({ email: "", password: "" }); setRegisterData({ name: "", email: "", mobile: "", password: "" }); }} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl">
+                            &times;
+                        </button>
+                        <div className="flex gap-4 mb-6 border-b">
+                            <button className={`pb-2 px-1 ${activeTab === 'login' ? ' border-b-2 border-[#e5484d] text-[#000000]' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('login')}>
+                                Login
                             </button>
-
-                            {/* Forgot Password (only in login) */}
-                            {activeTab === "login" && (
-                              <div className="text-center mt-2">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setShowAuthModal(false);
-                                    setShowForgotPasswordModal(true);
-                                    setForgotStep(1);
-                                    setForgotPasswordEmail(formData?.email || "");
-                                    setForgotOTP("");
-                                    setNewPassword("");
-                                    setConfirmPassword("");
-                                    setForgotPasswordMessage("");
-                                    setForgotPasswordError("");
-                                  }}
-                                  className="text-sm text-[#e5484d] hover:underline"
-                                >
-                                  Forgot Password?
-                                </button>
-                              </div>
-                            )}
-                          </form>
-                      </div>
-                  </div>
-              )}
-              {showForgotPasswordModal && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                      <div className="bg-white rounded-lg p-6 w-96 max-w-full relative">
-                          <button onClick={() => setShowForgotPasswordModal(false)} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
-                          {/* STEP 1: Enter Email */}
-                          {forgotStep === 1 && (
-                              <>
-                                  <h2 className="text-lg font-semibold mb-4">Reset Password</h2>
-                                  <form onSubmit={async (e) => {
-                                      e.preventDefault(); setForgotPasswordError(''); setForgotPasswordMessage(''); setForgotPasswordLoading(true);
-                                      try {
-                                          const res = await fetch('/api/auth/request-reset', {
-                                              method: 'POST',
-                                              headers: { 'Content-Type': 'application/json' },
-                                              body: JSON.stringify({ email: forgotPasswordEmail }),
-                                          });
-                                          const data = await res.json();
-                                          if (!res.ok) throw new Error(data.message || 'Error sending OTP');
-                                          setForgotPasswordMessage('OTP sent to your email.');
-                                          setForgotStep(2);
-                                      } catch (err) {
-                                          setForgotPasswordError(err.message);
-                                      } finally {
-                                          setForgotPasswordLoading(false);
-                                      }
-                                  }} className="space-y-4">
-                                      <input
-                                          type="email"
-                                          placeholder="Enter your email"
-                                          value={forgotPasswordEmail}
-                                          onChange={(e) => setForgotPasswordEmail(e.target.value)}
-                                          required
-                                          className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                      />
-                                      {forgotPasswordError && (
-                                          <p className="text-red-500 text-sm">{forgotPasswordError}</p>
-                                      )}
-                                      {forgotPasswordMessage && (
-                                          <p className="text-green-500 text-sm">{forgotPasswordMessage}</p>
-                                      )}
-                                      <button
-                                          type="submit"
-                                          disabled={forgotPasswordLoading}
-                                          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
-                                      >
-                                          {forgotPasswordLoading ? 'Sending...' : 'Send OTP'}
-                                      </button>
-                                  </form>
-                              </>
+                            <button className={`pb-2 px-1 ${activeTab === 'register' ? 'border-b-2 border-[#e5484d] text-[#000000]' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('register')}>
+                                Register
+                            </button>
+                        </div>
+                        <form onSubmit={handleAuthSubmit} className="space-y-4">
+                          {/* Register Name Field */}
+                          {activeTab === "register" && (
+                            <>
+                              <input
+                                type="text"
+                                placeholder="Name"
+                                value={registerData.name}
+                                onChange={(e) =>
+                                  setRegisterData({ ...registerData, name: e.target.value })
+                                }
+                                className={`w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                  errors?.register?.name ? "border-red-500" : ""
+                                }`}
+                              />
+                              {errors?.register?.name && (
+                                <p className="text-red-500 text-sm">{errors.register.name}</p>
+                              )}
+                            </>
                           )}
 
-                          {/* STEP 2: Enter OTP */}
-                          {forgotStep === 2 && (
-                              <>
-                                  <h2 className="text-lg font-semibold mb-4">Enter OTP</h2>
-                                  <p className="text-sm mb-2">Email: <strong>{forgotPasswordEmail}</strong></p>
-                                  <form onSubmit={async (e) => {
-                                      e.preventDefault(); setForgotPasswordError(''); setForgotPasswordMessage('');
-                                      if (!forgotOTP.trim()) {
-                                          setForgotPasswordError('Please enter OTP.');
-                                          return;
-                                      }
-                                      setForgotPasswordLoading(true);
-                                      try {
-                                          const res = await fetch('/api/auth/verify-otp', {
-                                              method: 'POST',
-                                              headers: { 'Content-Type': 'application/json' },
-                                              body: JSON.stringify({
-                                                  email: forgotPasswordEmail,
-                                                  otp: forgotOTP,
-                                              }),
-                                          });
-                                          const data = await res.json();
-                                          if (!res.ok) throw new Error(data.message || 'Invalid OTP');
-                                          setForgotPasswordMessage('OTP verified. Please set your new password.');
-                                          setForgotStep(3);
-                                      } catch (err) {
-                                          setForgotPasswordError(err.message);
-                                      } finally {
-                                          setForgotPasswordLoading(false);
-                                      }
-                                  }} className="space-y-4">
-                                      <input type="text" placeholder="Enter OTP" value={forgotOTP} onChange={(e) => setForgotOTP(e.target.value)} required className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                      {forgotPasswordError && (
-                                          <p className="text-red-500 text-sm">{forgotPasswordError}</p>
-                                      )}
-                                      {forgotPasswordMessage && (
-                                          <p className="text-green-500 text-sm">{forgotPasswordMessage}</p>
-                                      )}
-                                      <button type="submit" disabled={forgotPasswordLoading} className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:bg-gray-400">
-                                          {forgotPasswordLoading ? 'Validating...' : 'Validate OTP'}
-                                      </button>
-                                  </form>
-                              </>
+                          {/* Email Field */}
+                          <input
+                            type="text"
+                            placeholder="Email"
+                            value={
+                              activeTab === "login" ? loginData.email : registerData.email
+                            }
+                            onChange={(e) =>
+                              activeTab === "login"
+                                ? setLoginData({ ...loginData, email: e.target.value })
+                                : setRegisterData({ ...registerData, email: e.target.value })
+                            }
+                            className={`w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                              errors?.[activeTab]?.email ? "border-red-500" : ""
+                            }`}
+                          />
+                          {errors?.[activeTab]?.email && (
+                            <p className="text-red-500 text-sm">{errors[activeTab].email}</p>
                           )}
-                          {/* STEP 3: New Password */}
-                          {forgotStep === 3 && (
-                              <>
-                                  <h2 className="text-lg font-semibold mb-4">Set New Password</h2>
-                                  <p className="text-sm mb-2">Email: <strong>{forgotPasswordEmail}</strong></p>
-                                  <form onSubmit={async (e) => {
-                                      e.preventDefault();
-                                      setForgotPasswordError('');
-                                      setForgotPasswordMessage('');
-                                      if (newPassword !== confirmPassword) {
-                                          setForgotPasswordError('Passwords do not match.');
-                                          return;
-                                      }
-                                      setForgotPasswordLoading(true);
-                                      try {
-                                            const res = await fetch('/api/auth/reset-password', {
-                                              method: 'POST',
-                                              headers: { 'Content-Type': 'application/json' },
-                                              body: JSON.stringify({
-                                                  email: forgotPasswordEmail,
-                                                  otp: forgotOTP,
-                                                  newPassword,
-                                              }),
-                                          });
 
-                                          const data = await res.json();
-                                          if (!res.ok) throw new Error(data.message || 'Error resetting password');
-
-                                          setForgotPasswordMessage('Password reset successful.');
-                                          setTimeout(() => {
-                                              setShowForgotPasswordModal(false);
-                                              setShowAuthModal(true); // reopen login
-                                          }, 1500);
-                                      } catch (err) {
-                                          setForgotPasswordError(err.message);
-                                      } finally {
-                                          setForgotPasswordLoading(false);
-                                      }
-                                  }} className="space-y-4">
-                                      <input type="password" placeholder="New Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={6} className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                      <input type="password" placeholder="Confirm New Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                      {forgotPasswordError && (
-                                          <p className="text-red-500 text-sm">{forgotPasswordError}</p>
-                                      )}
-                                      {forgotPasswordMessage && (
-                                          <p className="text-green-500 text-sm">{forgotPasswordMessage}</p>
-                                      )}
-                                      <button
-                                          type="submit"
-                                          disabled={forgotPasswordLoading}
-                                          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
-                                      >
-                                          {forgotPasswordLoading ? 'Resetting...' : 'Reset Password'}
-                                      </button>
-                                  </form>
-                              </>
+                          {/* Register Mobile Field */}
+                          {activeTab === "register" && (
+                            <>
+                              <input
+                                type="tel"
+                                placeholder="Mobile"
+                                value={registerData.mobile}
+                                onChange={(e) =>
+                                  setRegisterData({ ...registerData, mobile: e.target.value })
+                                }
+                                className={`w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                  errors?.register?.mobile ? "border-red-500" : ""
+                                }`}
+                              />
+                              {errors?.register?.mobile && (
+                                <p className="text-red-500 text-sm">{errors.register.mobile}</p>
+                              )}
+                            </>
                           )}
-                      </div>
-                  </div>
-              )}
+
+                          {/* Password Field */}
+                          <input
+                            type="password"
+                            placeholder="Password"
+                            value={
+                              activeTab === "login" ? loginData.password : registerData.password
+                            }
+                            onChange={(e) =>
+                              activeTab === "login"
+                                ? setLoginData({ ...loginData, password: e.target.value })
+                                : setRegisterData({ ...registerData, password: e.target.value })
+                            }
+                            className={`w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                              errors?.[activeTab]?.password ? "border-red-500" : ""
+                            }`}
+                            minLength={6}
+                          />
+                          {errors?.[activeTab]?.password && (
+                            <p className="text-red-500 text-sm">{errors[activeTab].password}</p>
+                          )}
+
+                          {/* Global Form Error */}
+                          {(formError || error) && (
+                            <div className="text-red-500 text-sm">{formError || error}</div>
+                          )}
+
+                          {/* Submit Button */}
+                          <button
+                            type="submit"
+                            disabled={loadingAuth}
+                            className="w-full bg-[#e5484d] text-[#000000] hover:text-[#e5484d] py-2 px-4 rounded hover:bg-[#000000] disabled:bg-gray-400 transition-colors duration-200"
+                          >
+                            {loadingAuth
+                              ? "Processing..."
+                              : activeTab === "login"
+                              ? "Login"
+                              : "Register"}
+                          </button>
+
+                          {/* Forgot Password (only in login) */}
+                          {activeTab === "login" && (
+                            <div className="text-center mt-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setShowAuthModal(false);
+                                  setShowForgotPasswordModal(true);
+                                  setForgotStep(1);
+                                  setForgotPasswordEmail(formData?.email || "");
+                                  setForgotOTP("");
+                                  setNewPassword("");
+                                  setConfirmPassword("");
+                                  setForgotPasswordMessage("");
+                                  setForgotPasswordError("");
+                                }}
+                                className="text-sm text-[#e5484d] hover:underline"
+                              >
+                                Forgot Password?
+                              </button>
+                            </div>
+                          )}
+                        </form>
+                    </div>
+                </div>
+            )}
+            {showForgotPasswordModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-96 max-w-full relative">
+                        <button onClick={() => setShowForgotPasswordModal(false)} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                        {/* STEP 1: Enter Email */}
+                        {forgotStep === 1 && (
+                            <>
+                                <h2 className="text-lg font-semibold mb-4">Reset Password</h2>
+                                <form onSubmit={async (e) => {
+                                    e.preventDefault(); setForgotPasswordError(''); setForgotPasswordMessage(''); setForgotPasswordLoading(true);
+                                    try {
+                                        const res = await fetch('/api/auth/request-reset', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ email: forgotPasswordEmail }),
+                                        });
+                                        const data = await res.json();
+                                        if (!res.ok) throw new Error(data.message || 'Error sending OTP');
+                                        setForgotPasswordMessage('OTP sent to your email.');
+                                        setForgotStep(2);
+                                    } catch (err) {
+                                        setForgotPasswordError(err.message);
+                                    } finally {
+                                        setForgotPasswordLoading(false);
+                                    }
+                                }} className="space-y-4">
+                                    <input
+                                        type="email"
+                                        placeholder="Enter your email"
+                                        value={forgotPasswordEmail}
+                                        onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                                        required
+                                        className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    {forgotPasswordError && (
+                                        <p className="text-red-500 text-sm">{forgotPasswordError}</p>
+                                    )}
+                                    {forgotPasswordMessage && (
+                                        <p className="text-green-500 text-sm">{forgotPasswordMessage}</p>
+                                    )}
+                                    <button
+                                        type="submit"
+                                        disabled={forgotPasswordLoading}
+                                        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+                                    >
+                                        {forgotPasswordLoading ? 'Sending...' : 'Send OTP'}
+                                    </button>
+                                </form>
+                            </>
+                        )}
+
+                        {/* STEP 2: Enter OTP */}
+                        {forgotStep === 2 && (
+                            <>
+                                <h2 className="text-lg font-semibold mb-4">Enter OTP</h2>
+                                <p className="text-sm mb-2">Email: <strong>{forgotPasswordEmail}</strong></p>
+                                <form onSubmit={async (e) => {
+                                    e.preventDefault(); setForgotPasswordError(''); setForgotPasswordMessage('');
+                                    if (!forgotOTP.trim()) {
+                                        setForgotPasswordError('Please enter OTP.');
+                                        return;
+                                    }
+                                    setForgotPasswordLoading(true);
+                                    try {
+                                        const res = await fetch('/api/auth/verify-otp', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({
+                                                email: forgotPasswordEmail,
+                                                otp: forgotOTP,
+                                            }),
+                                        });
+                                        const data = await res.json();
+                                        if (!res.ok) throw new Error(data.message || 'Invalid OTP');
+                                        setForgotPasswordMessage('OTP verified. Please set your new password.');
+                                        setForgotStep(3);
+                                    } catch (err) {
+                                        setForgotPasswordError(err.message);
+                                    } finally {
+                                        setForgotPasswordLoading(false);
+                                    }
+                                }} className="space-y-4">
+                                    <input type="text" placeholder="Enter OTP" value={forgotOTP} onChange={(e) => setForgotOTP(e.target.value)} required className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    {forgotPasswordError && (
+                                        <p className="text-red-500 text-sm">{forgotPasswordError}</p>
+                                    )}
+                                    {forgotPasswordMessage && (
+                                        <p className="text-green-500 text-sm">{forgotPasswordMessage}</p>
+                                    )}
+                                    <button type="submit" disabled={forgotPasswordLoading} className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:bg-gray-400">
+                                        {forgotPasswordLoading ? 'Validating...' : 'Validate OTP'}
+                                    </button>
+                                </form>
+                            </>
+                        )}
+                        {/* STEP 3: New Password */}
+                        {forgotStep === 3 && (
+                            <>
+                                <h2 className="text-lg font-semibold mb-4">Set New Password</h2>
+                                <p className="text-sm mb-2">Email: <strong>{forgotPasswordEmail}</strong></p>
+                                <form onSubmit={async (e) => {
+                                    e.preventDefault();
+                                    setForgotPasswordError('');
+                                    setForgotPasswordMessage('');
+                                    if (newPassword !== confirmPassword) {
+                                        setForgotPasswordError('Passwords do not match.');
+                                        return;
+                                    }
+                                    setForgotPasswordLoading(true);
+                                    try {
+                                          const res = await fetch('/api/auth/reset-password', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({
+                                                email: forgotPasswordEmail,
+                                                otp: forgotOTP,
+                                                newPassword,
+                                            }),
+                                        });
+
+                                        const data = await res.json();
+                                        if (!res.ok) throw new Error(data.message || 'Error resetting password');
+
+                                        setForgotPasswordMessage('Password reset successful.');
+                                        setTimeout(() => {
+                                            setShowForgotPasswordModal(false);
+                                            setShowAuthModal(true); // reopen login
+                                        }, 1500);
+                                    } catch (err) {
+                                        setForgotPasswordError(err.message);
+                                    } finally {
+                                        setForgotPasswordLoading(false);
+                                    }
+                                }} className="space-y-4">
+                                    <input type="password" placeholder="New Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={6} className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <input type="password" placeholder="Confirm New Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    {forgotPasswordError && (
+                                        <p className="text-red-500 text-sm">{forgotPasswordError}</p>
+                                    )}
+                                    {forgotPasswordMessage && (
+                                        <p className="text-green-500 text-sm">{forgotPasswordMessage}</p>
+                                    )}
+                                    <button
+                                        type="submit"
+                                        disabled={forgotPasswordLoading}
+                                        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+                                    >
+                                        {forgotPasswordLoading ? 'Resetting...' : 'Reset Password'}
+                                    </button>
+                                </form>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
           </header>
       </>
     );
