@@ -1,7 +1,7 @@
 // 'use client';
 import Link from "next/link";
 import Image from 'next/image';
-import { FiMenu, FiX, FiPhoneCall, FiMessageSquare, FiChevronRight } from "react-icons/fi";
+import { FiMenu, FiX, FiPhoneCall, FiMessageSquare, FiChevronRight,FiEye, FiEyeOff } from "react-icons/fi";
 import { FaBars, FaShoppingBag, FaUserShield, FaSearch,FaUser,FaShoppingCart,FaHeart } from "react-icons/fa";
 import { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
 import { IoLogOut } from "react-icons/io5";
@@ -523,6 +523,8 @@ const Header = () => {
     // New password inputs
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    
     // Close mobile menu when clicking outside
 
     const handleClickOutside = (event) => {
@@ -1775,22 +1777,36 @@ const Header = () => {
                           )}
 
                           {/* Password Field */}
-                          <input
-                            type="password"
-                            placeholder="Password"
-                            value={
-                              activeTab === "login" ? loginData.password : registerData.password
-                            }
-                            onChange={(e) =>
-                              activeTab === "login"
-                                ? setLoginData({ ...loginData, password: e.target.value })
-                                : setRegisterData({ ...registerData, password: e.target.value })
-                            }
-                            className={`w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                              errors?.[activeTab]?.password ? "border-red-500" : ""
-                            }`}
-                            minLength={6}
-                          />
+                          <div className="relative">
+                            <input
+                              type={showPassword ? "text" : "password"}
+                              placeholder="Password"
+                              value={
+                                activeTab === "login"
+                                  ? loginData.password
+                                  : registerData.password
+                              }
+                              onChange={(e) =>
+                                activeTab === "login"
+                                  ? setLoginData({ ...loginData, password: e.target.value })
+                                  : setRegisterData({ ...registerData, password: e.target.value })
+                              }
+                              className={`w-full px-4 py-2 pr-10 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                errors?.[activeTab]?.password ? "border-red-500" : ""
+                              }`}
+                              minLength={6}
+                            />
+
+                            {/* Eye Button */}
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                            >
+                              {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                            </button>
+                          </div>
+
                           {errors?.[activeTab]?.password && (
                             <p className="text-red-500 text-sm">{errors[activeTab].password}</p>
                           )}
