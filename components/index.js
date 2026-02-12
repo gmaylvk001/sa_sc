@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import { HiArrowRight } from "react-icons/hi";
 import { FiChevronLeft, FiChevronRight, FiShoppingCart } from "react-icons/fi";
 import {FaPhoneAlt,FaShieldAlt,FaHeadset,FaUsers,FaChild,FaFistRaised,FaLaptop,FaSnowflake,FaAward,FaRunning,FaMusic,FaPaintBrush,FaGuitar,FaDrum,FaUtensils,FaSchool, FaUserCheck,FaCheckCircle,FaHandshake,FaStar,FaHeart, 
-  FaUserGraduate,FaMapMarkerAlt,FaEnvelope  } from "react-icons/fa";
+  FaUserGraduate,FaMapMarkerAlt,FaEnvelope,FaArrowLeft, FaArrowRight  } from "react-icons/fa";
 import { Heart, ShoppingCart } from "lucide-react";
 import Addtocart from "@/components/AddToCart";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -24,8 +24,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { v4 as uuidv4 } from "uuid";
-
-
+import IndexGalleryPreview from "@/components/gallery/Indexgallery";
 
 // Shuffle function
 function shuffleArray(array) {
@@ -50,7 +49,6 @@ export default function HomeComponent() {
     { name: "Music", imageSrc: "/images/sports-activities/music.png", description: "Enhancing voice and confidence through music." },
     { name: "Cookery", imageSrc: "/images/sports-activities/Cookery.png", description: "Fun cooking sessions to develop creativity and life skills." },
   ];
-
 
   const reels = [
     "https://www.instagram.com/p/DSmwY8UCP5d/",
@@ -124,6 +122,8 @@ export default function HomeComponent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState("login");
   const [isSectionLoading, setIsSectionLoading] = useState(false);
+  const [blogs, setBlogs] = useState([]);
+  const [blogLoading, setBlogLoading] = useState(true);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -134,6 +134,9 @@ export default function HomeComponent() {
       });
     }
   };
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
@@ -251,8 +254,37 @@ export default function HomeComponent() {
       positionsRef.current[card.dataset.key] = rect;
     });
   }, [activities]);
-  
 
+useEffect(() => {
+  const fetchBlogs = async () => {
+    try {
+      const res = await fetch("/api/blogs/get", {
+        cache: "no-store",
+      });
+
+      const data = await res.json();
+
+      if (data?.success && Array.isArray(data.data)) {
+        // ✅ Filter only Active blogs
+        const activeBlogs = data.data.filter(
+          (blog) => blog.status === "Active"
+        );
+
+        setBlogs(activeBlogs);
+      } else {
+        setBlogs([]);
+      }
+
+    } catch (err) {
+      console.error("Blog fetch error:", err);
+    } finally {
+      setBlogLoading(false);
+    }
+  };
+
+  fetchBlogs();
+}, []);
+  
   return (
     <>
       {/* {navigating && (
@@ -337,7 +369,7 @@ export default function HomeComponent() {
         </section>
 
         {/* ABOUT SECTION */}
-        <section id="about" className="py-16 bg-gradient-to-r from-pink-100 via-blue-100 to-white">
+        <section id="about" className="py-16 bg-gradient-to-r from-pink-100 via-blue-100 to-white shadow">
 
             {/* heading */}
             <div className="max-w-7xl mx-auto px-6 text-center">
@@ -368,7 +400,7 @@ export default function HomeComponent() {
                 <div>
 
                   {/* Small Heading */}
-                  <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4 text-red-600">
                     Values That Inspire
                   </h3>
                   {/* Intro Paragraph */}
@@ -433,7 +465,7 @@ export default function HomeComponent() {
                 <div className="order-2 lg:order-1">
 
                   {/* Small Heading */}
-                  <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4 text-red-600">
                     Learning Beyond Books
                   </h3>
 
@@ -542,7 +574,7 @@ export default function HomeComponent() {
         {/* GRADES OFFERED */}
         <section id="grade" className="relative bg-center bg-cover bg-scroll md:bg-fixed
                       min-h-[70vh] md:min-h-[70vh]
-                      flex items-center"
+                      flex items-center shadow"
             style={{ backgroundImage: "url('/images/home-page-img/grade-bg.jpeg')" }}
           >
             {/* Black overlay */}
@@ -611,7 +643,7 @@ export default function HomeComponent() {
         {/* why choose section */}
         <section
           id="Why"
-          className="py-14 bg-gradient-to-r from-pink-100 via-blue-100 to-white"
+          className="py-14 bg-gradient-to-r from-pink-100 via-blue-100 to-white shadow"
         >
           <div className="max-w-7xl mx-auto px-6">
             <h2 className="text-4xl font-bold text-center mb-12 text-gray-800">
@@ -689,10 +721,10 @@ export default function HomeComponent() {
         </section>
 
         {/* ACTIVITIES */}
-        <section ref={sectionRef} className="py-14 bg-white" id="ACTIVITIES">
+        <section ref={sectionRef} className="py-14 bg-white shadow" id="ACTIVITIES">
           <div className="max-w-7xl mx-auto px-6">
             <h2 className="text-4xl font-bold text-center mb-2 text-gray-800">
-              Sports & Activities
+              Sports <span className="text-red-600">&</span> Activities
             </h2>
             <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
               Our diverse sports and co-curricular programs help children develop confidence, creativity, and teamwork.
@@ -724,10 +756,14 @@ export default function HomeComponent() {
           </div>
         </section>
 
+        {/* gallery section  */}
+        <IndexGalleryPreview />
+        {/*end gallery section */}
+
         {/* CTA SECTION */}
         <section className="relative bg-center bg-cover bg-scroll md:bg-fixed
              min-h-[60vh] sm:min-h-[40vh] md:min-h-[60vh] lg:min-h-[80vh]
-             flex items-center"
+             flex items-center shadow"
             style={{ backgroundImage: "url('/images/home-page-img/admission-bg.jpeg')" }}
           >
           {/* Black overlay */}
@@ -755,11 +791,124 @@ export default function HomeComponent() {
           </div>
         </section>
 
+         {/* blog section */}
+        {!blogLoading && blogs.length > 0 && (
+          <section className="py-14 bg-gradient-to-r from-pink-100 via-blue-100 to-white shadow">
+            <div className="relative max-w-7xl mx-auto px-6">
+
+              {/* Heading */}
+                <h2 className="text-4xl font-bold text-center mb-2 text-gray-800">
+                  Latest <span className="text-red-600">Blogs</span>
+                </h2>
+                <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+                  Insights, updates, and stories from Sathya School
+                </p>
+              
+
+              {/* Swiper */}
+              <Swiper
+                modules={[Navigation, Autoplay]}
+                spaceBetween={30}
+                slidesPerView={1}
+                autoplay={{ delay: 4000, disableOnInteraction: false }}
+                navigation={{
+                  prevEl: prevRef.current,
+                  nextEl: nextRef.current,
+                }}
+                breakpoints={{
+                  640: { slidesPerView: 1 },
+                  768: { slidesPerView: 2 },
+                  1024: { slidesPerView: 3 },
+                }}
+                className="select-none"
+              >
+                {blogs.slice(0, 10).map((blog) => (
+                  <SwiperSlide key={blog._id}>
+                    <div className="bg-white rounded-3xl overflow-hidden shadow hover:shadow-xl transition-all h-full">
+
+                      <Link href={`/blog/${blog.blog_slug}`}>
+                        <img
+                          src={blog.image || "/images/placeholder.jpg"}
+                          alt={blog.blog_name}
+                          className="w-full h-56 object-cover"
+                        />
+                      </Link>
+
+                      <div className="p-4">
+                        <div className="mb-3">
+                          <span className="text-red-500 text-xs bg-red-100 px-3 py-1 rounded-full w-max">
+                            {new Date(blog.createdAt).toLocaleDateString("en-GB")}
+                          </span>
+                        </div>
+
+                        {/* Title as Link */}
+                        <Link href={`/blog/${blog.blog_slug}`} className="group-hover:text-red-500 transition-colors">
+                          <h3 className="text-lg font-semibold text-gray-800 mb-2 hover:underline hover:text-red-500">
+                            {blog.blog_name}
+                          </h3>
+                        </Link>
+
+                        <p className="text-gray-600 flex-1 mb-3 text-sm">
+                          {blog.description.slice(0, 90)}...
+                        </p>
+
+                        {/* Read More Button */}
+                        <div className="mt-auto">
+                          <Link
+                            href={`/blog/${blog.blog_slug}`}
+                            className="relative inline-block overflow-hidden text-red-500 text-sm font-medium py-2 px-3 rounded-lg underline
+                                      transition-colors duration-300
+                                      before:absolute before:inset-0 before:bg-red-600
+                                      before:origin-left before:scale-x-0 before:transition-transform before:duration-300
+                                      hover:text-white hover:before:scale-x-100"
+                          >
+                            <span className="relative z-10">Read More</span>
+                          </Link>
+                        </div>
+                      </div>
+
+                    </div>
+                  </SwiperSlide>
+                ))}
+
+              </Swiper>
+
+               {/* Custom Buttons */}
+                <button
+                  ref={prevRef}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 
+                            bg-red-500 text-white p-2 rounded-full shadow-lg 
+                            hover:bg-white hover:text-red-500 transition z-50"
+                >
+                  <FiChevronLeft size={22} />
+                </button>
+
+                <button
+                  ref={nextRef}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 
+                            bg-red-500 text-white p-2 rounded-full shadow-lg 
+                            hover:bg-white hover:text-red-500 transition z-50"
+                >
+                  <FiChevronRight size={22} />
+                </button>
+
+              <div className="pt-6 text-center">
+                 <Link
+                  href="/blog"
+                  className="mt-4 md:mt-0 inline-flex items-center gap-2 bg-red-600 hover:bg-red-400 text-white font-semibold hover:gap-3 transition-all border border-red-500 rounded-full py-2 px-3 transition transform hover:scale-105"
+                >
+                  View All Blogs 
+                </Link>
+              </div>
+            </div>
+          </section>
+        )}
+
         {/*insta stories */}
-        <section className="bg-gradient-to-r from-pink-100 via-blue-100 to-white">
+        <section className="bg-white shadow">
           <div className="max-w-7xl mx-auto px-4 py-14 text-center">
             {/* Heading */}
-            <h2 className="text-3xl font-bold mb-6">Instagram Stories</h2>
+            <h2 className="text-3xl font-bold mb-6"><span className="text-red-600">Instagram</span> Stories</h2>
            <div className="insta-swiper pb-[40px] mx-2 relative">
               {/* Navigation & Pagination wrapper above slides */}
               <div className="flex justify-between items-center mb-4">
@@ -811,7 +960,7 @@ export default function HomeComponent() {
         </section>
 
         {/* faq section */}
-        <section id="faq" className="py-14 bg-white">
+        <section id="faq" className="py-14 bg-gradient-to-r from-pink-100 via-blue-100 to-white shadow">
           <div className="max-w-5xl mx-auto px-6">
 
             {/* Heading */}
@@ -855,7 +1004,7 @@ export default function HomeComponent() {
         </section>
 
         {/* contact section */}
-        <section className="py-14 bg-gradient-to-r from-pink-100 via-blue-100 to-white">
+        <section className="py-14 bg-white shadow">
           <div className="max-w-7xl mx-auto px-6">
             {/* Heading */}
             <div className="mb-10">

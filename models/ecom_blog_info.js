@@ -4,7 +4,7 @@ const BlogSchema = new mongoose.Schema({
   blog_name: { type: String, required: true },
   blog_slug: { type: String, unique: true, required: true },
   description: { type: String, required: true },
-  category: { type: mongoose.Schema.Types.ObjectId, ref: "ecom_category_infos", required: true },
+  category: { type: mongoose.Schema.Types.ObjectId, ref: "ecom_blog_category_info", required: true },
   status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
   image: { type: String },
   createdAt: { type: Date, default: Date.now },

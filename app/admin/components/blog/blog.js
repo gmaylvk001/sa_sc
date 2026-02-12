@@ -12,10 +12,7 @@ export default function BlogComponent() {
     description: "",
     status: "Active",
   });
-  const [selectedCategories, setSelectedCategories] = useState(new Set());
   const [imagePreview, setImagePreview] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const [expandedCategories, setExpandedCategories] = useState({});
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [blogs, setBlogs] = useState([]);
@@ -41,29 +38,14 @@ export default function BlogComponent() {
     description: "",
     status: "Active",
   });
-  const [editSelectedCategories, setEditSelectedCategories] = useState(new Set());
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState("");
 
   // Fetch categories and blogs on component mount
   useEffect(() => {
-    fetchCategories();
     fetchBlogs();
+    fetchCategories();
   }, []);
-
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch("/api/categories/get");
-      const result = await response.json();
-      if (result.error) {
-        console.error("API Error:", result.error);
-      } else {
-        setCategories(buildCategoryTree(result));
-      }
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const fetchBlogs = async () => {
     try {
@@ -85,6 +67,20 @@ export default function BlogComponent() {
       setIsLoading(false);
     }
   };
+
+  const fetchCategories = async () => {
+  try {
+    const res = await fetch("/api/blogs/categories");
+    const data = await res.json();
+
+    const activeCategories = Array.isArray(data)
+      ? data.filter(c => c.status === true)
+      : [];
+    setCategories(activeCategories);
+  } catch (error) {
+    console.error("Error loading categories:", error);
+  }
+};
 
   // Filter blogs based on search, status, and date
   const filteredBlogs = blogs.filter((blog) => {
@@ -112,16 +108,6 @@ export default function BlogComponent() {
   const endEntry = Math.min(currentPage * itemsPerPage, totalEntries);
   const totalPages = Math.ceil(totalEntries / itemsPerPage);
 
-  // Helper functions
-  const buildCategoryTree = (categories, parentId = "none") => {
-    return categories
-      .filter((category) => category.parentid === parentId)
-      .map((category) => ({
-        ...category,
-        children: buildCategoryTree(categories, category._id),
-      }));
-  };
-
   const clearDateFilter = () => {
     setDateFilter({ startDate: null, endDate: null });
     setCurrentPage(1);
@@ -144,108 +130,6 @@ export default function BlogComponent() {
     }
   };
 
-  const toggleCategory = (id) => {
-    setExpandedCategories((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
-  const handleCategoryChange = (category, isChecked) => {
-    const updatedSelection = new Set(selectedCategories);
-
-    const toggleChildren = (children, select) => {
-      children.forEach((child) => {
-        if (select) {
-          updatedSelection.add(child._id);
-        } else {
-          updatedSelection.delete(child._id);
-        }
-        if (child.children.length > 0) {
-          toggleChildren(child.children, select);
-        }
-      });
-    };
-
-    if (isChecked) {
-      updatedSelection.add(category._id);
-      toggleChildren(category.children, true);
-    } else {
-      updatedSelection.delete(category._id);
-      toggleChildren(category.children, false);
-    }
-
-    const toggleParents = (parentId) => {
-      if (!parentId || parentId === "none") return;
-      const parent = findCategoryById(categories, parentId);
-      if (parent) {
-        const allChildrenSelected = parent.children.every((child) =>
-          updatedSelection.has(child._id)
-        );
-        if (allChildrenSelected) {
-          updatedSelection.add(parent._id);
-        } else {
-          updatedSelection.delete(parent._id);
-        }
-        toggleParents(parent.parentid);
-      }
-    };
-
-    toggleParents(category.parentid);
-    setSelectedCategories(updatedSelection);
-  };
-
-  const findCategoryById = (categories, id) => {
-    for (const category of categories) {
-      if (category._id === id) return category;
-      const found = findCategoryById(category.children, id);
-      if (found) return found;
-    }
-    return null;
-  };
-
-  const renderCategoryTree = (categories, level = 0, isEditMode = false) => {
-    return categories.map((category) => (
-      <div key={category._id} style={{ paddingLeft: `${level * 20}px` }}>
-        <div className="flex items-center cursor-pointer p-2">
-          {category.children.length > 0 && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleCategory(category._id);
-              }}
-              className="mr-2 text-red-500"
-            >
-              {expandedCategories[category._id] ? <FaMinus /> : <FaPlus />}
-            </button>
-          )}
-          <input
-            type="checkbox"
-            value={category._id}
-            checked={isEditMode 
-              ? editSelectedCategories.has(category._id) 
-              : selectedCategories.has(category._id)}
-            onChange={(e) => isEditMode 
-              ? handleEditCategoryChange(category, e.target.checked)
-              : handleCategoryChange(category, e.target.checked)}
-            className="mr-2"
-          />
-          <span
-            className={`font-semibold ${
-              (isEditMode ? editSelectedCategories.has(category._id) : selectedCategories.has(category._id)) 
-                ? "text-red-500" 
-                : "text-black"
-            }`}
-          >
-            {category.category_name}
-          </span>
-        </div>
-        {expandedCategories[category._id] && renderCategoryTree(category.children, level + 1, isEditMode)}
-      </div>
-    ));
-  };
-
   // Edit functions
   const handleEdit = (blog) => {
     setEditBlogData({
@@ -257,12 +141,7 @@ export default function BlogComponent() {
     });
     
     // Set selected categories for edit
-    const newSelected = new Set();
-    if (blog.category && blog.category._id) {
-      newSelected.add(blog.category._id);
-    }
-    setEditSelectedCategories(newSelected);
-    
+    setCategory(blog.category?._id || "");
     setIsEditModalOpen(true);
   };
 
@@ -281,50 +160,6 @@ export default function BlogComponent() {
     }
   };
 
-  const handleEditCategoryChange = (category, isChecked) => {
-    const updatedSelection = new Set(editSelectedCategories);
-
-    const toggleChildren = (children, select) => {
-      children.forEach((child) => {
-        if (select) {
-          updatedSelection.add(child._id);
-        } else {
-          updatedSelection.delete(child._id);
-        }
-        if (child.children.length > 0) {
-          toggleChildren(child.children, select);
-        }
-      });
-    };
-
-    if (isChecked) {
-      updatedSelection.add(category._id);
-      toggleChildren(category.children, true);
-    } else {
-      updatedSelection.delete(category._id);
-      toggleChildren(category.children, false);
-    }
-
-    const toggleParents = (parentId) => {
-      if (!parentId || parentId === "none") return;
-      const parent = findCategoryById(categories, parentId);
-      if (parent) {
-        const allChildrenSelected = parent.children.every((child) =>
-          updatedSelection.has(child._id)
-        );
-        if (allChildrenSelected) {
-          updatedSelection.add(parent._id);
-        } else {
-          updatedSelection.delete(parent._id);
-        }
-        toggleParents(parent.parentid);
-      }
-    };
-
-    toggleParents(category.parentid);
-    setEditSelectedCategories(updatedSelection);
-  };
-
   const handleEditSubmit = async (e) => {
     e.preventDefault();
 
@@ -332,7 +167,7 @@ export default function BlogComponent() {
     formData.append("id", editBlogData.id);
     formData.append("name", editBlogData.name);
     formData.append("description", editBlogData.description);
-    formData.append("category", Array.from(editSelectedCategories)[0]);
+    formData.append("category", category);
     formData.append("status", editBlogData.status);
     if (editBlogData.image) {
       formData.append("image", editBlogData.image);
@@ -358,7 +193,6 @@ export default function BlogComponent() {
           description: "", 
           status: "Active" 
         });
-        setEditSelectedCategories(new Set());
         fetchBlogs();
 
         setTimeout(() => {
@@ -384,17 +218,10 @@ export default function BlogComponent() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (selectedCategories.size === 0) {
-      setAlertMessage("Please select at least one category");
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 3000);
-      return;
-    }
-
     const formData = new FormData();
     formData.append("name", blogData.name);
     formData.append("description", blogData.description);
-    formData.append("category", Array.from(selectedCategories)[0]);
+    formData.append("category", category);
     formData.append("status", blogData.status);
     if (blogData.image) {
       formData.append("image", blogData.image);
@@ -412,7 +239,6 @@ export default function BlogComponent() {
         setShowAlert(true);
         setIsModalOpen(false);
         setBlogData({ name: "", image: null, description: "", status: "Active" });
-        setSelectedCategories(new Set());
         setImagePreview(null);
         fetchBlogs();
 
@@ -540,9 +366,9 @@ export default function BlogComponent() {
       )}
 
       {isLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
-        </div>
+         <p className="text-sm text-gray-500 mb-3">
+           Loading Blog Posts...
+        </p>
       ) : (
         <div className="bg-white shadow-md rounded-lg p-5 mb-5 overflow-x-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end mb-5">
@@ -642,7 +468,7 @@ export default function BlogComponent() {
                               : blog.description}
                           </td>
                           <td className="p-2">
-                            {blog.category ? blog.category.category_name : "No Category"}
+                            {blog.category ? blog.category.name : "No Category"}
                           </td>
                           <td className="p-2 font-semibold">
                             <span className={blog.status === "Active" ? "text-green-500" : "text-red-500"}>
@@ -662,17 +488,17 @@ export default function BlogComponent() {
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => handleEdit(blog)}
-                                className="w-7 h-7 bg-red-100 text-red-600 rounded-full inline-flex items-center justify-center hover:bg-red-200 transition"
+                                className="w-7 h-7 bg-red-100 text-red-500 rounded-full inline-flex items-center justify-center hover:bg-red-200 transition"
                                 title="Edit"
                               >
-                                <FaEdit className="mr-1" />
+                                <FaEdit className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => {
                                   setBlogToDelete(blog._id);
                                   setShowConfirmationModal(true);
                                 }}
-                                className="w-7 h-7 bg-pink-100 text-pink-600 rounded-full inline-flex items-center justify-center hover:bg-pink-200 transition"
+                                className="w-7 h-7 bg-pink-100 text-red-500 rounded-full inline-flex items-center justify-center hover:bg-pink-200 transition"
                                 title="Delete"
                               >
                                 <Icon icon="mingcute:delete-2-line" />
@@ -768,16 +594,27 @@ export default function BlogComponent() {
                   />
                 </div>
 
-                <div>
-                  <label className="block mb-1 text-sm font-semibold text-gray-700">Select Categories</label>
-                  <div className="border border-gray-300 rounded-md max-h-40 overflow-y-auto p-2">
-                    {categories.length > 0 ? (
-                      renderCategoryTree(categories)
-                    ) : (
-                      <p className="text-gray-500">No categories available</p>
-                    )}
+                 <div>
+                    <label className="block mb-1 text-sm font-semibold text-gray-700">
+                      Category
+                    </label>
+
+                    <select
+                      className="border w-full p-2 rounded-md"
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                      required
+                    >
+                      <option value="">Select Category</option>
+                      {categories.map((c) => (
+                        <option key={c._id} value={c._id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                    
                   </div>
-                </div>
+
 
                 <div>
                   <label htmlFor="status" className="block mb-1 text-sm font-semibold text-gray-700">
@@ -788,7 +625,7 @@ export default function BlogComponent() {
                     id="status"
                     value={blogData.status}
                     onChange={handleInputChange}
-                    className="w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-red-400"
+                    className="w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-red-400"
                   >
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
@@ -892,16 +729,20 @@ export default function BlogComponent() {
                   />
                 </div>
 
-                <div>
-                  <label className="block mb-1 text-sm font-semibold text-gray-700">Select Categories</label>
-                  <div className="border border-gray-300 rounded-md max-h-40 overflow-y-auto p-2">
-                    {categories.length > 0 ? (
-                      renderCategoryTree(categories, 0, true)
-                    ) : (
-                      <p className="text-gray-500">No categories available</p>
-                    )}
-                  </div>
-                </div>
+                <select
+                  className="border w-full p-2 rounded-md"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  required
+                >
+                  <option value="">Select Category</option>
+                  {categories.map((c) => (
+                    <option key={c._id} value={c._id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+
 
                 <div>
                   <label htmlFor="edit_status" className="block mb-1 text-sm font-semibold text-gray-700">

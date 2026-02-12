@@ -1,120 +1,175 @@
 // app/blog/[slug]/page.js
-import React from 'react';
+import React from "react";
+import Link from "next/link";
 
-async function getBlogPost(slug) {
+// ================= FETCH BLOGS =================
+async function getBlogs() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/blogs/get`, {
-      cache: 'no-store' // For dynamic data
-    });
-    
-    if (!res.ok) {
-      throw new Error('Failed to fetch blog posts');
-    }
-    
-    const { data: blogs } = await res.json();
-    // Find the blog with matching slug in the returned array
-    const blog = blogs.find(blog => blog.blog_slug === slug);
-    return blog || null;
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/blogs/get`,
+      { cache: "no-store" }
+    );
+
+    if (!res.ok) throw new Error("Failed to fetch blogs");
+
+    const { data } = await res.json();
+    return data || [];
   } catch (error) {
-    console.error('Error fetching blog post:', error);
-    return null;
+    console.error("Fetch blogs error:", error);
+    return [];
   }
 }
 
+// ================= PAGE =================
 export default async function BlogPost({ params }) {
   const { slug } = params;
-  const blog = await getBlogPost(slug);
+
+  const blogs = await getBlogs();
+  const blog = blogs.find((b) => b.blog_slug === slug);
 
   if (!blog) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center p-8 bg-white rounded-lg shadow-md max-w-md mx-auto">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">Blog post not found</h1>
-          <p className="text-gray-600 mb-6">The requested blog post could not be found.</p>
-          <a 
-            href="/blog" 
-            className="inline-block px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Back to Blog
-          </a>
+        <div className="bg-white p-8 rounded-xl shadow text-center">
+          <h1 className="text-xl font-semibold mb-2">Blog not found</h1>
+          <Link href="/blog" className="text-blue-600 hover:underline">
+            ← Back to blog
+          </Link>
         </div>
       </div>
     );
   }
 
+  // Recent posts (exclude current)
+  const recentPosts = blogs.filter(b => b._id !== blog._id).slice(0, 3);
+
+  // Unique categories
+  const categories = [
+    ...new Map(
+      blogs
+        .filter(b => b.category)
+        .map(b => [b.category._id, b.category])
+    ).values()
+  ];
+
   return (
-    <article className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <header className="mb-10">
+    <>
+    <section className="relative bg-cover bg-center py-16 "> 
+        <div className="absolute inset-0"></div>
+    </section>
+
+    <section className="bg-slate-50 py-12">
+      <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-4 gap-8">
+
+        {/* ================= LEFT CONTENT ================= */}
+        <article className="lg:col-span-3 bg-white rounded-xl  px-3 py-4 md:px-5 md:py-6 mb-4">
           
-          <h5 className="text-4xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight">
+          {blog.image && (
+            <div className="mb-8 rounded-lg overflow-hidden aspect-video">
+              <img
+                src={blog.image}
+                alt={blog.blog_name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+
+
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
             {blog.blog_name}
-          </h5>
-          <div className="flex items-center text-gray-500">
-            <span>
-              Published on {new Date(blog.createdAt).toLocaleDateString('en-GB', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </span>
-            {/* You could add author information here */}
-            {/* <span className="mx-2">•</span>
-            <span>By Author Name</span> */}
-          </div>
-        </header>
+          </h1>
 
-        {/* Featured Image */}
-        {blog.image && (
-          <div className="mb-10 rounded-xl overflow-hidden shadow-lg">
-            <img 
-              src={blog.image} 
-              alt={blog.blog_name}
-              className="w-full h-auto object-cover"
-            />
-          </div>
-        )}
+          <p className="text-sm text-gray-500 mb-6">
+            Published on{" "}
+            {new Date(blog.createdAt).toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })}
+          </p>
 
-        {/* Content */}
-        <div className="prose prose-lg max-w-none">
-          <div className="text-gray-700 leading-relaxed whitespace-pre-line">
-            {blog.description.split('\n').map((paragraph, index) => (
-              <p key={index} className="mb-6 last:mb-0">
-                {paragraph}
-              </p>
-            ))}
+          <div className="prose prose-lg max-w-none">
+            <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+              {blog.description.split('\n').map((paragraph, index) => (
+                <p key={index} className="mb-6 last:mb-0">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
           </div>
-        </div>
+        </article>
 
-        {/* Footer */}
-        <footer className="mt-12 pt-8 border-t border-gray-200">
-          {/* Add tags or sharing buttons here if needed */}
-          <div className="flex justify-end">
-            <a 
-              href="/blog" 
-              className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
-            >
-              ← Back to all posts
-            </a>
+        {/* ================= RIGHT SIDEBAR ================= */}
+        <aside className="space-y-8 lg:sticky lg:top-24 self-start">
+
+          {/* -------- Recent Posts -------- */}
+          <div className="bg-white rounded-xl shadow p-5">
+            <h3 className="text-lg font-semibold text-black mb-4 border-b pb-2 flex items-center gap-2">
+              Recent Posts
+            </h3>
+
+            {recentPosts.length > 0 ? (
+              <div className="space-y-4">
+                {recentPosts.map((post) => (
+                  <Link
+                    key={post._id}
+                    href={`/blog/${post.blog_slug}`}
+                    className="group flex flex-col sm:flex-row gap-3 items-start sm:items-center min-w-0"
+                  >
+                    {post.image && (
+                      <img
+                        src={post.image}
+                        alt={post.blog_name}
+                        className="w-full max-w-[120px] w-20 h-20 object-cover rounded-md flex-shrink-0"
+                      />
+                    )}
+                    <div className="max-w-[calc(100vw-80px)] sm:max-w-none break-words">
+                      <h4 className="text-sm font-medium text-gray-800 group-hover:text-red-500">
+                        {post.blog_name}
+                      </h4>
+                      <p className="text-xs text-gray-500">
+                        {new Date(post.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="text-sm text-gray-500 italic bg-gray-50 p-3 rounded-md">
+                No recent posts available.
+              </div>
+            )}
           </div>
-        </footer>
+
+          
+          {/* -------- Categories -------- */}
+          <div className="bg-white rounded-xl shadow p-5">
+            <h3 className="text-lg font-semibold text-black mb-4 border-b pb-2 flex items-center gap-2">
+              Categories
+            </h3>
+
+            {categories.length > 0 ? (
+              <div className="flex flex-wrap gap-3">
+                {categories.map((cat) => (
+                  <Link
+                    key={cat._id}
+                    href={`/blog?category=${cat._id}`} // ✅ Directly use cat._id
+                    className="px-4 py-2 bg-red-50 text-red-600 rounded-full text-sm cursor-pointer hover:bg-red-100 transition"
+                  >
+                    {cat.name}
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="text-sm text-gray-500 italic bg-gray-50 p-3 rounded-md">
+                No categories found.
+              </div>
+            )}
+          </div>
+
+        </aside>
       </div>
-    </article>
+    </section>
+    </>
   );
 }
-
-// export async function generateMetadata({ params }) {
-//   const { slug } = params;
-//   const blog = await getBlogPost(slug);
-  
-//   return {
-//     title: blog?.blog_name || 'Blog Post',
-//     description: blog?.description?.slice(0, 160) || 'Read this interesting blog post',
-//     openGraph: {
-//       title: blog?.blog_name || 'Blog Post',
-//       description: blog?.description?.slice(0, 160) || 'Read this interesting blog post',
-//       images: blog?.image ? [{ url: blog.image }] : [],
-//     },
-//   };
-// }

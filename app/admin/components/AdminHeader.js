@@ -61,7 +61,7 @@ const AdminHeader = ({ toggleSidebar }) => {
         // No userId needed, fetch all notifications
         const res = await fetch(`/api/notification`);
         const data = await res.json();
-        console.log('Fetched notifications:', data.notifications);
+        // console.log('Fetched notifications:', data.notifications);
         if (data.success) setNotifications(data.notifications);
       } catch (err) {
         console.error('Failed to fetch notifications:', err);
