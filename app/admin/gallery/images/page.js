@@ -18,6 +18,10 @@ export default function GalleryImagesPage() {
   const [status, setStatus] = useState("active");
   const [file, setFile] = useState(null); 
   const [loading,setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saveProgress, setSaveProgress] = useState(0);
+  const [toast, setToast] = useState("");
+  const [deleting, setDeleting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
   // **Filter states**
@@ -115,26 +119,70 @@ export default function GalleryImagesPage() {
       formData.append("id", editing._id);
     }
 
-    const res = await fetch(url, { method, body: formData });
-    const data = await res.json();
+    setSaving(true);
+    setSaveProgress(0);
 
-    if (!data.success) {
-      alert(data.message || "Something went wrong");
-      return;
+    // Animate progress from 0 to 90 while API call is in progress
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.random() * 15;
+      if (progress > 90) progress = 90;
+      setSaveProgress(Math.round(progress));
+    }, 150);
+
+    try {
+      const res = await fetch(url, { method, body: formData });
+      const data = await res.json();
+
+      if (!data.success) {
+        clearInterval(interval);
+        setSaving(false);
+        setSaveProgress(0);
+        alert(data.message || "Something went wrong");
+        return;
+      }
+
+      clearInterval(interval);
+      setSaveProgress(100);
+
+      // Brief pause at 100% before closing
+      await new Promise((resolve) => setTimeout(resolve, 400));
+
+      setModalOpen(false);
+      setSaving(false);
+      setSaveProgress(0);
+      loadImages();
+
+      // Show toast
+      setToast(editing ? "Image updated successfully!" : "Image saved successfully!");
+      setTimeout(() => setToast(""), 3000);
+    } catch (error) {
+      clearInterval(interval);
+      setSaving(false);
+      setSaveProgress(0);
+      console.error("Save failed:", error);
     }
-
-    setModalOpen(false);
-    loadImages();
   };
 
   /* ================= DELETE ================= */
 
   const deleteImage = async () => {
-    await fetch(`/api/gallery/images?id=${deleteItem._id}`, {
-      method: "DELETE",
-    });
-    setDeleteModal(false);
-    loadImages();
+    setDeleting(true);
+    try {
+      await fetch(`/api/gallery/images?id=${deleteItem._id}`, {
+        method: "DELETE",
+      });
+      setDeleteModal(false);
+      setDeleting(false);
+      loadImages();
+
+      // Show toast
+      setToast("Image deleted successfully!");
+      setTimeout(() => setToast(""), 3000);
+    } catch (error) {
+      console.error("Delete failed:", error);
+      setDeleting(false);
+    }
   };
 
  const filteredImages = images.filter((img) => {
@@ -345,74 +393,95 @@ export default function GalleryImagesPage() {
               {editing ? "Edit Image" : "Add Image"}
             </h2>
 
-            <input
-              className="border w-full p-2 mb-3"
-              placeholder="Image Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-
-            <select
-              className="border w-full p-2 mb-3"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              disabled={!categories || categories.length === 0}
-            >
-              {categories && categories.length > 0 ? (
-                <>
-                  <option value="">Select a category</option>
-                  {categories.map((c) => (
-                    <option key={c._id} value={c._id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </>
-              ) : (
-                <option value="" disabled>
-                  No category found
-                </option>
-              )}
-            </select>
-
-            <select
-              className="border w-full p-2 mb-3"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-            >
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-
-            {/* Show existing image preview when editing */}
-            {editing && editing.imageUrl && (
-              <div className="mb-3">
-                <p className="text-sm text-gray-500 mb-1">Current Image</p>
-                <img
-                  src={editing.imageUrl}
-                  alt="Current"
-                  className="w-32 h-32 object-contain border rounded"
-                />
-                <p className="text-xs text-red-400">
-                  Choose a new image only if you want to replace the existing one
+            {saving ? (
+              <div className="py-6">
+                <p className="text-sm text-gray-600 text-center mb-3">
+                  {saveProgress < 100 ? "Saving image..." : "Saved successfully!"}
+                </p>
+                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div
+                    className={`h-3 rounded-full transition-all duration-200 ${
+                      saveProgress < 100 ? "bg-blue-500" : "bg-green-500"
+                    }`}
+                    style={{ width: `${saveProgress}%` }}
+                  ></div>
+                </div>
+                <p className="text-center text-sm font-semibold mt-2 text-gray-700">
+                  {saveProgress}%
                 </p>
               </div>
+            ) : (
+              <>
+                <input
+                  className="border w-full p-2 mb-3"
+                  placeholder="Image Title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+
+                <select
+                  className="border w-full p-2 mb-3"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  disabled={!categories || categories.length === 0}
+                >
+                  {categories && categories.length > 0 ? (
+                    <>
+                      <option value="">Select a category</option>
+                      {categories.map((c) => (
+                        <option key={c._id} value={c._id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </>
+                  ) : (
+                    <option value="" disabled>
+                      No category found
+                    </option>
+                  )}
+                </select>
+
+                <select
+                  className="border w-full p-2 mb-3"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                >
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+
+                {/* Show existing image preview when editing */}
+                {editing && editing.imageUrl && (
+                  <div className="mb-3">
+                    <p className="text-sm text-gray-500 mb-1">Current Image</p>
+                    <img
+                      src={editing.imageUrl}
+                      alt="Current"
+                      className="w-32 h-32 object-contain border rounded"
+                    />
+                    <p className="text-xs text-red-400">
+                      Choose a new image only if you want to replace the existing one
+                    </p>
+                  </div>
+                )}
+
+                <input
+                  type="file"
+                  className="border w-full p-2 mb-3"
+                  onChange={(e) => setFile(e.target.files[0])}
+                />
+
+                <div className="flex justify-end gap-2">
+                  <button onClick={() => setModalOpen(false)}>Cancel</button>
+                  <button
+                    onClick={saveImage}
+                    className="bg-red-500 text-white px-4 py-2 rounded"
+                  >
+                    Save
+                  </button>
+                </div>
+              </>
             )}
-
-            <input
-              type="file"
-              className="border w-full p-2 mb-3"
-              onChange={(e) => setFile(e.target.files[0])}
-            />
-
-            <div className="flex justify-end gap-2">
-              <button onClick={() => setModalOpen(false)}>Cancel</button>
-              <button
-                onClick={saveImage}
-                className="bg-red-500 text-white px-4 py-2 rounded"
-              >
-                Save
-              </button>
-            </div>
           </div>
         </div>
       )}
@@ -428,12 +497,25 @@ export default function GalleryImagesPage() {
               <button onClick={() => setDeleteModal(false)}>Cancel</button>
               <button
                 onClick={deleteImage}
-                className="bg-red-500 text-white px-4 py-2 rounded"
+                disabled={deleting}
+                className={`px-4 py-2 rounded text-white ${
+                  deleting ? "bg-red-300 cursor-not-allowed" : "bg-red-500 hover:bg-red-600"
+                }`}
               >
-                Delete
+                {deleting ? "Deleting..." : "Delete"}
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed top-6 right-6 z-50 bg-green-500 text-white px-5 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+          </svg>
+          {toast}
         </div>
       )}
     </div>

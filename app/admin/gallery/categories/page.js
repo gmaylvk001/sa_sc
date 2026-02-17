@@ -19,6 +19,10 @@ export default function CategoriesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [nameError, setNameError] = useState("");
   const [statusError, setStatusError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [saveProgress, setSaveProgress] = useState(0);
+  const [toast, setToast] = useState("");
+  const [deleting, setDeleting] = useState(false);
   const categoriesPerPage = 10;
 
 
@@ -94,27 +98,56 @@ export default function CategoriesPage() {
     const slug = generateSlug(name);
     const statusBoolean = status === "active";
 
-    if (editingCategory) {
-      // Edit
-      await fetch(`/api/gallery/categories/${editingCategory._id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, slug, status: statusBoolean }),
-      });
-    } else {
-      // Add
-      await fetch("/api/gallery/categories", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, slug, status: statusBoolean }),
-      });
-    }
+    setSaving(true);
+    setSaveProgress(0);
 
-    setModalOpen(false);
-    setName("");
-    setStatus("active");
-    setEditingCategory(null);
-    loadCategories();
+    // Animate progress from 0 to 90 while API call is in progress
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.random() * 15;
+      if (progress > 90) progress = 90;
+      setSaveProgress(Math.round(progress));
+    }, 150);
+
+    try {
+      if (editingCategory) {
+        await fetch(`/api/gallery/categories/${editingCategory._id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, slug, status: statusBoolean }),
+        });
+      } else {
+        await fetch("/api/gallery/categories", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, slug, status: statusBoolean }),
+        });
+      }
+
+      clearInterval(interval);
+      setSaveProgress(100);
+
+      // Brief pause at 100% before closing
+      await new Promise((resolve) => setTimeout(resolve, 400));
+
+      const wasEditing = !!editingCategory;
+      setModalOpen(false);
+      setName("");
+      setStatus("active");
+      setEditingCategory(null);
+      setSaving(false);
+      setSaveProgress(0);
+      loadCategories();
+
+      // Show toast
+      setToast(wasEditing ? "Category updated successfully!" : "Category added successfully!");
+      setTimeout(() => setToast(""), 3000);
+    } catch (error) {
+      clearInterval(interval);
+      setSaving(false);
+      setSaveProgress(0);
+      console.error("Save failed:", error);
+    }
   };
 
   // Open delete confirmation modal
@@ -127,6 +160,7 @@ export default function CategoriesPage() {
   const deleteCategory = async () => {
     if (!categoryToDelete) return;
 
+    setDeleting(true);
     try {
       const res = await fetch(
         `/api/gallery/categories/${categoryToDelete._id}`,
@@ -138,6 +172,7 @@ export default function CategoriesPage() {
       if (!res.ok) {
         // show API error in modal
         setDeleteError(data.error || "Unable to delete category");
+        setDeleting(false);
         return;
       }
 
@@ -145,10 +180,16 @@ export default function CategoriesPage() {
       setDeleteModalOpen(false);
       setCategoryToDelete(null);
       setDeleteError("");
+      setDeleting(false);
       loadCategories();
+
+      // Show toast
+      setToast("Category deleted successfully!");
+      setTimeout(() => setToast(""), 3000);
     } catch (error) {
       console.error("Delete failed:", error);
       setDeleteError("Something went wrong. Please try again.");
+      setDeleting(false);
     }
   };
 
@@ -360,81 +401,100 @@ export default function CategoriesPage() {
             <div className="bg-white p-6 rounded w-96">
               <h2 className="text-xl font-bold mb-4">{editingCategory ? "Edit Category" : "Add Category"}</h2>
 
-              <div className="space-y-3">
-                {/* Category Name */}
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Category Name"
-                    value={name}
-                    onChange={(e) => {
-                      const newName = e.target.value;
-                      setName(newName);
+              {saving ? (
+                <div className="py-6">
+                  <p className="text-sm text-gray-600 text-center mb-3">
+                    {saveProgress < 100 ? "Saving category..." : "Saved successfully!"}
+                  </p>
+                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div
+                      className={`h-3 rounded-full transition-all duration-200 ${
+                        saveProgress < 100 ? "bg-blue-500" : "bg-green-500"
+                      }`}
+                      style={{ width: `${saveProgress}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-center text-sm font-semibold mt-2 text-gray-700">
+                    {saveProgress}%
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {/* Category Name */}
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Category Name"
+                      value={name}
+                      onChange={(e) => {
+                        const newName = e.target.value;
+                        setName(newName);
 
-                      // Live validation
-                      if (!newName.trim()) {
-                        setNameError("Category name is required");
-                      } else {
-                        // Check for duplicates excluding current category
-                        const nameExists = allCategories.some(
-                          (cat) =>
-                            cat.name.toLowerCase() === newName.trim().toLowerCase() &&
-                            cat._id !== (editingCategory?._id || "")
-                        );
-                        if (nameExists) {
-                          setNameError("Category with this name already exists");
+                        // Live validation
+                        if (!newName.trim()) {
+                          setNameError("Category name is required");
                         } else {
-                          setNameError(""); // Clear error if valid
+                          // Check for duplicates excluding current category
+                          const nameExists = allCategories.some(
+                            (cat) =>
+                              cat.name.toLowerCase() === newName.trim().toLowerCase() &&
+                              cat._id !== (editingCategory?._id || "")
+                          );
+                          if (nameExists) {
+                            setNameError("Category with this name already exists");
+                          } else {
+                            setNameError(""); // Clear error if valid
+                          }
                         }
-                      }
-                    }}
-                    className={`border px-3 py-2 w-full rounded 
-                      ${nameError ? "border-red-500" : name ? "border-green-500" : ""}`}
-                  />
-                  {nameError && (
-                    <p className="text-red-500 text-sm mt-1">{nameError}</p>
-                  )}
+                      }}
+                      className={`border px-3 py-2 w-full rounded
+                        ${nameError ? "border-red-500" : name ? "border-green-500" : ""}`}
+                    />
+                    {nameError && (
+                      <p className="text-red-500 text-sm mt-1">{nameError}</p>
+                    )}
+                  </div>
+
+
+                  {/* Status */}
+                  <div>
+                    <select
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                      className={`border px-3 py-2 w-full rounded ${
+                        statusError ? "border-red-500" : ""
+                      }`}
+                    >
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                    {statusError && (
+                      <p className="text-red-500 text-sm mt-1">{statusError}</p>
+                    )}
+                  </div>
+
+                  {/* Buttons */}
+                  <div className="flex justify-end gap-2 mt-4">
+                    <button
+                      onClick={() => {
+                        setModalOpen(false);
+                        setNameError("");
+                        setStatusError("");
+                      }}
+                      className="px-4 py-2 rounded border"
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      onClick={handleSaveWithValidation}
+                      className="px-4 py-2 rounded bg-blue-500 text-white"
+                    >
+                      Save
+                    </button>
+                  </div>
                 </div>
-
-
-                {/* Status */}
-                <div>
-                  <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                    className={`border px-3 py-2 w-full rounded ${
-                      statusError ? "border-red-500" : ""
-                    }`}
-                  >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
-                  {statusError && (
-                    <p className="text-red-500 text-sm mt-1">{statusError}</p>
-                  )}
-                </div>
-
-                {/* Buttons */}
-                <div className="flex justify-end gap-2 mt-4">
-                  <button
-                    onClick={() => {
-                      setModalOpen(false);
-                      setNameError("");
-                      setStatusError("");
-                    }}
-                    className="px-4 py-2 rounded border"
-                  >
-                    Cancel
-                  </button>
-
-                  <button
-                    onClick={handleSaveWithValidation}
-                    className="px-4 py-2 rounded bg-blue-500 text-white"
-                  >
-                    Save
-                  </button>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         )}
@@ -468,9 +528,12 @@ export default function CategoriesPage() {
 
                     <button
                       onClick={deleteCategory}
-                      className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
+                      disabled={deleting}
+                      className={`px-4 py-2 rounded text-white ${
+                        deleting ? "bg-red-300 cursor-not-allowed" : "bg-red-500 hover:bg-red-600"
+                      }`}
                     >
-                      Delete
+                      {deleting ? "Deleting..." : "Delete"}
                     </button>
                   </div>
                 </>
@@ -501,6 +564,16 @@ export default function CategoriesPage() {
               )}
 
             </div>
+          </div>
+        )}
+
+        {/* Toast Notification */}
+        {toast && (
+          <div className="fixed top-6 right-6 z-50 bg-green-500 text-white px-5 py-3 rounded-lg shadow-lg flex items-center gap-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+            </svg>
+            {toast}
           </div>
         )}
 

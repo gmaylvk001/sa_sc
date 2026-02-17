@@ -16,6 +16,10 @@ export default function BlogCategoriesAdmin() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saveProgress, setSaveProgress] = useState(0);
+  const [toast, setToast] = useState("");
+  const [deleting, setDeleting] = useState(false);
   const categoriesPerPage = 10;
 
   const filteredCategories = categories.filter((c) => {
@@ -96,21 +100,52 @@ const currentCategories = filteredCategories.slice(indexOfFirst, indexOfLast);
     const url = editing ? `/api/blogs/categories/${editing._id}` : `/api/blogs/categories`;
     const method = editing ? "PUT" : "POST";
 
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body,
-    });
+    setSaving(true);
+    setSaveProgress(0);
 
-    const data = await res.json();
-    if (!data.success) {
-      setError(data.message || "Something went wrong");
-      return;
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.random() * 15;
+      if (progress > 90) progress = 90;
+      setSaveProgress(Math.round(progress));
+    }, 150);
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body,
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        clearInterval(interval);
+        setSaving(false);
+        setSaveProgress(0);
+        setError(data.message || "Something went wrong");
+        return;
+      }
+
+      clearInterval(interval);
+      setSaveProgress(100);
+
+      await new Promise((resolve) => setTimeout(resolve, 400));
+
+      const wasEditing = !!editing;
+      setModalOpen(false);
+      setSaving(false);
+      setSaveProgress(0);
+      fetchCategories();
+      resetForm();
+
+      setToast(wasEditing ? "Category updated successfully!" : "Category added successfully!");
+      setTimeout(() => setToast(""), 3000);
+    } catch (error) {
+      clearInterval(interval);
+      setSaving(false);
+      setSaveProgress(0);
+      console.error("Save failed:", error);
     }
-
-    setModalOpen(false);
-    fetchCategories();
-    resetForm();
   };
 
   const confirmDelete = (cat) => {
@@ -121,15 +156,29 @@ const currentCategories = filteredCategories.slice(indexOfFirst, indexOfLast);
   const deleteCategoryNow = async () => {
     if (!deleteCategory) return;
 
-    const res = await fetch(`/api/blogs/categories/${deleteCategory._id}`, {
-      method: "DELETE",
-    });
-    const data = await res.json();
-    if (!data.success) return alert(data.message || "Failed to delete");
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/blogs/categories/${deleteCategory._id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!data.success) {
+        setDeleting(false);
+        alert(data.message || "Failed to delete");
+        return;
+      }
 
-    setDeleteModal(false);
-    setDeleteCategory(null);
-    fetchCategories();
+      setDeleteModal(false);
+      setDeleteCategory(null);
+      setDeleting(false);
+      fetchCategories();
+
+      setToast("Category deleted successfully!");
+      setTimeout(() => setToast(""), 3000);
+    } catch (error) {
+      console.error("Delete failed:", error);
+      setDeleting(false);
+    }
   };
 
   return (
@@ -293,57 +342,79 @@ const currentCategories = filteredCategories.slice(indexOfFirst, indexOfLast);
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded w-96">
             <h2 className="text-xl font-bold mb-4">{editing ? "Edit" : "Add"} Category</h2>
-            <input
-              type="text"
-              placeholder="Category Name"
-              value={name}
-              onChange={(e) => {
-                const newName = e.target.value;
-                setName(newName);
 
-                // Live validation
-                if (!newName.trim()) {
-                  setError("Category name is required");
-                } else {
-                  // Check if name already exists (excluding the category being edited)
-                  const nameExists = categories.some(
-                    (cat) =>
-                      cat.name.toLowerCase() === newName.trim().toLowerCase() &&
-                      cat._id !== (editing?._id || "")
-                  );
+            {saving ? (
+              <div className="py-6">
+                <p className="text-sm text-gray-600 text-center mb-3">
+                  {saveProgress < 100 ? "Saving category..." : "Saved successfully!"}
+                </p>
+                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div
+                    className={`h-3 rounded-full transition-all duration-200 ${
+                      saveProgress < 100 ? "bg-blue-500" : "bg-green-500"
+                    }`}
+                    style={{ width: `${saveProgress}%` }}
+                  ></div>
+                </div>
+                <p className="text-center text-sm font-semibold mt-2 text-gray-700">
+                  {saveProgress}%
+                </p>
+              </div>
+            ) : (
+              <>
+                <input
+                  type="text"
+                  placeholder="Category Name"
+                  value={name}
+                  onChange={(e) => {
+                    const newName = e.target.value;
+                    setName(newName);
 
-                  if (nameExists) {
-                    setError("Category with this name already exists");
-                  } else {
-                    setError(""); // clear error if valid
-                  }
-                }
-              }}
-              className={`border w-full p-2 rounded mb-3 ${error ? "border-red-500" : ""}`}
-            />
-            {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="border w-full p-2 rounded mb-4"
-            >
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setModalOpen(false)}
-                className="px-4 py-2 border rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={saveCategory}
-                className="px-4 py-2 bg-blue-500 text-white rounded"
-              >
-                Save
-              </button>
-            </div>
+                    // Live validation
+                    if (!newName.trim()) {
+                      setError("Category name is required");
+                    } else {
+                      // Check if name already exists (excluding the category being edited)
+                      const nameExists = categories.some(
+                        (cat) =>
+                          cat.name.toLowerCase() === newName.trim().toLowerCase() &&
+                          cat._id !== (editing?._id || "")
+                      );
+
+                      if (nameExists) {
+                        setError("Category with this name already exists");
+                      } else {
+                        setError(""); // clear error if valid
+                      }
+                    }
+                  }}
+                  className={`border w-full p-2 rounded mb-3 ${error ? "border-red-500" : ""}`}
+                />
+                {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
+                <select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  className="border w-full p-2 rounded mb-4"
+                >
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+                <div className="flex justify-end gap-2">
+                  <button
+                    onClick={() => setModalOpen(false)}
+                    className="px-4 py-2 border rounded"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={saveCategory}
+                    className="px-4 py-2 bg-blue-500 text-white rounded"
+                  >
+                    Save
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -365,12 +436,25 @@ const currentCategories = filteredCategories.slice(indexOfFirst, indexOfLast);
               </button>
               <button
                 onClick={deleteCategoryNow}
-                className="px-4 py-2 bg-red-500 text-white rounded"
+                disabled={deleting}
+                className={`px-4 py-2 rounded text-white ${
+                  deleting ? "bg-red-300 cursor-not-allowed" : "bg-red-500 hover:bg-red-600"
+                }`}
               >
-                Delete
+                {deleting ? "Deleting..." : "Delete"}
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed top-6 right-6 z-50 bg-green-500 text-white px-5 py-3 rounded-lg shadow-lg flex items-center gap-2">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+          </svg>
+          {toast}
         </div>
       )}
     </div>

@@ -135,14 +135,16 @@ export default function ContactComponent() {
     return matchesSearch && matchesStatus && matchesDate;
   });
 
+  const sortedContacts = [...filteredContacts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
   const indexOfLastContact = currentPage * contactsPerPage;
   const indexOfFirstContact = indexOfLastContact - contactsPerPage;
-  const currentContacts = filteredContacts.slice(indexOfFirstContact, indexOfLastContact);
+  const currentContacts = sortedContacts.slice(indexOfFirstContact, indexOfLastContact);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-  const totalPages = Math.ceil(filteredContacts.length / contactsPerPage);
+  const totalPages = Math.ceil(sortedContacts.length / contactsPerPage);
   const startEntry = indexOfFirstContact + 1;
-  const endEntry = Math.min(indexOfLastContact, filteredContacts.length);
+  const endEntry = Math.min(indexOfLastContact, sortedContacts.length);
 
   const handleDateChange = ({ startDate, endDate }) => {
     setDateFilter({ startDate, endDate });
@@ -204,7 +206,7 @@ export default function ContactComponent() {
                 }}
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
               >
-                <option value="All">All Statuses</option>
+                <option value="All">All Status</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </select>
@@ -263,7 +265,8 @@ export default function ContactComponent() {
                      <th className="p-2">Parent/Guardian</th>
                     <th className="p-2">Mobile Number</th>
                     <th className="p-2">Address</th>
-					<th className="p-2">Date Of Birth</th>
+					          <th className="p-2">Date Of Birth</th>
+                    <th className="p-2">Registered Date</th>
                     <th className="p-2">Status</th>
                     {/* <th className="p-2">Created At</th>
                     <th className="p-2">Actions</th> */}
@@ -278,7 +281,16 @@ export default function ContactComponent() {
                       <td className="p-2">{contact.parent_guardian || '-'}</td>
                       <td className="p-2">{contact.phone_number || '-'}</td>
                       <td className="p-2">{contact.address || '-'}</td>
-					  <td className="p-2">{contact.date_of_birth || '-'}</td>
+                      <td className="p-2">
+                        {contact.date_of_birth 
+                          ? new Date(contact.date_of_birth).toISOString().split("T")[0] 
+                          : '-'}
+                      </td>
+                      <td className="p-2">
+                        {contact.createdAt 
+                          ? new Date(contact.createdAt).toISOString().split("T")[0] 
+                          : '-'}
+                      </td>
                       <td className="p-2">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           contact.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -321,7 +333,7 @@ export default function ContactComponent() {
               {/* Pagination Section */}
               <div className="flex justify-between items-center mt-4 flex-wrap gap-2">
                 <div className="text-sm text-gray-600">
-                  Showing {startEntry} to {endEntry} of {filteredContacts.length} entries
+                  Showing {startEntry} to {endEntry} of {sortedContacts.length} entries
                 </div>
                 <div className="flex items-center space-x-1">
                   <button

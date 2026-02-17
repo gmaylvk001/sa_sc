@@ -1559,9 +1559,8 @@ const Header = () => {
               {/* Admission Button */}
               <div className="ml-auto">
                 <div className="flex">
-                  {/* Icons Group */}
-                  <div className="flex items-center space-x-6 pl-3 mr-10">
-                      {/* User Account */}
+             
+                  {/* <div className="flex items-center space-x-6 pl-3 mr-10">
                       <div className="relative" >
                           {isLoggedIn ? (
                               <>
@@ -1606,12 +1605,12 @@ const Header = () => {
                           ) : (
                               <button onClick={() => setShowAuthModal(true)} className="relative flex items-center justify-center w-8 h-8 rounded-full bg-red-500 hover:bg-red-400 transition p-2">
                                   <FaUser size={18} className="text-white" />
-                                  {/* <span className="ml-1 font-bold text-xs sm:text-sm text-customBlue hidden lg:inline">Sign In</span> */}
+                                 
                               </button>
                           )}
                       </div>
-                  </div>
-                  {/* Mobile Hamburger */}
+                  </div> */}
+              
                   <button
                     className="fixed top-3 right-2 md:right-5 z-50 focus:outline-none bg-red-500 text-white rounded p-1"
                     onClick={() => setIsOpen(!isOpen)}
@@ -1641,7 +1640,6 @@ const Header = () => {
                       )}
                     </svg>
                   </button>
-
                 </div>
               </div>
 

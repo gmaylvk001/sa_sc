@@ -19,6 +19,11 @@ export default function BlogComponent() {
   const [loading, setLoading] = useState(false);
   const limit = 2;
   const debounceRef = useRef(null);
+  const stripHtml = (html) => {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+  };
 
   // ✅ Fetch blogs function
   const fetchBlogs = async (reset = false) => {
@@ -122,7 +127,7 @@ export default function BlogComponent() {
         <div className="absolute inset-0"></div>
       </section>
 
-      <section className="pt-2 pb-8 min-h-screen">
+      <section className="pt-2 pb-8 min-h-screen bg-gradient-to-r from-pink-100 via-blue-100 to-white">
         {/* Hero */}
         <div className="bg-gradient-to-r from-red-600 to-red-500 py-14 text-center text-white">
           <h1 className="text-4xl md:text-5xl font-bold mb-3">Our Blogs</h1>
@@ -130,93 +135,111 @@ export default function BlogComponent() {
             Explore the latest news, articles, and insights.
           </p>
         </div>
-          {/* Search & Filter */}
-          <div className="max-w-7xl mx-auto px-6 mt-10 flex flex-col md:flex-row gap-4 justify-between items-center">
-            <input
-              type="text"
-              placeholder="Search blogs..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full md:w-1/4 px-4 py-3 rounded-xl border focus:ring-2 focus:ring-red-500 outline-none"
-            />
 
-            <div className="flex gap-3 flex-wrap">
-              {categories.map((cat) => (
-                <button
-                  key={cat._id}
-                  onClick={() => handleCategoryClick(cat._id)}
-                  className={`px-4 py-2 rounded-full text-sm transition ${
-                    selectedCategory === cat._id
-                      ? "bg-red-500 text-white shadow-md"
-                      : "bg-white border text-gray-700 hover:bg-red-50"
-                  }`}
-                >
-                  {cat.name}
-                </button>
-              ))}
+        <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-4 gap-10">
+
+          <div className="lg:col-span-1 space-y-6 px-6 py-5 shadow rounded-xl lg:sticky lg:top-24 self-start bg-white">
+
+            <div>
+              <h3 className="font-semibold text-lg mb-5 border-b">Search</h3>
+              <input
+                type="text"
+                placeholder="Search blogs..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-red-500 outline-none"
+              />
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-lg mb-5 border-b">Categories</h3>
+
+              {/* Scrollable container */}
+              <div className="flex flex-col max-h-72 overflow-y-auto scrollbar-hide">
+                {categories.map((cat) => (
+                  <div key={cat._id} className="w-full border-b">
+                    <button
+                      onClick={() => handleCategoryClick(cat._id)}
+                      className={`
+                        w-fit px-4 py-2 rounded-lg text-md text-left mb-2 
+                        relative overflow-hidden 
+                        transition-colors duration-500
+                        ${selectedCategory === cat._id
+                          ? "text-red-500"
+                          : "text-gray-700 hover:text-red-500"
+                        }
+                      `}
+                    >
+                      <span className="relative z-10">{cat.name}</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+
             </div>
           </div>
 
-          {/* Blog Grid */}
-        {blogs.length > 0 ? (
-          <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-6 py-10">
-              {blogs.map((blog) => (
-                <div
-                  key={blog._id}
-                  className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col group hover:-translate-y-2 hover:shadow-2xl transition duration-300"
-                >
-                  <div className="h-52 w-full overflow-hidden">
-                    <img
-                      src={blog.image || "/default-blog.jpg"}
-                      alt={blog.blog_name}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                  </div>
 
-                  <div className="p-5 flex flex-col flex-1">
-                    <span className="text-red-500 text-xs bg-red-100 px-3 py-1 rounded-full w-max mb-3">
-                      {new Date(blog.createdAt).toLocaleDateString("en-GB")}
-                    </span>
+          <div className="lg:col-span-3">
+            {blogs.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                {blogs.map((blog) => (
+                  <div
+                    key={blog._id}
+                    className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col group hover:-translate-y-2 hover:shadow-2xl transition duration-300"
+                  >
+                    <div className="h-52 w-full overflow-hidden">
+                      <img
+                        src={blog.image || "/default-blog.jpg"}
+                        alt={blog.blog_name}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    </div>
 
-                    <Link
-                      href={`/blog/${blog.blog_slug}`}
-                      className="group-hover:text-red-500 transition-colors"
-                    >
-                      <h3 className="text-lg font-semibold text-gray-800 hover:text-red-500 mb-2 hover:underline">
-                        {blog.blog_name}
-                      </h3>
-                    </Link>
+                    <div className="p-3 flex flex-col flex-1">
+                      <span className="text-red-500 text-xs bg-red-100 px-3 py-1 rounded-full w-max mb-3">
+                        {new Date(blog.createdAt).toLocaleDateString("en-GB")}
+                      </span>
 
-                    <p className="text-gray-600 flex-1 mb-4 text-sm">
-                      {blog.description.slice(0, 100)}...
-                    </p>
+                      <Link
+                        href={`/blog/${blog.blog_slug}`}
+                        className="group-hover:text-red-500 transition-colors"
+                      >
+                        <h3 className="text-lg font-semibold text-gray-800 hover:text-red-500 mb-2 hover:underline">
+                          {blog.blog_name.slice(0,25)}
+                        </h3>
+                      </Link>
 
-                    <div className="">
+                      <p className="text-gray-600 flex-1 mb-4 text-sm">
+                        {stripHtml(blog.description).slice(0, 90)}...
+                      </p>
+
                       <Link
                         href={`/blog/${blog.blog_slug}`}
                         className="relative inline-block overflow-hidden text-red-500 text-sm font-medium py-2 px-3 rounded-lg underline
-                                          transition-colors duration-300
-                                          before:absolute before:inset-0 before:bg-red-600
-                                          before:origin-left before:scale-x-0 before:transition-transform before:duration-300
-                                          hover:text-white hover:before:scale-x-100"
+                        transition-colors duration-300
+                        before:absolute before:inset-0 before:bg-red-600
+                        before:origin-left before:scale-x-0 before:transition-transform before:duration-300
+                        hover:text-white hover:before:scale-x-100 w-max"
                       >
                         <span className="relative z-10">Read More</span>
                       </Link>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+            ) : loading ? (
+              <div className="flex justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center py-20">
+                <p className="text-center text-gray-500">No blogs found.</p>
+              </div>
+            )}
           </div>
-        ) : loading ? (
-          <div className="col-span-full flex justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
-          </div>
-        ) : (
-          <div className="min-h-screen flex items-center justify-center">
-            <p className="col-span-full text-center text-gray-500">No blogs found.</p>
-          </div>
-        )}
 
+        </div>
         {loading && blogs.length > 0 && (
           <div className="col-span-full flex justify-center py-10">
             <div className="flex items-center gap-3 text-red-500 font-medium">

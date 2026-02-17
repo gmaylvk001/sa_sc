@@ -41,13 +41,15 @@ export default async function BlogPost({ params }) {
   }
 
   // Recent posts (exclude current)
-  const recentPosts = blogs.filter(b => b._id !== blog._id).slice(0, 3);
+const recentPosts = blogs
+  .filter(b => b._id !== blog._id && b.status === "Active")
+  .slice(0, 3);
 
   // Unique categories
   const categories = [
     ...new Map(
       blogs
-        .filter(b => b.category)
+        .filter(b => b.category && b.status === "Active")
         .map(b => [b.category._id, b.category])
     ).values()
   ];
@@ -58,7 +60,7 @@ export default async function BlogPost({ params }) {
         <div className="absolute inset-0"></div>
     </section>
 
-    <section className="bg-slate-50 py-12">
+    <section className="bg-gradient-to-r from-pink-100 via-blue-100 to-white py-12">
       <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-4 gap-8">
 
         {/* ================= LEFT CONTENT ================= */}
@@ -89,13 +91,10 @@ export default async function BlogPost({ params }) {
           </p>
 
           <div className="prose prose-lg max-w-none">
-            <div className="text-gray-700 leading-relaxed whitespace-pre-line">
-              {blog.description.split('\n').map((paragraph, index) => (
-                <p key={index} className="mb-6 last:mb-0">
-                  {paragraph}
-                </p>
-              ))}
-            </div>
+            <div
+              className="blog-content text-gray-700 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: blog.description }}
+            />
           </div>
         </article>
 

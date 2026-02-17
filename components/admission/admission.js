@@ -58,6 +58,10 @@ export default function ContactForm() {
       return;
     }
 
+    console.log("Form Data Submitted:", form);
+    // Stop sending to server
+    // return;
+
     setLoading(true);
     setResponseMsg("");
 

@@ -10,6 +10,7 @@ export default function GalleryPage() {
   const [activeImage, setActiveImage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [tabLoading, setTabLoading] = useState(false);
   const imagesPerPage = 20;
 
   // Load categories
@@ -86,6 +87,19 @@ export default function GalleryPage() {
     setPage(1); // Reset page when tab changes
   }, [activeTab]);
 
+  // Handle tab click
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    setTabLoading(true); // start loading
+    setActiveImage(null);
+    setPage(1);
+
+    // Simulate a small delay for loading effect
+    setTimeout(() => {
+      setTabLoading(false);
+    }, 300); // 0.3s for smoothness
+  };
+
   // Tabs with "all" plus only categories with images
   const tabs = ["all", ...categories.map((c) => c.slug)];
 
@@ -100,8 +114,8 @@ export default function GalleryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-lg font-medium">Loading gallery...</p>
+      <div className="min-h-screen flex justify-center items-center py-20 bg-gradient-to-r from-pink-100 via-blue-100 to-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
       </div>
     );
   }
@@ -116,7 +130,7 @@ export default function GalleryPage() {
         <div className="absolute inset-0"></div>
       </section>
 
-      <section className="pb-10 mt-4 min-h-screen">
+      <section className="pb-10 mt-4 min-h-screen bg-gradient-to-r from-pink-100 via-blue-100 to-white">
 
         <div className="bg-gradient-to-r from-red-600 to-red-500 py-14 text-center text-white">
           <h1 className="text-4xl md:text-5xl font-bold mb-3">Our School Moments</h1>
@@ -127,7 +141,7 @@ export default function GalleryPage() {
 
         {/* If No Images */}
         {noGalleryData ? (
-          <div className="min-h-screen flex items-center justify-center py-20">
+          <div className="bg-gradient-to-r from-pink-100 via-blue-100 to-white min-h-screen flex items-center justify-center py-20">
             <p className="text-gray-500 text-lg italic">
               No gallery images found.
             </p>
@@ -140,9 +154,11 @@ export default function GalleryPage() {
             {tabs.map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-5 py-2 rounded-full border transition ${
-                  activeTab === tab ? "bg-red-500 text-white" : "hover:bg-gray-100"
+                onClick={() => handleTabClick(tab)}
+                className={`px-5 py-2 rounded-full border transition-all duration-300 transform ${
+                  activeTab === tab
+                    ? "bg-red-500 text-white"
+                    : "bg-white hover:bg-gray-100 hover:scale-105 hover:shadow-lg hover:border-red-500"
                 }`}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -152,23 +168,31 @@ export default function GalleryPage() {
 
           {/* Masonry Image Grid */}
           <div className="flex justify-center">
-            <div className="columns-2 sm:columns-3 md:columns-3 lg:columns-4 xl:columns-5 gap-6 space-y-6 max-w-[1200px]">
-              {paginatedImages.length === 0 ? (
-                <p className="col-span-full text-center text-gray-500 italic">
-                  No images available in this category.
-                </p>
-              ) : (
-                paginatedImages.map((img, index) => (
-                  <img
-                    key={img._id}
-                    src={img.imageUrl}
-                    alt={img.title || "Gallery image"}
-                    onClick={() => setActiveImage(index)}
-                    className="block mx-auto rounded-lg cursor-pointer hover:scale-105 transition shadow break-inside-avoid"
-                  />
-                ))
-              )}
-            </div>
+            {tabLoading ? (
+              <div className="flex justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+              </div>
+            ) : (
+              <div className="columns-2 sm:columns-3 md:columns-3 lg:columns-4 xl:columns-5 gap-6 space-y-6 max-w-[1200px]">
+                {paginatedImages.length === 0 ? (
+                  <p className="col-span-full text-center text-gray-500 italic">
+                    No images available in this category.
+                  </p>
+                ) : (
+                  paginatedImages.map((img, index) => (
+                    <div key={img._id} className="cursor-pointer transition-transform hover:scale-105 rounded-xl">
+                      <img
+                        src={img.imageUrl}
+                        alt={img.title || "Gallery image"}
+                        onClick={() => setActiveImage(index)}
+                        className="block mx-auto rounded-xl"
+                      />
+                      {/* <h6 className="py-1 text-center text-md">{img.title}</h6> */}
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
           </div>
 
           {/* Load More Button */}

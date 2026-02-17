@@ -136,6 +136,11 @@ export default function HomeComponent() {
   };
   const prevRef = useRef(null);
   const nextRef = useRef(null);
+  const stripHtml = (html) => {
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText || "";
+};
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -848,8 +853,8 @@ useEffect(() => {
                           </h3>
                         </Link>
 
-                        <p className="text-gray-600 flex-1 mb-3 text-sm">
-                          {blog.description.slice(0, 90)}...
+                        <p className="text-gray-600 flex-1 mb-4 text-sm">
+                          {stripHtml(blog.description).slice(0, 100)}...
                         </p>
 
                         {/* Read More Button */}

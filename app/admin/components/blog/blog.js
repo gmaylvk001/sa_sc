@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaPlus, FaMinus, FaEdit } from "react-icons/fa";
 import { Icon } from '@iconify/react';
 import DateRangePicker from '@/components/DateRangePicker';
+import CustomQuill from './CustomQuill';
 
 export default function BlogComponent() {
   // State declarations
@@ -28,6 +29,10 @@ export default function BlogComponent() {
     endDate: null
   });
   
+  const [saving, setSaving] = useState(false);
+  const [saveProgress, setSaveProgress] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+
   // Edit modal states
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editBlogData, setEditBlogData] = useState({
@@ -40,6 +45,11 @@ export default function BlogComponent() {
   });
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState("");
+  const stripHtml = (html) => {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+  };
 
   // Fetch categories and blogs on component mount
   useEffect(() => {
@@ -174,6 +184,16 @@ export default function BlogComponent() {
     }
     formData.append("existingImage", editBlogData.existingImage);
 
+    setSaving(true);
+    setSaveProgress(0);
+
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.random() * 15;
+      if (progress > 90) progress = 90;
+      setSaveProgress(Math.round(progress));
+    }, 150);
+
     try {
       const response = await fetch("/api/blogs/update", {
         method: "PUT",
@@ -182,36 +202,42 @@ export default function BlogComponent() {
 
       const result = await response.json();
       if (result.success) {
-        setAlertMessage("Blog updated successfully!");
-        setShowAlert(true);
+        clearInterval(interval);
+        setSaveProgress(100);
+        await new Promise((resolve) => setTimeout(resolve, 400));
+
+        setSaving(false);
+        setSaveProgress(0);
         setIsEditModalOpen(false);
-        setEditBlogData({ 
+        setEditBlogData({
           id: "",
-          name: "", 
-          image: null, 
+          name: "",
+          image: null,
           existingImage: "",
-          description: "", 
-          status: "Active" 
+          description: "",
+          status: "Active"
         });
         fetchBlogs();
 
-        setTimeout(() => {
-          setShowAlert(false);
-        }, 3000);
+        setAlertMessage("Blog updated successfully!");
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
       } else {
+        clearInterval(interval);
+        setSaving(false);
+        setSaveProgress(0);
         setAlertMessage("Error: " + result.error);
         setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-        }, 3000);
+        setTimeout(() => setShowAlert(false), 3000);
       }
     } catch (error) {
+      clearInterval(interval);
+      setSaving(false);
+      setSaveProgress(0);
       console.error("Error submitting form:", error);
       setAlertMessage("Failed to update blog.");
       setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-      }, 3000);
+      setTimeout(() => setShowAlert(false), 3000);
     }
   };
 
@@ -227,6 +253,19 @@ export default function BlogComponent() {
       formData.append("image", blogData.image);
     }
 
+    setSaving(true);
+    setSaveProgress(0);
+
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.random() * 15;
+      if (progress > 90) progress = 90;
+      setSaveProgress(Math.round(progress));
+    }, 150);
+
+    // Option 1 — easiest, see all key/value pairs
+    console.log('test form', Object.fromEntries(formData));
+
     try {
       const response = await fetch("/api/blogs/add", {
         method: "POST",
@@ -235,62 +274,71 @@ export default function BlogComponent() {
 
       const result = await response.json();
       if (result.success) {
-        setAlertMessage("Blog added successfully!");
-        setShowAlert(true);
+        clearInterval(interval);
+        setSaveProgress(100);
+        await new Promise((resolve) => setTimeout(resolve, 400));
+
+        setSaving(false);
+        setSaveProgress(0);
         setIsModalOpen(false);
         setBlogData({ name: "", image: null, description: "", status: "Active" });
         setImagePreview(null);
         fetchBlogs();
 
-        setTimeout(() => {
-          setShowAlert(false);
-        }, 3000);
+        setAlertMessage("Blog added successfully!");
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
       } else {
+        clearInterval(interval);
+        setSaving(false);
+        setSaveProgress(0);
         setAlertMessage("Error: " + result.error);
         setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-        }, 3000);
+        setTimeout(() => setShowAlert(false), 3000);
       }
     } catch (error) {
+      clearInterval(interval);
+      setSaving(false);
+      setSaveProgress(0);
       console.error("Error submitting form:", error);
       setAlertMessage("Failed to add blog.");
       setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-      }, 3000);
+      setTimeout(() => setShowAlert(false), 3000);
     }
   };
 
   const handleDelete = async () => {
     if (!blogToDelete) return;
-    
+
+    setDeleting(true);
     try {
       const response = await fetch(`/api/blogs/delete?id=${blogToDelete}`, {
         method: 'PUT',
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-  
+
       const result = await response.json();
       if (result.success) {
-        setAlertMessage('Blog status updated to Inactive successfully!');
+        setAlertMessage('Blog deleted successfully!');
         fetchBlogs();
       } else {
         setAlertMessage('Error: ' + result.error);
       }
-      
+
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 3000);
       setShowConfirmationModal(false);
       setBlogToDelete(null);
+      setDeleting(false);
     } catch (error) {
       console.error('Error updating blog status:', error);
-      setAlertMessage('Failed to update blog status.');
+      setAlertMessage('Failed to delete blog.');
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 3000);
+      setDeleting(false);
     }
   };
 
@@ -403,7 +451,7 @@ export default function BlogComponent() {
                 }}
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500 text-sm"
               >
-                <option value="">All Statuses</option>
+                <option value="">All Status</option>
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
               </select>
@@ -462,10 +510,10 @@ export default function BlogComponent() {
                       .map((blog) => (
                         <tr key={blog._id} className="border-b hover:bg-gray-50">
                           <td className="p-2 font-bold">{blog.blog_name}</td>
-                          <td className="p-2" title={blog.description}>
-                            {blog.description.length > 50 
-                              ? `${blog.description.substring(0, 50)}...` 
-                              : blog.description}
+                          <td className="p-2" title={stripHtml(blog.description)}>
+                            {stripHtml(blog.description).length > 50
+                              ? `${stripHtml(blog.description).substring(0, 50)}...`
+                              : stripHtml(blog.description)}
                           </td>
                           <td className="p-2">
                             {blog.category ? blog.category.name : "No Category"}
@@ -540,6 +588,24 @@ export default function BlogComponent() {
             </div>
 
             <div className="px-6 py-6 overflow-y-auto flex-grow">
+              {saving ? (
+                <div className="py-10">
+                  <p className="text-sm text-gray-600 text-center mb-3">
+                    {saveProgress < 100 ? "Saving blog..." : "Saved successfully!"}
+                  </p>
+                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div
+                      className={`h-3 rounded-full transition-all duration-200 ${
+                        saveProgress < 100 ? "bg-blue-500" : "bg-green-500"
+                      }`}
+                      style={{ width: `${saveProgress}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-center text-sm font-semibold mt-2 text-gray-700">
+                    {saveProgress}%
+                  </p>
+                </div>
+              ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label htmlFor="blog_name" className="block mb-1 text-sm font-semibold text-gray-700">
@@ -582,39 +648,32 @@ export default function BlogComponent() {
                   <label htmlFor="description" className="block mb-1 text-sm font-semibold text-gray-700">
                     Blog Description
                   </label>
-                  <textarea
-                    name="description"
+                  <CustomQuill
                     value={blogData.description}
-                    onChange={handleInputChange}
-                    id="description"
-                    className="w-full rounded-md border p-2 focus:ring-2 focus:ring-red-400"
-                    placeholder="Enter Blog Description"
-                    rows={4}
-                    required
+                    onChange={(content) => {
+                      setBlogData((prev) => ({ ...prev, description: content }))
+                    }}
                   />
                 </div>
 
                  <div>
-                    <label className="block mb-1 text-sm font-semibold text-gray-700">
-                      Category
-                    </label>
-
-                    <select
-                      className="border w-full p-2 rounded-md"
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                      required
-                    >
-                      <option value="">Select Category</option>
-                      {categories.map((c) => (
-                        <option key={c._id} value={c._id}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
-                    
-                  </div>
-
+                  <label className="block mb-1 text-sm font-semibold text-gray-700">
+                    Category
+                  </label>
+                  <select
+                    className="border w-full p-2 rounded-md"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    required
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map((c) => (
+                      <option key={c._id} value={c._id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
                 <div>
                   <label htmlFor="status" className="block mb-1 text-sm font-semibold text-gray-700">
@@ -639,6 +698,7 @@ export default function BlogComponent() {
                   Add Blog
                 </button>
               </form>
+              )}
             </div>
           </div>
         </div>
@@ -668,6 +728,24 @@ export default function BlogComponent() {
             </div>
 
             <div className="px-6 py-6 overflow-y-auto flex-grow">
+              {saving ? (
+                <div className="py-10">
+                  <p className="text-sm text-gray-600 text-center mb-3">
+                    {saveProgress < 100 ? "Updating blog..." : "Updated successfully!"}
+                  </p>
+                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div
+                      className={`h-3 rounded-full transition-all duration-200 ${
+                        saveProgress < 100 ? "bg-blue-500" : "bg-green-500"
+                      }`}
+                      style={{ width: `${saveProgress}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-center text-sm font-semibold mt-2 text-gray-700">
+                    {saveProgress}%
+                  </p>
+                </div>
+              ) : (
               <form onSubmit={handleEditSubmit} className="space-y-5">
                 <div>
                   <label htmlFor="edit_blog_name" className="block mb-1 text-sm font-semibold text-gray-700">
@@ -698,17 +776,17 @@ export default function BlogComponent() {
                       hover:file:bg-red-100"
                   />
                   {editBlogData.existingImage && !editBlogData.image && (
-                    <img 
-                      src={editBlogData.existingImage} 
-                      alt="Current" 
-                      className="mt-3 h-16 rounded-md object-contain mx-auto" 
+                    <img
+                      src={editBlogData.existingImage}
+                      alt="Current"
+                      className="mt-3 h-16 rounded-md object-contain mx-auto"
                     />
                   )}
                   {editBlogData.image && (
-                    <img 
-                      src={URL.createObjectURL(editBlogData.image)} 
-                      alt="New" 
-                      className="mt-3 h-16 rounded-md object-contain mx-auto" 
+                    <img
+                      src={URL.createObjectURL(editBlogData.image)}
+                      alt="New"
+                      className="mt-3 h-16 rounded-md object-contain mx-auto"
                     />
                   )}
                 </div>
@@ -717,15 +795,9 @@ export default function BlogComponent() {
                   <label htmlFor="edit_description" className="block mb-1 text-sm font-semibold text-gray-700">
                     Blog Description
                   </label>
-                  <textarea
-                    name="description"
+                  <CustomQuill
                     value={editBlogData.description}
-                    onChange={handleEditInputChange}
-                    id="edit_description"
-                    className="w-full rounded-md border p-2 focus:ring-2 focus:ring-red-400"
-                    placeholder="Enter Blog Description"
-                    rows={4}
-                    required
+                    onChange={(content) => setEditBlogData((prev) => ({ ...prev, description: content }))}
                   />
                 </div>
 
@@ -767,6 +839,7 @@ export default function BlogComponent() {
                   Update Blog
                 </button>
               </form>
+              )}
             </div>
           </div>
         </div>
@@ -787,9 +860,12 @@ export default function BlogComponent() {
               </button>
               <button
                 onClick={handleDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                disabled={deleting}
+                className={`px-4 py-2 rounded-md text-white ${
+                  deleting ? "bg-red-300 cursor-not-allowed" : "bg-red-500 hover:bg-red-600"
+                }`}
               >
-                Delete
+                {deleting ? "Deleting..." : "Delete"}
               </button>
             </div>
           </div>
