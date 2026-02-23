@@ -1672,12 +1672,12 @@ const Header = () => {
                   <Link className="menu-item" href="/admission" onClick={() => setIsOpen(false)}>
                     <span className="menu-text text-white" >Admission Open</span>
                   </Link>
-                  <Link className="menu-item" href="/gallery" onClick={() => setIsOpen(false)}>
+                  {/* <Link className="menu-item" href="/gallery" onClick={() => setIsOpen(false)}>
                     <span className="menu-text text-white" >Gallery</span>
                   </Link>
                   <Link className="menu-item" href="/blog" onClick={() => setIsOpen(false)}>
                     <span className="menu-text text-white" >Blogs</span>
-                  </Link>
+                  </Link> */}
                 </div>
 
                 {/* RIGHT IMAGE (hidden on mobile) */}

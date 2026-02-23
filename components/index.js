@@ -24,7 +24,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { v4 as uuidv4 } from "uuid";
-import IndexGalleryPreview from "@/components/gallery/Indexgallery";
+// import IndexGalleryPreview from "@/components/gallery/Indexgallery";
 
 // Shuffle function
 function shuffleArray(array) {
@@ -122,8 +122,8 @@ export default function HomeComponent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState("login");
   const [isSectionLoading, setIsSectionLoading] = useState(false);
-  const [blogs, setBlogs] = useState([]);
-  const [blogLoading, setBlogLoading] = useState(true);
+  // const [blogs, setBlogs] = useState([]);
+  // const [blogLoading, setBlogLoading] = useState(true);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -260,35 +260,35 @@ export default function HomeComponent() {
     });
   }, [activities]);
 
-useEffect(() => {
-  const fetchBlogs = async () => {
-    try {
-      const res = await fetch("/api/blogs/get", {
-        cache: "no-store",
-      });
+// useEffect(() => {
+//   const fetchBlogs = async () => {
+//     try {
+//       const res = await fetch("/api/blogs/get", {
+//         cache: "no-store",
+//       });
 
-      const data = await res.json();
+//       const data = await res.json();
 
-      if (data?.success && Array.isArray(data.data)) {
-        // ✅ Filter only Active blogs
-        const activeBlogs = data.data.filter(
-          (blog) => blog.status === "Active"
-        );
+//       if (data?.success && Array.isArray(data.data)) {
+//         // ✅ Filter only Active blogs
+//         const activeBlogs = data.data.filter(
+//           (blog) => blog.status === "Active"
+//         );
 
-        setBlogs(activeBlogs);
-      } else {
-        setBlogs([]);
-      }
+//         setBlogs(activeBlogs);
+//       } else {
+//         setBlogs([]);
+//       }
 
-    } catch (err) {
-      console.error("Blog fetch error:", err);
-    } finally {
-      setBlogLoading(false);
-    }
-  };
+//     } catch (err) {
+//       console.error("Blog fetch error:", err);
+//     } finally {
+//       setBlogLoading(false);
+//     }
+//   };
 
-  fetchBlogs();
-}, []);
+//   fetchBlogs();
+// }, []);
   
   return (
     <>
@@ -762,7 +762,7 @@ useEffect(() => {
         </section>
 
         {/* gallery section  */}
-        <IndexGalleryPreview />
+        {/* <IndexGalleryPreview /> */}
         {/*end gallery section */}
 
         {/* CTA SECTION */}
@@ -797,11 +797,11 @@ useEffect(() => {
         </section>
 
          {/* blog section */}
-        {!blogLoading && blogs.length > 0 && (
+        {/* {!blogLoading && blogs.length > 0 && (
           <section className="py-14 bg-gradient-to-r from-pink-100 via-blue-100 to-white shadow">
             <div className="relative max-w-7xl mx-auto px-6">
 
-              {/* Heading */}
+ 
                 <h2 className="text-4xl font-bold text-center mb-2 text-gray-800">
                   Latest <span className="text-red-600">Blogs</span>
                 </h2>
@@ -810,7 +810,7 @@ useEffect(() => {
                 </p>
               
 
-              {/* Swiper */}
+ 
               <Swiper
                 modules={[Navigation, Autoplay]}
                 spaceBetween={30}
@@ -846,7 +846,7 @@ useEffect(() => {
                           </span>
                         </div>
 
-                        {/* Title as Link */}
+                
                         <Link href={`/blog/${blog.blog_slug}`} className="group-hover:text-red-500 transition-colors">
                           <h3 className="text-lg font-semibold text-gray-800 mb-2 hover:underline hover:text-red-500">
                             {blog.blog_name}
@@ -857,7 +857,7 @@ useEffect(() => {
                           {stripHtml(blog.description).slice(0, 100)}...
                         </p>
 
-                        {/* Read More Button */}
+ 
                         <div className="mt-auto">
                           <Link
                             href={`/blog/${blog.blog_slug}`}
@@ -878,7 +878,7 @@ useEffect(() => {
 
               </Swiper>
 
-               {/* Custom Buttons */}
+      
                 <button
                   ref={prevRef}
                   className="absolute left-0 top-1/2 -translate-y-1/2 
@@ -907,7 +907,7 @@ useEffect(() => {
               </div>
             </div>
           </section>
-        )}
+        )} */}
 
         {/*insta stories */}
         <section className="bg-white shadow">

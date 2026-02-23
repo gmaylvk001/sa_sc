@@ -54,8 +54,8 @@ export default function IndexGalleryPreview() {
   const displayedImages = images.slice(0, previewCount);
 
   return (
-    <section className="py-14 max-w-7xl mx-auto px-6 bg-gradient-to-r from-pink-100 via-blue-100 to-white shadow">
-      <div className="text-center mb-8">
+    <section className="py-14  bg-gradient-to-r from-pink-100 via-blue-100 to-white shadow">
+      <div className="text-center max-w-7xl mx-auto px-6  mb-8">
         <h2 className="text-3xl md:text-4xl font-bold">
           Life at <span className="text-red-600">Sathya School</span>
         </h2>
