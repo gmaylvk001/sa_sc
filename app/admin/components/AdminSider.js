@@ -21,6 +21,7 @@ export default function AdminSider({ collapsed }) {
     else if (path.includes('/registration')) setActiveMenu('Admission');
     else if (path.includes('/blog/blog_categories')) setActiveMenu('Blog Categories');
     else if (path.includes('/blog')) setActiveMenu('Posts');
+    else if (path.includes('/activities')) setActiveMenu('Activities');
   }, []);
 
   const menuItems = [
@@ -41,6 +42,7 @@ export default function AdminSider({ collapsed }) {
         { icon: 'mdi:file-document-outline', label: 'Posts', link: 'blog' },
       ],
     },
+    { icon: 'mdi:trophy-outline', label: 'Activities', link: 'activities' },
   ];
 
   const handleCloseSubmenu = () => {

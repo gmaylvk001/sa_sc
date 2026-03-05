@@ -38,17 +38,7 @@ function shuffleArray(array) {
 
 export default function HomeComponent() {
 
-  // Original activities
-  const activitiesData = [
-    { name: "Karate", imageSrc: "/images/sports-activities/Karate.jpg", description: "Discipline, strength, and focus training for students." },
-    { name: "Silambam", imageSrc: "/images/sports-activities/Silambam.jpg", description: "Traditional martial art enhancing agility and coordination." },
-    { name: "Bharathanatyam", imageSrc: "/images/sports-activities/bharatham.png", description: "Classical dance to boost expression and rhythm." },
-    { name: "Western Dance", imageSrc: "/images/sports-activities/western-dance.png", description: "Modern dance promoting creativity and teamwork." },
-    { name: "Art & Craft", imageSrc: "/images/sports-activities/Art-craft.jpg", description: "Hands-on activities to nurture imagination." },
-    { name: "Singing", imageSrc: "/images/sports-activities/Singing.jpg", description: "Enhancing voice and confidence through music." },
-    { name: "Music", imageSrc: "/images/sports-activities/music.png", description: "Enhancing voice and confidence through music." },
-    { name: "Cookery", imageSrc: "/images/sports-activities/Cookery.png", description: "Fun cooking sessions to develop creativity and life skills." },
-  ];
+  // Activities fetched from API
 
   const reels = [
     "https://www.instagram.com/p/DSmwY8UCP5d/",
@@ -214,51 +204,27 @@ export default function HomeComponent() {
     };
   }, []);
 
-  const [activities, setActivities] = useState(activitiesData);
-  const sectionRef = useRef(null);
-
-  // Track previous positions for FLIP effect
-  const positionsRef = useRef({});
+  const [activities, setActivities] = useState([]);
+  const [activitiesVisible, setActivitiesVisible] = useState(false);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          // Trigger shuffle when section comes into view
-          setActivities((prev) => shuffleArray(prev));
-        }
-      },
-      { threshold: 0.5 }
-    );
-
-    if (sectionRef.current) observer.observe(sectionRef.current);
-
-    return () => {
-      if (sectionRef.current) observer.unobserve(sectionRef.current);
-    };
+    fetch("/api/activities/get")
+      .then((r) => r.json())
+      .then((data) => { if (data.success) setActivities(data.data); })
+      .catch(console.error);
   }, []);
 
+  const sectionRef = useRef(null);
+
   useEffect(() => {
-    // FLIP animation
-    const cards = document.querySelectorAll(".activity-card");
-    cards.forEach((card) => {
-      const rect = card.getBoundingClientRect();
-      const prev = positionsRef.current[card.dataset.key];
-      if (prev) {
-        const dx = prev.left - rect.left;
-        const dy = prev.top - rect.top;
-        if (dx || dy) {
-          card.style.transform = `translate(${dx}px, ${dy}px)`;
-          card.style.transition = "transform 0s";
-          requestAnimationFrame(() => {
-            card.style.transition = "transform 0.5s ease";
-            card.style.transform = "";
-          });
-        }
-      }
-      positionsRef.current[card.dataset.key] = rect;
-    });
-  }, [activities]);
+    if (!sectionRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { setActivitiesVisible(entry.isIntersecting); },
+      { threshold: 0.1 }
+    );
+    observer.observe(sectionRef.current);
+    return () => { observer.disconnect(); };
+  }, [activities.length]); // re-run once activities load and section renders
 
 // useEffect(() => {
 //   const fetchBlogs = async () => {
@@ -725,7 +691,8 @@ export default function HomeComponent() {
           </div>
         </section>
 
-        {/* ACTIVITIES */}
+        {/* ACTIVITIES — only shown when at least one Active activity exists */}
+        {activities.length > 0 && (
         <section ref={sectionRef} className="py-14 bg-white shadow" id="ACTIVITIES">
           <div className="max-w-7xl mx-auto px-6">
             <h2 className="text-4xl font-bold text-center mb-2 text-gray-800">
@@ -736,30 +703,36 @@ export default function HomeComponent() {
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-              {activities.map((activity) => (
-                <div
+              {activities.map((activity, index) => {
+                const animClass = index % 3 === 0
+                  ? "activity-animate-left"
+                  : index % 3 === 1
+                  ? "activity-animate-up"
+                  : "activity-animate-right";
+                return (
+                <Link
                   key={activity.name}
-                  data-key={activity.name} // used to track positions
-                  className="activity-card group bg-white rounded-3xl shadow-md
-                  overflow-hidden cursor-default border-2 border-red-600"
-                  style={{ transition: "all 0.5s ease" }}
+                  href={`/activities/${activity.slug}`}
+                  data-key={activity.name}
+                  className={`activity-card group bg-white rounded-3xl shadow-md overflow-hidden cursor-pointer border-2 border-red-600 hover:shadow-xl transition-shadow block ${activitiesVisible ? animClass : "opacity-0"}`}
+                  style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div className="relative">
                     <img src={activity.imageSrc} alt={activity.name} className="w-full transition-opacity duration-500" />
                     <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                      <span className="text-white font-semibold text-lg">{activity.name}</span>
                     </div>
                   </div>
 
                   <div className="px-5 py-2">
                     <h3 className="text-lg font-semibold text-gray-900 mb-1">{activity.name}</h3>
-                    <p className="text-gray-600 text-sm">{activity.description}</p>
+                    <p className="text-gray-600 text-sm">{activity.tagline}</p>
                   </div>
-                </div>
-              ))}
+                </Link>
+              )})}
             </div>
           </div>
         </section>
+        )}
 
         {/* gallery section  */}
         {/* <IndexGalleryPreview /> */}
