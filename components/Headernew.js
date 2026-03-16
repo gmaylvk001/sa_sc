@@ -1666,9 +1666,9 @@ const Header = () => {
                   <Link className="menu-item" href="/#Why" onClick={() => setIsOpen(false)}>
                     <span className="menu-text text-white">Why Parent Trust Us</span>
                   </Link>
-                  <Link className="menu-item" href="/#ACTIVITIES" onClick={() => setIsOpen(false)}>
+                  {/* <Link className="menu-item" href="/#ACTIVITIES" onClick={() => setIsOpen(false)}>
                     <span className="menu-text text-white">Activities</span>
-                  </Link>
+                  </Link> */}
                   <Link className="menu-item" href="/admission" onClick={() => setIsOpen(false)}>
                     <span className="menu-text text-white" >Admission Open</span>
                   </Link>
