@@ -6,6 +6,24 @@ import ReactPaginate from "react-paginate";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+
+// ─── Config ───────────────────────────────────────────────────────────────────
+const MAX_FILE_SIZE_MB = 5;
+const MAX_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
+// ─── Helper ───────────────────────────────────────────────────────────────────
+function validateImageFile(file, label = "Image") {
+  if (!file) return null;
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    return `${label} must be JPEG, PNG, WEBP, or GIF.`;
+  }
+  if (file.size > MAX_BYTES) {
+    return `${label} "${file.name}" is ${(file.size / 1024 / 1024).toFixed(1)}MB — max allowed is ${MAX_FILE_SIZE_MB}MB.`;
+  }
+  return null;
+}
+
 const emptyForm = {
   _id: null,
   name: "",
@@ -106,6 +124,14 @@ export default function ActivitiesAdminComponent() {
   const handleBannerChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    const error = validateImageFile(file, "Banner image");
+        if (error) {
+          toast.error(error);
+          e.target.value = ""; // clear input
+          return;
+        }
+    
     setForm((f) => ({ ...f, imageSrc: file }));
     setBannerPreview(URL.createObjectURL(file));
   };
@@ -113,6 +139,17 @@ export default function ActivitiesAdminComponent() {
   // ---------- gallery images ----------
   const handleGalleryChange = (e) => {
     const files = Array.from(e.target.files);
+    const validFiles = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const error = validateImageFile(files[i], `Gallery image ${i + 1}`);
+      if (error) {
+        toast.error(error);
+        e.target.value = ""; // clear entire input on any invalid file
+        return;
+      }
+      validFiles.push(files[i]);
+    }
     setForm((f) => ({ ...f, gallery: [...f.gallery, ...files] }));
     setGalleryPreviews((prev) => [
       ...prev,
