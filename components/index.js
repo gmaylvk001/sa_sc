@@ -204,28 +204,28 @@ export default function HomeComponent() {
     };
   }, []);
 
-  // const [activities, setActivities] = useState([]);
-  // const [activitiesVisible, setActivitiesVisible] = useState(false);
+  const [activities, setActivities] = useState([]);
+  const [activitiesVisible, setActivitiesVisible] = useState(false);
 
-  // useEffect(() => {
-  //   fetch("/api/activities/get")
-  //     .then((r) => r.json())
-  //     .then((data) => { if (data.success) setActivities(data.data); })
-  //     .catch(console.error);
-  // }, []);
+  useEffect(() => {
+    fetch("/api/activities/get")
+      .then((r) => r.json())
+      .then((data) => { if (data.success) setActivities(data.data); })
+      .catch(console.error);
+  }, []);
 
-  // const sectionRef = useRef(null);
+  const sectionRef = useRef(null);
 
-  // useEffect(() => {
-  //   if (!sectionRef.current) return;
-  //   const observer = new IntersectionObserver(
-  //     ([entry]) => { setActivitiesVisible(entry.isIntersecting); },
-  //     { threshold: 0.1 }
-  //   );
-  //   observer.observe(sectionRef.current);
-  //   return () => { observer.disconnect(); };
-  // }, [activities.length]);
-   // re-run once activities load and section renders
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { setActivitiesVisible(entry.isIntersecting); },
+      { threshold: 0.1 }
+    );
+    observer.observe(sectionRef.current);
+    return () => { observer.disconnect(); };
+  }, [activities.length]);
+  //  re-run once activities load and section renders
 
 // useEffect(() => {
 //   const fetchBlogs = async () => {
@@ -693,7 +693,7 @@ export default function HomeComponent() {
         </section>
 
         {/* ACTIVITIES — only shown when at least one Active activity exists */}
-        {/* {activities.length > 0 && (
+        {activities.length > 0 && (
         <section ref={sectionRef} className="py-14 bg-white shadow" id="ACTIVITIES">
           <div className="max-w-7xl mx-auto px-6">
             <h2 className="text-4xl font-bold text-center mb-2 text-gray-800">
@@ -703,7 +703,7 @@ export default function HomeComponent() {
               Our diverse sports and co-curricular programs help children develop confidence, creativity, and teamwork.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-center">
               {activities.map((activity, index) => {
                 const animClass = index % 3 === 0
                   ? "activity-animate-left"
@@ -733,7 +733,7 @@ export default function HomeComponent() {
             </div>
           </div>
         </section>
-        )} */}
+        )}
 
         {/* gallery section  */}
         {/* <IndexGalleryPreview /> */}
