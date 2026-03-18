@@ -1654,7 +1654,7 @@ const Header = () => {
                     className={`menu-slide-left flex flex-col space-y-8 px-6 pt-8 bg-red-600
                     ${isOpen ? "menu-open" : ""}`}
                   >
-                  <Link className="menu-item text-white" href="#" onClick={() => setIsOpen(false)}>
+                  <Link className="menu-item text-white" href="/" onClick={() => setIsOpen(false)}>
                     <span className="menu-text text-white">Home</span>
                   </Link>
                   <Link className="menu-item" href="/#about" onClick={() => setIsOpen(false)}>
