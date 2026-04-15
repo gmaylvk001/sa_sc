@@ -24,7 +24,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { v4 as uuidv4 } from "uuid";
-// import IndexGalleryPreview from "@/components/gallery/Indexgallery";
+import IndexGalleryPreview from "@/components/gallery/Indexgallery";
 
 // Shuffle function
 function shuffleArray(array) {
@@ -112,8 +112,8 @@ export default function HomeComponent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState("login");
   const [isSectionLoading, setIsSectionLoading] = useState(false);
-  // const [blogs, setBlogs] = useState([]);
-  // const [blogLoading, setBlogLoading] = useState(true);
+  const [blogs, setBlogs] = useState([]);
+  const [blogLoading, setBlogLoading] = useState(true);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -227,35 +227,35 @@ export default function HomeComponent() {
   }, [activities.length]);
   //  re-run once activities load and section renders
 
-// useEffect(() => {
-//   const fetchBlogs = async () => {
-//     try {
-//       const res = await fetch("/api/blogs/get", {
-//         cache: "no-store",
-//       });
+useEffect(() => {
+  const fetchBlogs = async () => {
+    try {
+      const res = await fetch("/api/blogs/get", {
+        cache: "no-store",
+      });
 
-//       const data = await res.json();
+      const data = await res.json();
 
-//       if (data?.success && Array.isArray(data.data)) {
-//         // ✅ Filter only Active blogs
-//         const activeBlogs = data.data.filter(
-//           (blog) => blog.status === "Active"
-//         );
+      if (data?.success && Array.isArray(data.data)) {
+        // ✅ Filter only Active blogs
+        const activeBlogs = data.data.filter(
+          (blog) => blog.status === "Active"
+        );
 
-//         setBlogs(activeBlogs);
-//       } else {
-//         setBlogs([]);
-//       }
+        setBlogs(activeBlogs);
+      } else {
+        setBlogs([]);
+      }
 
-//     } catch (err) {
-//       console.error("Blog fetch error:", err);
-//     } finally {
-//       setBlogLoading(false);
-//     }
-//   };
+    } catch (err) {
+      console.error("Blog fetch error:", err);
+    } finally {
+      setBlogLoading(false);
+    }
+  };
 
-//   fetchBlogs();
-// }, []);
+  fetchBlogs();
+}, []);
   
   return (
     <>
@@ -696,7 +696,7 @@ export default function HomeComponent() {
         {activities.length > 0 && (
         <section ref={sectionRef} className="py-14 bg-white shadow" id="ACTIVITIES">
           <div className="max-w-7xl mx-auto px-6">
-            <h2 className="text-4xl font-bold text-center mb-2 text-gray-800">
+            <h2 className="text-xl font-bold text-center mb-2 text-gray-800">
               Sports <span className="text-red-600">&</span> Activities
             </h2>
             <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
@@ -736,7 +736,7 @@ export default function HomeComponent() {
         )}
 
         {/* gallery section  */}
-        {/* <IndexGalleryPreview /> */}
+        <IndexGalleryPreview />
         {/*end gallery section */}
 
         {/* CTA SECTION */}
@@ -771,7 +771,7 @@ export default function HomeComponent() {
         </section>
 
          {/* blog section */}
-        {/* {!blogLoading && blogs.length > 0 && (
+        {!blogLoading && blogs.length > 0 && (
           <section className="py-14 bg-gradient-to-r from-pink-100 via-blue-100 to-white shadow">
             <div className="relative max-w-7xl mx-auto px-6">
 
@@ -881,7 +881,7 @@ export default function HomeComponent() {
               </div>
             </div>
           </section>
-        )} */}
+        )}
 
         {/*insta stories */}
         <section className="bg-white shadow">
