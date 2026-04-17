@@ -14,8 +14,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { HiArrowRight } from "react-icons/hi";
 import { FiChevronLeft, FiChevronRight, FiShoppingCart } from "react-icons/fi";
-import {FaPhoneAlt,FaShieldAlt,FaHeadset,FaUsers,FaChild,FaFistRaised,FaLaptop,FaSnowflake,FaAward,FaRunning,FaMusic,FaPaintBrush,FaGuitar,FaDrum,FaUtensils,FaSchool, FaUserCheck,FaCheckCircle,FaHandshake,FaStar,FaHeart, 
-  FaUserGraduate,FaMapMarkerAlt,FaEnvelope,FaArrowLeft, FaArrowRight  } from "react-icons/fa";
+import {
+  FaPhoneAlt, FaShieldAlt, FaHeadset, FaUsers, FaChild, FaFistRaised,
+  FaLaptop, FaSnowflake, FaAward, FaRunning, FaMusic, FaPaintBrush,
+  FaGuitar, FaDrum, FaUtensils, FaSchool,
+  FaUserCheck, FaCheckCircle, FaHandshake, FaStar, FaHeart,
+  FaUserGraduate, FaMapMarkerAlt, FaEnvelope, FaArrowLeft, FaArrowRight,
+  FaGraduationCap, FaComments, FaLightbulb
+} from "react-icons/fa";
 import { Heart, ShoppingCart } from "lucide-react";
 import Addtocart from "@/components/AddToCart";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -271,7 +277,7 @@ useEffect(() => {
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
         </div>
       )} */}
-      <main className="w-full overflow-hidden ">
+      <main className="w-full overflow-hidden">
 
         {/* HERO SECTION */}
         <section
@@ -335,8 +341,22 @@ useEffect(() => {
                           }`}
               style={{ transitionDelay: "700ms" }}
             >
-              Admission Open
+              Admission Open 2026 -2027
             </Link>
+
+             {/* CONTACT NUMBER */}
+              <div
+                  className={`mt-5 text-sm md:text-base font-medium fade-up ${
+                    isVisible ? "show" : ""
+                  }`}
+                  style={{ transitionDelay: "900ms" }}
+                >
+                Call us:{" "}
+                <a href="tel:+919597701985" className="font-semibold text-white hover:underline">
+                  +91 95977 01985
+                </a>
+              </div>
+
           </div>
         </section>
 
@@ -465,9 +485,7 @@ useEffect(() => {
                   </h3>
 
                   <p className="text-gray-600 leading-relaxed">
-                    To nurture confident, responsible, and value-based individuals through quality education that
-                    encourages curiosity, critical thinking, and lifelong learning, while shaping future leaders
-                    who act with integrity, empathy, discipline, and a strong sense of social responsibility.
+                    Empowering immediate communities through Quality Educationand Effective Communication, Accessible to All, everywhere.
                   </p>
                 </div>
 
@@ -483,14 +501,10 @@ useEffect(() => {
 
                   <ul className="space-y-2 text-gray-600">
                     {[
-                      "To provide a safe, inclusive, and supportive learning environment",
-                      "To deliver strong academic foundations through effective and engaging teaching",
-                      "To instil moral values, discipline, and respect alongside education",
-                      "To encourage curiosity, creativity, and independent thinking",
-                      "To partner with parents in shaping well-rounded, future-ready students",
+                      "To empower individuals and communities through accessible, quality education and effective communication skills that create opportunities for life long success.",
                     ].map((item, i) => (
                       <li key={i} className="flex items-start gap-3">
-                        <span className="mt-1 h-2 w-2 rounded-full bg-indigo-500"></span>
+                        {/* <span className="mt-1 h-2 w-2 rounded-full bg-indigo-500"></span> */}
                         <span>{item}</span>
                       </li>
                     ))}
@@ -505,20 +519,27 @@ useEffect(() => {
               {/* Title */}
               <div className="mb-10">
                 <h3 className="text-3xl font-extrabold text-gray-800">
-                  Our Core Values
+                  {/* Our Core Values */}
+                  Our Motto
                 </h3>
                 <p className="text-gray-600 mt-2 max-w-xl">
-                  The principles that guide our teaching, culture, and every child’s journey.
+                  {/* The principles that guide our teaching, culture, and every child’s journey. */}
+                  Knowledge is Power
                 </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
                 {[
-                  { icon: <FaCheckCircle />, title: "Integrity", text: "We believe in honesty, ethics, and doing the right thing—always." },
-                  { icon: <FaHandshake />, title: "Respect", text: "We foster respect for teachers, peers, parents, and the wider community." },
-                  { icon: <FaStar />, title: "Excellence", text: "We strive for high standards in academics, behaviour, and personal growth." },
-                  { icon: <FaHeart />, title: "Care & Compassion", text: "Every child matters. We nurture with empathy, patience, and understanding." },
-                   { icon: <FaUserCheck />, title: "Responsibility", text: "We encourage students to be accountable, disciplined, and socially aware." },
+                  // { icon: <FaCheckCircle />, title: "Integrity", text: "We believe in honesty, ethics, and doing the right thing—always." },
+                  // { icon: <FaHandshake />, title: "Respect", text: "We foster respect for teachers, peers, parents, and the wider community." },
+                  // { icon: <FaStar />, title: "Excellence", text: "We strive for high standards in academics, behaviour, and personal growth." },
+                  // { icon: <FaHeart />, title: "Care & Compassion", text: "Every child matters. We nurture with empathy, patience, and understanding." },
+                  //  { icon: <FaUserCheck />, title: "Responsibility", text: "We encourage students to be accountable, disciplined, and socially aware." },
+                  { icon: <FaGraduationCap />, text: "To empower students and communities through quality education that is accessible to all." },
+                  { icon: <FaComments />, text: "To foster effective communication skills that help learners express themselves with confidence and clarity ." },
+                  { icon: <FaLightbulb />,  text: "To create meaningful learning opportunities that support lifelong success and personal growth." },
+                  { icon: <FaUsers />, text: "To ensure an inclusive and supportive environment where every learner feels valued and encouraged." },
+                   { icon: <FaUserCheck />,text: "To nurture responsible individuals who contribute positively to society through knowledge and values." },
                 ].map((item, i) => (
                   <div
                     key={i}
@@ -528,9 +549,9 @@ useEffect(() => {
                       {item.icon}
                     </div>
 
-                    <h4 className="font-bold text-gray-800 mb-2">
+                    {/* <h4 className="font-bold text-gray-800 mb-2">
                       {item.title}
-                    </h4>
+                    </h4> */}
 
                     <p className="text-sm text-gray-600 leading-relaxed">
                       {item.text}
@@ -619,60 +640,43 @@ useEffect(() => {
         >
           <div className="max-w-7xl mx-auto px-6">
             <h2 className="text-4xl font-bold text-center mb-12 text-gray-800">
-               Why Parent Trust <span className="text-red-600">Sathya School?</span>
+              Why Parents Trust <span className="text-red-600">Sathya School?</span>
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
               {[
-                {
-                  icon: <FaAward className="text-indigo-600" />,
-                  title: "Quality Education",
-                  description:
-                    "Experienced teachers deliver the best academic learning with innovative teaching methods.",
-                  bg: "bg-indigo-100",
-                  iconColor: "text-indigo-600",
-                },
-                {
-                  icon: <FaUsers className="text-yellow-600" />,
-                  title: "Interactive Atmosphere",
-                  description:
-                    "Students learn in a collaborative, fun, and creative environment that encourages curiosity.",
-                  bg: "bg-yellow-100",
-                  iconColor: "text-yellow-600",
-                },
-                {
-                  icon: <FaShieldAlt className="text-green-600" />,
-                  title: "Individual Attention",
-                  description:
-                    "Small class sizes ensure each child receives personal guidance and support.",
-                  bg: "bg-green-100",
-                  iconColor: "text-green-600",
-                },
-                {
-                  icon: <FaHeadset className="text-pink-600" />,
-                  title: "Activity Based Learning",
-                  description:
-                    "Hands-on learning, creative projects, and games to make education fun.",
-                  bg: "bg-pink-100",
-                  iconColor: "text-pink-600",
-                },
-                {
-                  icon: <FaLaptop className="text-blue-600" />,
-                  title: "Computer Lab",
-                  description:
-                    "Modern lab facilities help students explore technology and coding.",
-                  bg: "bg-blue-100",
-                  iconColor: "text-blue-600",
-                },
-                {
-                  icon: <FaSnowflake className="text-indigo-700" />,
-                  title: "Air Conditioned Campus",
-                  description:
-                    "Comfortable learning environment for students throughout the year.",
-                  bg: "bg-indigo-200",
-                  iconColor: "text-indigo-700",
-                },
-              ].map(({ icon, title, description, bg, iconColor }, i) => (
+                 {
+                    icon: <FaAward className="text-indigo-600 text-4xl" />,
+                    title: "Quality Education with strong academic foundation",
+                    description: "We provide high-standard academic learning with experienced teachers and structured curriculum."
+                  },
+                  {
+                    icon: <FaUsers className="text-yellow-600 text-4xl" />,
+                    title: "Individualized Learning Support",
+                    description: "Each student receives personal attention to improve understanding and performance."
+                  },
+                  {
+                    icon: <FaShieldAlt className="text-green-600 text-4xl" />,
+                    title: "Comfort optimized Campus",
+                    description: "A safe, clean, and comfortable environment designed for effective learning."
+                  },
+                  {
+                    icon: <FaSnowflake className="text-indigo-700 text-4xl" />,
+                    title: "Air-Conditioned Classrooms",
+                    description: "Fully air-conditioned classrooms to ensure comfort and focus throughout learning hours."
+                  },
+                  {
+                    icon: <FaHeadset className="text-pink-600 text-4xl" />,
+                    title: "Activity based and experiential learning",
+                    description: "Hands-on learning through activities, projects, and interactive teaching methods."
+                  },
+                  {
+                    icon: <FaRunning className="text-blue-600 text-4xl" />,
+                    title: "Encouraging teamwork, discipline and a spirit of excellence through sports",
+                    description: "Sports activities help build teamwork, discipline, confidence, and overall development."
+                  },
+              ].map(({ icon, title, bg, iconColor, description }, i) => (
                 <div
                   key={i}
                   className="flex items-start gap-6 bg-white rounded-xl p-6 shadow hover:shadow-lg transition cursor-default"
@@ -682,9 +686,18 @@ useEffect(() => {
                   >
                     {icon}
                   </div>
+
                   <div>
-                    <h3 className="text-xl font-semibold mb-1 text-gray-800">{title}</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
+                    <h3 className="text-base md:text-lg font-medium text-gray-800">
+                      {title}
+                    </h3>
+
+                    {/* DESCRIPTION ADD HERE */}
+                    {description && (
+                      <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                        {description}
+                      </p>
+                    )}
                   </div>
                 </div>
               ))}
@@ -696,7 +709,7 @@ useEffect(() => {
         {activities.length > 0 && (
         <section ref={sectionRef} className="py-14 bg-white shadow" id="ACTIVITIES">
           <div className="max-w-7xl mx-auto px-6">
-            <h2 className="text-xl font-bold text-center mb-2 text-gray-800">
+            <h2 className="text-4xl font-bold text-center mb-2 text-gray-800">
               Sports <span className="text-red-600">&</span> Activities
             </h2>
             <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
@@ -751,7 +764,7 @@ useEffect(() => {
           {/* Content */}
           <div className="relative max-w-4xl mx-auto px-6 text-center text-white">
             <h2 className="md:text-5xl text-4xl mb-4 drop-shadow-md font-serif">
-              Admission Open Now
+              Admission 2026 - 2027 Open Now!
             </h2>
 
             <p className="md:text-xl text-lg mb-6 drop-shadow-sm font-sans">
