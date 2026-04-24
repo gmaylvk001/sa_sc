@@ -12,6 +12,7 @@ export default function ContactForm() {
 		parent_guardian: "",
 		address: "",
 		phone_number: "",
+    branch: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -37,6 +38,7 @@ export default function ContactForm() {
 		if (!form.date_of_birth.trim()) newErrors.date_of_birth = "DateOfBirth is required";
 		if (!form.parent_guardian.trim()) newErrors.parent_guardian = "Parent/Guardian is required";
 		if (!form.gender.trim()) newErrors.gender = "Gender is required";
+    if (!form.branch.trim()) newErrors.branch = "Branch is required";
 		if (!form.phone_number.trim()) {
 		  newErrors.phone_number = "Phone number is required";
 		} else if (!/^\d{10,15}$/.test(form.phone_number)) {
@@ -76,7 +78,7 @@ export default function ContactForm() {
 
       if (res.ok) {
         setResponseMsg("Message sent successfully!");
-        setForm({ name: "", stud_class: "", date_of_birth: "", gender: "", parent_guardian: "", phone_number: "", address: "" });
+        setForm({ name: "", stud_class: "", date_of_birth: "", gender: "", parent_guardian: "", phone_number: "", address: "",branch: "", });
 
         // Clear message after 2 seconds
         setTimeout(() => {
@@ -144,29 +146,30 @@ export default function ContactForm() {
                 {/* {errors.name && <p className="text-red-500 mt-1 text-sm">{errors.name}</p>} */}
               </div>
 
-{/* Email */}
-              <div>
-                <label className="block font-medium mb-1">
-                  Class<span className="text-red-600">*</span>
-                </label>
-                <select name="stud_class" value={form.stud_class} onChange={handleChange} className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-									errors.stud_class && (touched.stud_class || submitted)
-									? "border-red-500"
-									: "border-gray-300"
-									}`}
-									>
-										<option value="">Select Class</option>
-										<option value="PreKG">PreKG</option>
-										<option value="LKG">LKG</option>
-										<option value="UKG">UKG</option>
-										<option value="1st Std">1st Std</option>
-										<option value="2nd Std">2nd Std</option>
-										<option value="3rd Std">3rd Std</option>
-										<option value="4th Std">4th Std</option>
-										<option value="5th Std">5th Std</option>
-									</select>
-              </div>
-			  {/* Gender */}
+                {/* Email */}
+                <div>
+                  <label className="block font-medium mb-1">
+                    Class<span className="text-red-600">*</span>
+                  </label>
+                  <select name="stud_class" value={form.stud_class} onChange={handleChange} className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.stud_class && (touched.stud_class || submitted)
+                    ? "border-red-500"
+                    : "border-gray-300"
+                    }`}
+                    >
+                      <option value="">Select Class</option>
+                      <option value="PreKG">PreKG</option>
+                      <option value="LKG">LKG</option>
+                      <option value="UKG">UKG</option>
+                      <option value="1st Std">1st Std</option>
+                      <option value="2nd Std">2nd Std</option>
+                      <option value="3rd Std">3rd Std</option>
+                      <option value="4th Std">4th Std</option>
+                      <option value="5th Std">5th Std</option>
+                    </select>
+                </div>
+
+			          {/* Gender */}
 								<div>
 									<label className="block font-medium mb-1">Gender<span className="text-red-600">*</span></label>
 									<select name="gender" value={form.gender} onChange={handleChange} className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
@@ -192,13 +195,37 @@ export default function ContactForm() {
 								</div>
 
 								{/* Parent or Guardian Name */}
-								<div className="md:col-span-2">
+								<div className="">
 									<label className="block font-medium mb-1">
 									Parent / Guardian Name<span className="text-red-600">*</span>
 									</label>
 									<input type="text" name="parent_guardian" value={form.parent_guardian} onChange={handleChange} className={`${inputClass} ${errors.parent_guardian && (touched.parent_guardian || submitted) ? "border-red-500" : "border-gray-300"}`}/>
 								</div>
-              {/* Phone Number*/}
+
+                {/* Branch */}
+                <div>
+                  <label className="block font-medium mb-1">
+                    School<span className="text-red-600">*</span>
+                  </label>
+
+                  <select
+                    name="branch"
+                    value={form.branch}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      errors.branch && (touched.branch || submitted)
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    <option value="">Select School</option>
+                    <option>Sathya Preparatory School</option>
+                    <option>Sathya CBSE School</option>
+                  </select>
+                </div>
+
+                {/* Phone Number*/}
 								<div>
 									<label className="block font-medium mb-1">
 									Phone Number<span className="text-red-600">*</span>

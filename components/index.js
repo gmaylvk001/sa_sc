@@ -32,6 +32,7 @@ import "swiper/css/pagination";
 import { v4 as uuidv4 } from "uuid";
 import IndexGalleryPreview from "@/components/gallery/Indexgallery";
 
+
 // Shuffle function
 function shuffleArray(array) {
   const newArr = [...array];
@@ -56,54 +57,56 @@ export default function HomeComponent() {
   ];
 
   function FaqItem({ question, answer }) {
-  const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(false);
 
-  return (
-    <div
-      className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all overflow-hidden"
-    >
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex justify-between items-center px-6 py-5 text-left focus:outline-none"
+    return (
+      <div
+        className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all overflow-hidden"
       >
-        <span className="text-lg font-semibold text-gray-800">
-          {question}
-        </span>
-        <span
-          className={`transform transition-transform duration-300 ${
-            open ? "rotate-180" : ""
+        <button
+          onClick={() => setOpen(!open)}
+          className="w-full flex justify-between items-center px-6 py-5 text-left focus:outline-none"
+        >
+          <span className="text-lg font-semibold text-gray-800">
+            {question}
+          </span>
+          <span
+            className={`transform transition-transform duration-300 ${
+              open ? "rotate-180" : ""
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-red-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </span>
+        </button>
+
+        <div
+          className={`px-6 overflow-hidden transition-all duration-300 ${
+            open ? "max-h-40 pb-6" : "max-h-0"
           }`}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 text-red-600"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </span>
-      </button>
-
-      <div
-        className={`px-6 overflow-hidden transition-all duration-300 ${
-          open ? "max-h-40 pb-6" : "max-h-0"
-        }`}
-      >
-        <p className="text-gray-600 leading-relaxed text-sm">
-          {answer}
-        </p>
+          <p className="text-gray-600 leading-relaxed text-sm">
+            {answer}
+          </p>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
+  const [flashPaused, setFlashPaused] = useState(false);
+  const [flashNews, setFlashNews] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -233,34 +236,67 @@ export default function HomeComponent() {
   }, [activities.length]);
   //  re-run once activities load and section renders
 
-useEffect(() => {
-  const fetchBlogs = async () => {
-    try {
-      const res = await fetch("/api/blogs/get", {
-        cache: "no-store",
-      });
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const res = await fetch("/api/blogs/get", {
+          cache: "no-store",
+        });
 
+        const data = await res.json();
+
+        if (data?.success && Array.isArray(data.data)) {
+          // ✅ Filter only Active blogs
+          const activeBlogs = data.data.filter(
+            (blog) => blog.status === "Active"
+          );
+
+          setBlogs(activeBlogs);
+        } else {
+          setBlogs([]);
+        }
+
+      } catch (err) {
+        console.error("Blog fetch error:", err);
+      } finally {
+        setBlogLoading(false);
+      }
+    };
+
+    fetchBlogs();
+  }, []);
+
+  // flash news
+useEffect(() => {
+  const fetchFlashNews = async () => {
+    try {
+      const res = await fetch("/api/flash-news/get");
       const data = await res.json();
 
-      if (data?.success && Array.isArray(data.data)) {
-        // ✅ Filter only Active blogs
-        const activeBlogs = data.data.filter(
-          (blog) => blog.status === "Active"
-        );
+      if (data.success) {
+        const now = new Date();
 
-        setBlogs(activeBlogs);
-      } else {
-        setBlogs([]);
+        const filtered = data.data
+          .filter(item => {
+            const publish = new Date(item.publishDate);
+            const expiry = item.expiryDate ? new Date(item.expiryDate) : null;
+
+            return (
+              item.status === "Active" &&
+              now >= publish &&
+              (!expiry || now <= expiry)
+            );
+          })
+          .sort((a, b) => a.priority - b.priority);
+
+        setFlashNews(filtered);
       }
-
     } catch (err) {
-      console.error("Blog fetch error:", err);
-    } finally {
-      setBlogLoading(false);
+      console.error(err);
     }
   };
 
-  fetchBlogs();
+  fetchFlashNews();
 }, []);
   
   return (
@@ -359,6 +395,74 @@ useEffect(() => {
 
           </div>
         </section>
+
+        {/* FLASH NEWS BAR */}
+        {flashNews.length > 0 && (
+          <div className="relative flex items-center h-11 bg-red-600 border-b border-red-600 overflow-hidden">
+
+            {/* left red line */}
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-600 z-10" />
+
+           {/* LIVE badge */}
+            <div className="hidden md:flex relative z-10 items-center gap-2 bg-red-600 text-white text-md md:text-[14px] font-bold tracking-widest uppercase px-3 py-1 rounded ml-4 shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              Flash News
+            </div>
+
+            {/* divider */}
+            <div className="hidden md:block w-px h-5 bg-white mx-4 shrink-0 z-10" />
+
+            {/* scrolling text */}
+            <div className="flex-1 overflow-hidden relative z-10">
+              <div className="flex w-max animate-marquee"
+                  style={{
+                    animationDuration: "12s",
+                    animationPlayState: flashPaused ? "paused" : "running",
+                  }}
+                >
+                
+                {/* First set */}
+                <div className="flex items-center whitespace-nowrap">
+                  {flashNews.map((item, i) => (
+                    <span
+                      key={`first-${i}`}
+                      className="inline-flex items-center gap-3 text-white text-sm md:text-[16px] font-medium px-8 shrink-0"
+                    >
+                      {String(item.content ?? "")}
+                      <span className="w-1 h-1 rounded-full bg-red-500 opacity-60" />
+                    </span>
+                  ))}
+                </div>
+
+                {/* Second duplicate */}
+                <div className="flex items-center whitespace-nowrap">
+                  {flashNews.map((item, i) => (
+                    <span
+                      key={`second-${i}`}
+                      className="inline-flex items-center gap-3 text-white text-sm md:text-[16px] font-medium px-8 shrink-0"
+                    >
+                      {String(item.content ?? "")}
+                      <span className="w-1 h-1 rounded-full bg-red-500 opacity-60" />
+                    </span>
+                  ))}
+                </div>
+
+              </div>
+            </div>
+
+            {/* pause button */}
+            <button
+              onClick={() => setFlashPaused((p) => !p)}
+              className="shrink-0 mr-3 z-10 w-7 h-7 flex items-center justify-center border border-white rounded text-white hover:text-white hover:border-white hover:bg-white transition-all"
+            >
+              {flashPaused ? (
+                <svg width="9" height="10" viewBox="0 0 9 10" fill="currentColor"><path d="M1.5 1l6 4-6 4V1z"/></svg>
+              ) : (
+                <svg width="9" height="10" viewBox="0 0 9 10" fill="currentColor"><rect x="1" y="1" width="2.5" height="8" rx="1"/><rect x="5.5" y="1" width="2.5" height="8" rx="1"/></svg>
+              )}
+            </button>
+          </div>
+        )}
 
         {/* ABOUT SECTION */}
         <section id="about" className="py-16 bg-gradient-to-r from-pink-100 via-blue-100 to-white shadow">

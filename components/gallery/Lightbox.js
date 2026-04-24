@@ -53,7 +53,7 @@ export default function Lightbox({ images, index, setIndex, onClose }) {
       />
 
       {/* Title */}
-      {images[index].title && (
+      {images[index]?.title?.trim() && (
         <h3 className="text-white text-lg text-center">
           {images[index].title}
         </h3>

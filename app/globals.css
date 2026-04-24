@@ -3,6 +3,24 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Activity card entrance animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeLeft {
+  from { opacity: 0; transform: translateX(-50px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeRight {
+  from { opacity: 0; transform: translateX(50px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.activity-animate-left  { animation: fadeLeft  0.6s ease both; }
+.activity-animate-right { animation: fadeRight 0.6s ease both; }
+.activity-animate-up    { animation: fadeUp    0.6s ease both; }
+
 
 
 :root {
@@ -500,4 +518,5 @@ body::-webkit-scrollbar {
 .blog-content strong { font-weight: 700; }
 .blog-content em { font-style: italic; }
 .blog-content span[style] { /* preserve inline styles from editor */ }
+
 

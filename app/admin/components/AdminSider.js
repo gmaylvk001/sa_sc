@@ -8,11 +8,11 @@ export default function AdminSider({ collapsed }) {
   const [activeMenu, setActiveMenu] = useState('Admission');
   const [hoveredSubmenu, setHoveredSubmenu] = useState(null);
   const [isHoveringSubmenu, setIsHoveringSubmenu] = useState(false);
-  const [openMenu, setOpenMenu] = useState(null); // only one dropdown open
+  const [openMenu, setOpenMenu] = useState(null);
   const router = useRouter();
   const submenuRef = useRef(null);
 
-  // Set active menu based on current path
+  // ✅ Active menu detection
   useEffect(() => {
     const path = window.location.pathname;
 
@@ -22,10 +22,13 @@ export default function AdminSider({ collapsed }) {
     else if (path.includes('/blog/blog_categories')) setActiveMenu('Blog Categories');
     else if (path.includes('/blog')) setActiveMenu('Posts');
     else if (path.includes('/activities')) setActiveMenu('Activities');
+    else if (path.includes('/flash-news')) setActiveMenu('Flash News'); // ✅ NEW
   }, []);
 
+  // ✅ MENU ITEMS
   const menuItems = [
     { icon: 'mdi:note-text-outline', label: 'Admission', link: 'registration' },
+
     {
       icon: 'mdi:image-multiple-outline',
       label: 'Gallery',
@@ -34,6 +37,7 @@ export default function AdminSider({ collapsed }) {
         { icon: 'mdi:image-outline', label: 'Images', link: 'gallery/images' },
       ],
     },
+
     {
       icon: 'mdi:note-text-outline',
       label: 'Blogs',
@@ -42,7 +46,15 @@ export default function AdminSider({ collapsed }) {
         { icon: 'mdi:file-document-outline', label: 'Posts', link: 'blog' },
       ],
     },
+
     { icon: 'mdi:trophy-outline', label: 'Activities', link: 'activities' },
+
+    // ✅ FLASH NEWS ADDED
+    {
+      icon: 'mdi:newspaper-variant-outline',
+      label: 'Flash News',
+      link: 'flash-news',
+    },
   ];
 
   const handleCloseSubmenu = () => {
@@ -58,7 +70,7 @@ export default function AdminSider({ collapsed }) {
           collapsed ? 'w-16' : 'w-52'
         }`}
       >
-        {/* Logo */}
+        {/* LOGO */}
         <div
           className={`flex items-center px-4 py-4 border-b border-gray-200 ${
             collapsed ? 'justify-center' : 'justify-between'
@@ -66,15 +78,15 @@ export default function AdminSider({ collapsed }) {
         >
           {!collapsed ? (
             <a href="/" className="flex items-center space-x-2">
-              <img src="/admin/assets/images/sathya-school-logo.png" alt="Site Logo" className="h-9" />
+              <img src="/admin/assets/images/sathya-school-logo.png" alt="logo" className="h-9" />
               <span className="text-sm font-bold text-gray-700">Sathya School</span>
             </a>
           ) : (
-            <img src="/admin/assets/images/sathya-school-logo.png" alt="Site Logo" className="h-9" />
+            <img src="/admin/assets/images/sathya-school-logo.png" alt="logo" className="h-9" />
           )}
         </div>
 
-        {/* Menu */}
+        {/* MENU */}
         <nav className="mt-4">
           <ul className="px-2 space-y-1">
             {menuItems.map((item) =>
@@ -109,7 +121,7 @@ export default function AdminSider({ collapsed }) {
         </nav>
       </aside>
 
-      {/* Hover Submenu Box for collapsed mode */}
+      {/* HOVER SUBMENU */}
       {hoveredSubmenu && collapsed && (
         <div
           ref={submenuRef}
@@ -131,7 +143,9 @@ export default function AdminSider({ collapsed }) {
                     router.push(`/admin/${sub.link}`);
                   }}
                   className={`w-full flex items-center px-3 py-2 rounded text-sm space-x-3 ${
-                    activeMenu === sub.label ? 'bg-red-500 text-white' : 'text-gray-700 hover:text-red-500'
+                    activeMenu === sub.label
+                      ? 'bg-red-500 text-white'
+                      : 'text-gray-700 hover:text-red-500'
                   }`}
                 >
                   <Icon icon={sub.icon} className="text-lg" />
@@ -148,6 +162,7 @@ export default function AdminSider({ collapsed }) {
 
 function SidebarItem({ icon, label, link, activeMenu, setActiveMenu, collapsed, router }) {
   const active = activeMenu === label;
+
   return (
     <li>
       <button
@@ -197,7 +212,6 @@ function SidebarItemWithDropdown({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={collapsed ? handleCloseSubmenu : undefined}
     >
-      {/* Parent button */}
       <button
         onClick={() => {
           if (!collapsed) setOpenMenu(isOpen ? null : item.label);
@@ -210,10 +224,11 @@ function SidebarItemWithDropdown({
       >
         <Icon icon={item.icon} className={collapsed ? 'text-2xl' : 'text-xl'} />
         {!collapsed && <span className="flex-1 text-left">{item.label}</span>}
-        {!collapsed && <Icon icon={isOpen ? 'mdi:chevron-down' : 'mdi:chevron-right'} className="text-lg" />}
+        {!collapsed && (
+          <Icon icon={isOpen ? 'mdi:chevron-down' : 'mdi:chevron-right'} className="text-lg" />
+        )}
       </button>
 
-      {/* Expanded submenu */}
       {!collapsed && isOpen && (
         <ul className="ml-2 mt-1 space-y-1">
           {item.submenu.map((sub) => (
@@ -224,7 +239,9 @@ function SidebarItemWithDropdown({
                   router.push(`/admin/${sub.link}`);
                 }}
                 className={`w-full flex items-center px-3 py-2 rounded text-sm space-x-3 ${
-                  activeMenu === sub.label ? 'bg-red-500 text-white' : 'text-gray-700 hover:text-red-500'
+                  activeMenu === sub.label
+                    ? 'bg-red-500 text-white'
+                    : 'text-gray-700 hover:text-red-500'
                 }`}
               >
                 <Icon icon={sub.icon} className="text-lg" />

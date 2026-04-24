@@ -4,50 +4,73 @@ import ContactModel from "@/models/ecom_admission_info";
 
 export async function POST(request) {
   try {
-    await dbConnect(); // Ensure DB connection
+    await dbConnect();
 
     const body = await request.json();
-    const { name, stud_class, gender, date_of_birth, parent_guardian, phone_number, address, status } = body;
 
-    // Validate fields
-    if (!name || !stud_class || !gender || !date_of_birth || !parent_guardian || !phone_number || !address) {
+    const {
+      name,
+      stud_class,
+      gender,
+      date_of_birth,
+      parent_guardian,
+      phone_number,
+      address,
+      status,
+      branch, // ✅ NEW
+    } = body;
+
+    // ✅ Validation
+    if (
+      !name ||
+      !stud_class ||
+      !gender ||
+      !date_of_birth ||
+      !parent_guardian ||
+      !phone_number ||
+      !address ||
+      !branch // ✅ REQUIRED
+    ) {
       return NextResponse.json(
         { success: false, message: "All fields are required" },
         { status: 400 }
       );
     }
 
-    // Check for existing contact (optional — usually check email instead of name)
-    const existingContact = await ContactModel.findOne({ phone_number });
-    if (existingContact) {
+    // ✅ Check duplicate (based on phone)
+    const existing = await ContactModel.findOne({ phone_number });
+    if (existing) {
       return NextResponse.json(
         { success: false, message: "Contact already exists" },
         { status: 400 }
       );
     }
 
-    // Create new contact
-    const newContact = new ContactModel({
+    // ✅ Save
+    const newAdmission = await ContactModel.create({
       name,
-	  stud_class,
-	  gender,
+      stud_class,
+      gender,
       date_of_birth,
       parent_guardian,
       phone_number,
       address,
       status,
+      branch, // ✅ SAVE
     });
 
-    await newContact.save();
-
     return NextResponse.json(
-      { success: true, message: "Contact added successfully", data: newContact },
+      {
+        success: true,
+        message: "Admission added successfully",
+        data: newAdmission,
+      },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error adding contact:", error);
+    console.error("Error:", error);
     return NextResponse.json(
-      { success: false, message: "Internal server error" },
+      { success: false, message: "Server error" },
       { status: 500 }
     );
   }

@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import {  FaTrash,FaEdit } from "react-icons/fa";
 
@@ -92,8 +91,8 @@ export default function GalleryImagesPage() {
   /* ================= SAVE IMAGE ================= */
 
   const saveImage = async () => {
-    if (!title || !category) {
-      alert("Title and category are required");
+    if (!category) {
+      alert("Category is required");
       return;
     }
 
@@ -104,7 +103,8 @@ export default function GalleryImagesPage() {
     }
 
     const formData = new FormData();
-    formData.append("title", title);
+    // formData.append("title", title);
+    formData.append("title", title || "");
     formData.append("category", category);
     formData.append("status", status);
 

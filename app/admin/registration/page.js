@@ -262,6 +262,7 @@ export default function ContactComponent() {
                    
                     <th className="p-2">Name</th>
 					<th className="p-2">Class</th>
+          <th className="p-2">School</th>
                      <th className="p-2">Parent/Guardian</th>
                     <th className="p-2">Mobile Number</th>
                     <th className="p-2">Address</th>
@@ -278,6 +279,7 @@ export default function ContactComponent() {
                       {/* <td className="p-2 font-bold">{contact.email_address || '-'}</td> */}
                       <td className="p-2">{contact.name || '-'}</td>
 					  <td className="p-2">{contact.stud_class || '-'}</td>
+            <td className="p-2">{contact.branch || '-'}</td>
                       <td className="p-2">{contact.parent_guardian || '-'}</td>
                       <td className="p-2">{contact.phone_number || '-'}</td>
                       <td className="p-2">{contact.address || '-'}</td>
