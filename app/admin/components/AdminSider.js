@@ -23,6 +23,7 @@ export default function AdminSider({ collapsed }) {
     else if (path.includes('/blog')) setActiveMenu('Posts');
     else if (path.includes('/activities')) setActiveMenu('Activities');
     else if (path.includes('/flash-news')) setActiveMenu('Flash News'); // ✅ NEW
+    else if (path.includes('/events')) setActiveMenu('Events');
   }, []);
 
   // ✅ MENU ITEMS
@@ -55,6 +56,8 @@ export default function AdminSider({ collapsed }) {
       label: 'Flash News',
       link: 'flash-news',
     },
+
+    { icon: 'mdi:calendar-month-outline', label: 'Events', link: 'events' },
   ];
 
   const handleCloseSubmenu = () => {

@@ -1,15 +1,13 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AdminPage() {
-  const [time, setTime] = useState(null);
+  const router = useRouter();
 
-useEffect(() => {
-  setTime(Date.now());
-}, []);
-  return (
-    <div>
-      
-    </div>
-  );
+  useEffect(() => {
+    router.replace("/admin/registration");
+  }, []);
+
+  return null;
 }

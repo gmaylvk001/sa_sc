@@ -31,6 +31,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { v4 as uuidv4 } from "uuid";
 import IndexGalleryPreview from "@/components/gallery/Indexgallery";
+import EventCalendar from "@/components/events/EventCalendar";
 
 
 // Shuffle function
@@ -398,38 +399,48 @@ useEffect(() => {
 
         {/* FLASH NEWS BAR */}
         {flashNews.length > 0 && (
-          <div className="relative flex items-center h-11 bg-red-600 border-b border-red-600 overflow-hidden">
+          <div className="relative flex items-center bg-white overflow-hidden">
 
-            {/* left red line */}
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-600 z-10" />
+            {/* Flash News badge with triangle */}
+            <div className="relative flex-shrink-0 flex items-center">
+              
+              {/* Main badge */}
+              <div className="bg-[#4338ca] px-4 py-2 flex items-center gap-2 z-10">
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                <span className="text-white text-sm font-bold tracking-widest uppercase whitespace-nowrap">
+                  Flash News
+                </span>
+              </div>
 
-           {/* LIVE badge */}
-            <div className="hidden md:flex relative z-10 items-center gap-2 bg-red-600 text-white text-md md:text-[14px] font-bold tracking-widest uppercase px-3 py-1 rounded ml-4 shrink-0">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              Flash News
+              {/* Triangle arrow */}
+              <div
+                className="w-0 h-0 z-10"
+                style={{
+                  borderTop: "12px solid transparent",
+                  borderBottom: "12px solid transparent",
+                  borderLeft: "16px solid #4338ca", // indigo-700 approx
+                }}
+              />
+
             </div>
 
-            {/* divider */}
-            <div className="hidden md:block w-px h-5 bg-white mx-4 shrink-0 z-10" />
-
             {/* scrolling text */}
-            <div className="flex-1 overflow-hidden relative z-10">
+            <div className="flex-1 overflow-hidden relative z-10 py-1">
               <div className="flex w-max animate-marquee"
-                  style={{
-                    animationDuration: "12s",
-                    animationPlayState: flashPaused ? "paused" : "running",
-                  }}
-                >
-                
+                style={{
+                  animationDuration: "12s",
+                  animationPlayState: flashPaused ? "paused" : "running",
+                }}
+              >
                 {/* First set */}
                 <div className="flex items-center whitespace-nowrap">
                   {flashNews.map((item, i) => (
                     <span
                       key={`first-${i}`}
-                      className="inline-flex items-center gap-3 text-white text-sm md:text-[16px] font-medium px-8 shrink-0"
+                      className="inline-flex items-center gap-3 text-[#4338ca] text-sm md:text-[16px] font-medium px-8 shrink-0"
                     >
                       {String(item.content ?? "")}
-                      <span className="w-1 h-1 rounded-full bg-red-500 opacity-60" />
+                      <span className="w-1 h-1 rounded-full bg-white opacity-60" />
                     </span>
                   ))}
                 </div>
@@ -439,21 +450,20 @@ useEffect(() => {
                   {flashNews.map((item, i) => (
                     <span
                       key={`second-${i}`}
-                      className="inline-flex items-center gap-3 text-white text-sm md:text-[16px] font-medium px-8 shrink-0"
+                      className="inline-flex items-center gap-3 text-[#4338ca] text-sm md:text-[16px] font-medium px-8 shrink-0"
                     >
                       {String(item.content ?? "")}
-                      <span className="w-1 h-1 rounded-full bg-red-500 opacity-60" />
+                      <span className="w-1 h-1 rounded-full bg-white opacity-60" />
                     </span>
                   ))}
                 </div>
-
               </div>
             </div>
 
             {/* pause button */}
             <button
               onClick={() => setFlashPaused((p) => !p)}
-              className="shrink-0 mr-3 z-10 w-7 h-7 flex items-center justify-center border border-white rounded text-white hover:text-white hover:border-white hover:bg-white transition-all"
+              className="shrink-0 mr-3 z-10 w-7 h-7 flex items-center justify-center border border-[#4338ca] rounded text-[#4338ca] hover:bg-white hover:text-[#4338ca] transition-all"
             >
               {flashPaused ? (
                 <svg width="9" height="10" viewBox="0 0 9 10" fill="currentColor"><path d="M1.5 1l6 4-6 4V1z"/></svg>
@@ -461,6 +471,7 @@ useEffect(() => {
                 <svg width="9" height="10" viewBox="0 0 9 10" fill="currentColor"><rect x="1" y="1" width="2.5" height="8" rx="1"/><rect x="5.5" y="1" width="2.5" height="8" rx="1"/></svg>
               )}
             </button>
+
           </div>
         )}
 
@@ -595,7 +606,7 @@ useEffect(() => {
 
                 {/* Mission */}
                 <div className="group relative p-8 bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg hover:shadow-2xl transition-all">
-                  <div className="absolute -top-6 left-6 bg-red-600 text-white p-4 rounded-2xl shadow-lg">
+                  <div className="absolute -top-6 left-6 bg-gradient-to-br from-indigo-500 to-indigo-700 text-white p-4 rounded-2xl shadow-lg">
                     <FaCheckCircle className="text-xl" />
                   </div>
 
@@ -855,6 +866,8 @@ useEffect(() => {
         {/* gallery section  */}
         <IndexGalleryPreview />
         {/*end gallery section */}
+
+        <EventCalendar />
 
         {/* CTA SECTION */}
         <section className="relative bg-center bg-cover bg-scroll md:bg-fixed

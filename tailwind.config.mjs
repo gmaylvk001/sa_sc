@@ -12,6 +12,19 @@ export default {
         foreground: "var(--foreground)",
         customBlue: "#015aaa",
       },
+
+      // 🔥 Animation definition
+      animation: {
+        marquee: "marquee 20s linear infinite",
+      },
+
+      // 🔥 Proper seamless keyframe
+      keyframes: {
+        marquee: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+      },
     },
   },
   plugins: [require("tailwind-scrollbar-hide")],

@@ -72,10 +72,27 @@ export default function AuthProvider({ children }) {
     verifyAuth();
   }, [pathname, router]);
 
-  if (authStatus === 'checking') {
+ if (authStatus === 'checking') {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <style>{`
+          .loader {
+            font-weight: bold;
+            font-family: sans-serif;
+            font-size: 30px;
+            padding-bottom: 8px;
+            color: #ef4444;
+            background: linear-gradient(#ef4444 0 0) 0 100%/0% 3px no-repeat;
+            animation: l2 2s linear infinite;
+          }
+          .loader:before {
+            content: "Loading...";
+          }
+          @keyframes l2 {
+            to { background-size: 100% 3px }
+          }
+        `}</style>
+        <div className="loader"></div>
       </div>
     );
   }

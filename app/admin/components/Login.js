@@ -48,7 +48,8 @@ export default function Login() {
 
       setMessage("Login successful! ✅");
       localStorage.setItem('token', result.token);
-      setTimeout(() => router.push("/admin/registration"), 2000);
+      // setTimeout(() => router.push("/admin/registration"), 2000);
+      router.push("/admin/registration");
     } catch (error) {
       setMessage(error.message);
     } finally {

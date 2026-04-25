@@ -48,6 +48,7 @@ export default function IndexGalleryPreview() {
 
     loadImages();
   }, []);
+  
 
   if (loading || images.length === 0) return null;
 
