@@ -3,10 +3,18 @@ import mongoose from "mongoose";
 
 const EventSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true },
-    date: { type: Date, required: true },
-    description: { type: String, default: "" },
-    status: { type: Boolean, default: true },
+    title: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: Date,
+      required: true,
+    },
+    status: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

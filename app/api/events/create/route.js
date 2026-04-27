@@ -5,11 +5,22 @@ import Event from "@/models/Event";
 
 export async function POST(req) {
   await dbConnect();
+
   try {
     const body = await req.json();
-    const event = await Event.create(body);
+    const { title, date, status } = body;
+
+    const event = await Event.create({
+      title,
+      date,
+      status,
+    });
+
     return NextResponse.json({ success: true, data: event });
   } catch (err) {
-    return NextResponse.json({ success: false, message: err.message }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: err.message },
+      { status: 500 }
+    );
   }
 }

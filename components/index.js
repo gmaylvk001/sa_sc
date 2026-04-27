@@ -405,9 +405,12 @@ useEffect(() => {
             <div className="relative flex-shrink-0 flex items-center">
               
               {/* Main badge */}
-              <div className="bg-[#4338ca] px-4 py-2 flex items-center gap-2 z-10">
-                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                <span className="text-white text-sm font-bold tracking-widest uppercase whitespace-nowrap">
+             <div className="bg-[#4338ca] px-1 py-2 md:px-2 md:py-2 flex items-center gap-2 z-10">
+                {/* Dot → mobile la hide */}
+                <span className="hidden md:inline-block w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                
+                {/* Text size responsive */}
+                <span className="text-white text-[9px] md:text-md lg:text-lg font-bold tracking-widest uppercase whitespace-nowrap">
                   Flash News
                 </span>
               </div>
@@ -428,7 +431,6 @@ useEffect(() => {
             <div className="flex-1 overflow-hidden relative z-10 py-1">
               <div className="flex w-max animate-marquee"
                 style={{
-                  animationDuration: "12s",
                   animationPlayState: flashPaused ? "paused" : "running",
                 }}
               >
@@ -474,6 +476,8 @@ useEffect(() => {
 
           </div>
         )}
+
+         <EventCalendar />
 
         {/* ABOUT SECTION */}
         <section id="about" className="py-16 bg-gradient-to-r from-pink-100 via-blue-100 to-white shadow">
@@ -866,8 +870,6 @@ useEffect(() => {
         {/* gallery section  */}
         <IndexGalleryPreview />
         {/*end gallery section */}
-
-        <EventCalendar />
 
         {/* CTA SECTION */}
         <section className="relative bg-center bg-cover bg-scroll md:bg-fixed

@@ -16,7 +16,6 @@ export default function EventAdmin() {
   const [form, setForm] = useState({
     title: "",
     date: "",
-    description: "",
     status: true,
   });
 
@@ -47,12 +46,11 @@ export default function EventAdmin() {
       setForm({
         title: item.title || "",
         date: item.date ? formatForInput(item.date) : "",
-        description: item.description || "",
         status: item.status ?? true,
       });
     } else {
       setEditingEvent(null);
-      setForm({ title: "", date: "", description: "", status: true });
+      setForm({ title: "", date: "", status: true });
     }
     setErrors({});
     setModalOpen(true);
@@ -71,7 +69,6 @@ export default function EventAdmin() {
     const payload = {
       title: form.title,
       date: new Date(form.date).toISOString(),
-      description: form.description,
       status: form.status,
     };
     const url = editingEvent
@@ -157,7 +154,6 @@ export default function EventAdmin() {
                   <tr>
                     <th className="p-2 text-center">Title</th>
                     <th className="p-2 text-center">Date</th>
-                    <th className="p-2 text-center">Description</th>
                     <th className="p-2 text-center">Status</th>
                     <th className="p-2 text-center">Created</th>
                     <th className="p-2 text-center">Action</th>
@@ -175,9 +171,6 @@ export default function EventAdmin() {
                           timeZone: "Asia/Kolkata",
                         })}
                         {getDateLabel(item.date)}
-                      </td>
-                      <td className="p-2 text-sm text-gray-600">
-                        {item.description || "-"}
                       </td>
                       <td className="p-2">
                         <span
@@ -244,15 +237,6 @@ export default function EventAdmin() {
               className={`border px-3 py-2 w-full mb-1 rounded ${errors.date ? "border-red-500" : ""}`}
             />
             {errors.date && <p className="text-red-500 text-xs mb-2">{errors.date}</p>}
-
-            <label className="block text-sm font-medium mb-1">Description (optional)</label>
-            <textarea
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-              className="border px-3 py-2 w-full mb-3 rounded text-sm"
-              rows={3}
-              placeholder="Short description..."
-            />
 
             <label className="block text-sm font-medium mb-1">Status</label>
             <select
