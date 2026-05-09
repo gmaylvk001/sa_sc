@@ -9,7 +9,7 @@ import { IoReload, IoStorefront, IoCardOutline, IoShieldCheckmark } from "react-
 import { TbTruckDelivery } from "react-icons/tb";
 import Image from "next/image";
 import { MdAccountCircle } from "react-icons/md";
-import { FaInstagram, FaYoutube,FaFacebook } from "react-icons/fa";
+import { FaInstagram, FaYoutube,FaFacebook,FaWhatsapp } from "react-icons/fa";
 import { IoLogOut } from "react-icons/io5";
 
 const Footer = () => {
@@ -404,6 +404,15 @@ const capitalizeFirstLetter = (str) =>
       </div>
     </footer>
 
+    <a
+      href="https://wa.me/919597701985?text=Hi%2C%20I%20am%20interested%20in%20admission%20for%202026-2027.%20Please%20share%20details."
+      target="_blank"
+      rel="noopener noreferrer"
+      className="fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white p-2 rounded-full shadow-lg transition transform hover:scale-110"
+    >
+      <FaWhatsapp size={38} />
+    </a>
+
       {/* Auth Modal */}
       {showAuthModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -499,3 +508,5 @@ const capitalizeFirstLetter = (str) =>
   );
 };
 export default Footer;
+
+

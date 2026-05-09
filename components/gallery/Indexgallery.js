@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Masonry from "react-masonry-css";
 import Link from "next/link";
 import Lightbox from "./Lightbox";
 
@@ -54,6 +55,13 @@ export default function IndexGalleryPreview() {
 
   const displayedImages = images.slice(0, previewCount);
 
+  const breakpointColumns = {
+  default: 5,
+  1280: 4,
+  1024: 3,
+  640: 2,
+};
+
   return (
     <section className="py-14  bg-gradient-to-r from-pink-100 via-blue-100 to-white shadow">
       <div className="text-center max-w-7xl mx-auto px-6  mb-8">
@@ -66,7 +74,7 @@ export default function IndexGalleryPreview() {
       </div>
 
       <div className="flex justify-center">
-        <div className="columns-2 sm:columns-3 md:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4 max-w-[1200px]">
+        <Masonry breakpointCols={breakpointColumns} className="flex gap-4 max-w-[1200px]" columnClassName="flex flex-col gap-4">
           {displayedImages.map((img, index) => (
             <div
               key={img._id}
@@ -80,8 +88,8 @@ export default function IndexGalleryPreview() {
               />
             </div>
           ))}
+          </Masonry>
         </div>
-      </div>
 
       <div className="pt-6 text-center">
         <Link

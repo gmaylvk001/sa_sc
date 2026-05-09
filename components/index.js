@@ -6,8 +6,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { ToastContainer, toast } from "react-toastify";
 import "../styles/slick-custom.css";
-import { motion, useAnimation, useInView } from "framer-motion";
-//import { ShoppingCartSimple, CaretDown } from "@phosphor-icons/react";
+import { motion, useAnimation, AnimatePresence  } from "framer-motion";
 import { X } from "lucide-react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 import Link from "next/link";
@@ -34,6 +33,7 @@ import IndexGalleryPreview from "@/components/gallery/Indexgallery";
 import EventCalendar from "@/components/events/EventCalendar";
 
 
+
 // Shuffle function
 function shuffleArray(array) {
   const newArr = [...array];
@@ -45,8 +45,6 @@ function shuffleArray(array) {
 }
 
 export default function HomeComponent() {
-
-  // Activities fetched from API
 
   const reels = [
     "https://www.instagram.com/p/DSmwY8UCP5d/",
@@ -61,46 +59,20 @@ export default function HomeComponent() {
     const [open, setOpen] = useState(false);
 
     return (
-      <div
-        className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all overflow-hidden"
-      >
+      <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all overflow-hidden">
         <button
           onClick={() => setOpen(!open)}
           className="w-full flex justify-between items-center px-6 py-5 text-left focus:outline-none"
         >
-          <span className="text-lg font-semibold text-gray-800">
-            {question}
-          </span>
-          <span
-            className={`transform transition-transform duration-300 ${
-              open ? "rotate-180" : ""
-            }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-red-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
+          <span className="text-lg font-semibold text-gray-800">{question}</span>
+          <span className={`transform transition-transform duration-300 ${open ? "rotate-180" : ""}`}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </span>
         </button>
-
-        <div
-          className={`px-6 overflow-hidden transition-all duration-300 ${
-            open ? "max-h-40 pb-6" : "max-h-0"
-          }`}
-        >
-          <p className="text-gray-600 leading-relaxed text-sm">
-            {answer}
-          </p>
+        <div className={`px-6 overflow-hidden transition-all duration-300 ${open ? "max-h-40 pb-6" : "max-h-0"}`}>
+          <p className="text-gray-600 leading-relaxed text-sm">{answer}</p>
         </div>
       </div>
     );
@@ -124,7 +96,9 @@ export default function HomeComponent() {
   const [isSectionLoading, setIsSectionLoading] = useState(false);
   const [blogs, setBlogs] = useState([]);
   const [blogLoading, setBlogLoading] = useState(true);
+  const [showAdmissionPopup, setShowAdmissionPopup] = useState(false);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
   const scroll = (direction) => {
     if (scrollRef.current) {
       const scrollAmount = 350;
@@ -134,35 +108,36 @@ export default function HomeComponent() {
       });
     }
   };
+
   const prevRef = useRef(null);
   const nextRef = useRef(null);
+
   const stripHtml = (html) => {
-  const tmp = document.createElement("div");
-  tmp.innerHTML = html;
-  return tmp.textContent || tmp.innerText || "";
-};
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+  };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
+    const timer = setTimeout(() => setIsLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
+
   useEffect(() => {
     setHasMounted(true);
   }, []);
+
   useEffect(() => {
     if (!hasMounted) return;
     checkAuthStatus();
   }, [hasMounted]);
+
   const controls = useAnimation();
 
   const checkAuthStatus = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-
       const response = await fetch("/api/auth/check", {
         method: "GET",
         headers: {
@@ -170,7 +145,6 @@ export default function HomeComponent() {
           Authorization: `Bearer ${token}`,
         },
       });
-
       if (response.ok) {
         const data = await response.json();
         setIsLoggedIn(true);
@@ -183,15 +157,12 @@ export default function HomeComponent() {
       console.error("Error checking auth status:", error);
     }
   };
- 
+
   useEffect(() => {
     const handleRouteChange = () => setNavigating(false);
-
     if (!router?.events?.on) return;
-
     router.events.on("routeChangeComplete", handleRouteChange);
     router.events.on("routeChangeError", handleRouteChange);
-
     return () => {
       router.events.off("routeChangeComplete", handleRouteChange);
       router.events.off("routeChangeError", handleRouteChange);
@@ -206,9 +177,7 @@ export default function HomeComponent() {
       },
       { threshold: 0.3 }
     );
-
     if (containerRef.current) observer.observe(containerRef.current);
-
     return () => {
       if (containerRef.current) observer.unobserve(containerRef.current);
     };
@@ -235,93 +204,179 @@ export default function HomeComponent() {
     observer.observe(sectionRef.current);
     return () => { observer.disconnect(); };
   }, [activities.length]);
-  //  re-run once activities load and section renders
 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const res = await fetch("/api/blogs/get", {
-          cache: "no-store",
-        });
-
+        const res = await fetch("/api/blogs/get", { cache: "no-store" });
         const data = await res.json();
-
         if (data?.success && Array.isArray(data.data)) {
-          // ✅ Filter only Active blogs
-          const activeBlogs = data.data.filter(
-            (blog) => blog.status === "Active"
-          );
-
+          const activeBlogs = data.data.filter((blog) => blog.status === "Active");
           setBlogs(activeBlogs);
         } else {
           setBlogs([]);
         }
-
       } catch (err) {
         console.error("Blog fetch error:", err);
       } finally {
         setBlogLoading(false);
       }
     };
-
     fetchBlogs();
   }, []);
 
   // flash news
-useEffect(() => {
-  const fetchFlashNews = async () => {
-    try {
-      const res = await fetch("/api/flash-news/get");
-      const data = await res.json();
-
-      if (data.success) {
-        const now = new Date();
-
-        const filtered = data.data
-          .filter(item => {
-            const publish = new Date(item.publishDate);
-            const expiry = item.expiryDate ? new Date(item.expiryDate) : null;
-
-            return (
-              item.status === "Active" &&
-              now >= publish &&
-              (!expiry || now <= expiry)
-            );
-          })
-          .sort((a, b) => a.priority - b.priority);
-
-        setFlashNews(filtered);
+  useEffect(() => {
+    const fetchFlashNews = async () => {
+      try {
+        const res = await fetch("/api/flash-news/get");
+        const data = await res.json();
+        if (data.success) {
+          const now = new Date();
+          const filtered = data.data
+            .filter(item => {
+              const publish = new Date(item.publishDate);
+              const expiry = item.expiryDate ? new Date(item.expiryDate) : null;
+              return (
+                item.status === "Active" &&
+                now >= publish &&
+                (!expiry || now <= expiry)
+              );
+            })
+            .sort((a, b) => a.priority - b.priority);
+          setFlashNews(filtered);
+        }
+      } catch (err) {
+        console.error(err);
       }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+    };
+    fetchFlashNews();
+  }, []);
 
-  fetchFlashNews();
-}, []);
-  
+  useEffect(() => {
+    if (!hasMounted) return;
+
+    const initialTimeout = setTimeout(() => {
+      setShowAdmissionPopup(true);
+    }, 20000);
+
+    const interval = setInterval(() => {
+      setShowAdmissionPopup(true);
+    }, 20000);
+
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(interval);
+    };
+
+  }, [hasMounted]);
+
+
   return (
     <>
-      {/* {navigating && (
-        <div className="fixed inset-0 z-[9999] flex justify-center items-center bg-black bg-opacity-30">
-          <div className="p-4  shadow-lg">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600 mx-auto"></div>
+      {/* ── ADMISSION NOTIFICATION — bottom-right slide-in ── */}
+      <AnimatePresence>
+        {showAdmissionPopup && (
+          <div className="fixed bottom-6 right-4 md:bottom-6 md:right-24 z-[9999]">
+            {/* ✅ FIX: motion.div is now the border wrapper itself */}
+            <motion.div
+              initial={{ opacity: 0, y: 40, scale: 0.94 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 30, scale: 0.94 }}
+              transition={{
+                opacity: { duration: 0.25 },
+                scale: { duration: 0.25 },
+                y: { duration: 0.25 },
+              }}
+              className="relative rounded-[22px] p-[1px] overflow-hidden shadow-2xl"
+            >
+              {/* Animated Gradient Border — inside motion.div so it fades with it */}
+              <div className="absolute inset-0 animated-border rounded-[22px]" />
+
+              {/* Card */}
+              <div
+                className="relative w-[340px] bg-white overflow-hidden rounded-[20px]"
+                style={{
+                  boxShadow:
+                    "0 24px 48px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.06)",
+                }}
+              >
+                {/* Shine Effect */}
+                <span className="absolute inset-0 popup-shine pointer-events-none z-10" />
+
+                {/* HEADER */}
+                <div className="relative flex items-center gap-3 px-4 pt-4 z-20">
+
+                  {/* ICON */}
+                  <div className="relative flex-shrink-0">
+                    <span className="absolute inset-[-3px] rounded-[16px] border-2 border-red-500 animate-ping opacity-40" />
+                    <div className="relative w-[42px] h-[42px] rounded-xl bg-red-600 flex items-center justify-center text-white text-lg shadow-lg">
+                      <FaGraduationCap />
+                    </div>
+                  </div>
+
+                  {/* TITLE */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-[15px] font-semibold text-slate-900 leading-snug">
+                        Admissions Open 2026–2027
+                      </p>
+                      {/* Live Dot */}
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Sathya School
+                    </p>
+                  </div>
+
+                  {/* CLOSE */}
+                  <button
+                    onClick={() => setShowAdmissionPopup(false)}
+                    className="w-6 h-6 rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 flex items-center justify-center text-slate-400 text-[11px] transition-all duration-300 flex-shrink-0 border border-red-600"
+                  >
+                    <X size={12} className="text-red-600" />
+                  </button>
+
+                </div>
+
+                {/* BODY */}
+                <div className="relative px-4 pt-3 pb-0 z-20">
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    Applications are now being accepted. Give your child the best
+                    start — secure your seat today.
+                  </p>
+                </div>
+
+                {/* ACTIONS */}
+                <div className="relative flex border-t border-slate-100 mt-4 z-20">
+                  <Link
+                    href="/admission"
+                    onClick={() => setShowAdmissionPopup(false)}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 border-r border-slate-100 transition-all duration-300 group hover:tracking-wide apply-btn"
+                  >
+                    Apply Now
+                    <FaArrowRight className="text-[10px] group-hover:translate-x-1 transition-transform duration-300" />
+                  </Link>
+                  <button
+                    onClick={() => setShowAdmissionPopup(false)}
+                    className="flex-1 py-3 text-xs text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all duration-300"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
-      {isLoading && (
-        <div className="preloader fixed inset-0 z-[9999] flex justify-center items-center bg-white">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-        </div>
-      )} */}
-      <main className="w-full overflow-hidden">
+        )}
+      </AnimatePresence>
+
+      <main className="w-full">
 
         {/* HERO SECTION */}
-        <section
-            ref={containerRef}
-            className="relative h-screen w-full overflow-hidden"
-          >
-          {/* BACKGROUND VIDEO */}
+        <section ref={containerRef} className="relative h-screen w-full overflow-hidden">
           <video
             className="absolute inset-0 w-full h-full object-cover filter contrast-125"
             autoPlay
@@ -330,41 +385,32 @@ useEffect(() => {
             playsInline
             preload="metadata"
             loading="lazy"
-              webkit-playsinline="true"  // iOS specific
-              disablePictureInPicture
+            webkit-playsinline="true"
+            disablePictureInPicture
           >
             <source src="/videos/Img 9014 (3).mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
 
-          {/* DARK OVERLAY */}
           <div className="absolute inset-0 bg-black/70 z-10"></div>
 
-          {/* CONTENT */}
           <div className="relative z-20 max-w-7xl mx-auto px-6 h-full flex flex-col items-center justify-center text-center text-white">
             <h1
-              className={`text-5xl md:text-7xl mb-4 fade-up font-serif
-              ${
-                isVisible ? "show" : ""
-              }`}
+              className={`text-5xl md:text-7xl mb-4 fade-up font-serif ${isVisible ? "show" : ""}`}
               style={{ transitionDelay: "100ms" }}
             >
               Sathya School
             </h1>
 
             <p
-              className={`text-xl md:text-2xl mb-6 font-extralight fade-up font-sans ${
-                isVisible ? "show" : ""
-              }`}
+              className={`text-xl md:text-2xl mb-6 font-extralight fade-up font-sans ${isVisible ? "show" : ""}`}
               style={{ transitionDelay: "300ms" }}
             >
               Nurturing Minds • Shaping Futures
             </p>
 
             <p
-              className={`max-w-2xl mx-auto mb-8 text-sm md:text-base fade-up font-extralight font-sans  ${
-                isVisible ? "show" : ""
-              }`}
+              className={`max-w-2xl mx-auto mb-8 text-sm md:text-base fade-up font-extralight font-sans ${isVisible ? "show" : ""}`}
               style={{ transitionDelay: "500ms" }}
             >
               CBSE Pattern | Air Conditioned Campus | PreKG to 5th Standard
@@ -372,450 +418,274 @@ useEffect(() => {
 
             <Link
               href="/admission"
-              className={`inline-block bg-red-600 hover:bg-red-400 text-white px-8 py-3 rounded-full font-semibold
-                          transform hover:scale-105 transition-transform duration-300 ease-in-out fade-up ${
-                            isVisible ? "show" : ""
-                          }`}
+              className={`inline-block bg-red-600 hover:bg-red-400 text-white px-8 py-3 rounded-full font-semibold transform hover:scale-105 transition-transform duration-300 ease-in-out fade-up ${isVisible ? "show" : ""}`}
               style={{ transitionDelay: "700ms" }}
             >
               Admission Open 2026 -2027
             </Link>
 
-             {/* CONTACT NUMBER */}
-              <div
-                  className={`mt-5 text-sm md:text-base font-medium fade-up ${
-                    isVisible ? "show" : ""
-                  }`}
-                  style={{ transitionDelay: "900ms" }}
-                >
-                Call us:{" "}
-                <a href="tel:+919597701985" className="font-semibold text-white hover:underline">
-                  +91 95977 01985
-                </a>
-              </div>
-
+            <div
+              className={`mt-5 text-sm md:text-base font-medium fade-up ${isVisible ? "show" : ""}`}
+              style={{ transitionDelay: "900ms" }}
+            >
+              Call us:{" "}
+              <a href="tel:+919597701985" className="font-semibold text-white hover:underline">
+                +91 95977 01985
+              </a>
+            </div>
           </div>
         </section>
 
         {/* FLASH NEWS BAR */}
-        {flashNews.length > 0 && (
-          <div className="relative flex items-center bg-white overflow-hidden">
+        <div className="relative">
+          <div className="absolute bottom-[-23px] left-0 w-full z-30 md:px-4 md:px-6">
+            {flashNews.length > 0 && (
+              <div className="md:max-w-7xl md:mx-auto md:px-6">
+                <div className="relative flex items-center bg-white overflow-hidden border-2 border-[#4338ca] md:rounded-full shadow-lg">
 
-            {/* Flash News badge with triangle */}
-            <div className="relative flex-shrink-0 flex items-center">
-              
-              {/* Main badge */}
-             <div className="bg-[#4338ca] px-1 py-2 md:px-2 md:py-2 flex items-center gap-2 z-10">
-                {/* Dot → mobile la hide */}
-                <span className="hidden md:inline-block w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                
-                {/* Text size responsive */}
-                <span className="text-white text-[9px] md:text-md lg:text-lg font-bold tracking-widest uppercase whitespace-nowrap">
-                  Flash News
-                </span>
-              </div>
+                  <div className="relative flex-shrink-0 flex items-center">
+                    <div className="relative overflow-hidden bg-[#4338ca] px-1 py-2 md:px-2 md:py-2 flex items-center gap-2 z-10">
+                      <span className="absolute inset-0 shine-effect pointer-events-none"></span>
+                      <div className="hidden md:flex relative items-center justify-center w-4 h-4">
+                        <span className="absolute w-3.5 h-3.5 rounded-full bg-red-500 opacity-60 animate-ping" />
+                        <span className="absolute w-2.5 h-2.5 rounded-full bg-red-600" />
+                      </div>
+                      <span className="relative text-white text-[9px] md:text-md lg:text-lg font-bold tracking-widest uppercase whitespace-nowrap">
+                        Flash News
+                      </span>
+                    </div>
+                    <div
+                      className="w-0 h-0 z-10"
+                      style={{
+                        borderTop: "12px solid transparent",
+                        borderBottom: "12px solid transparent",
+                        borderLeft: "16px solid #4338ca",
+                      }}
+                    />
+                  </div>
 
-              {/* Triangle arrow */}
-              <div
-                className="w-0 h-0 z-10"
-                style={{
-                  borderTop: "12px solid transparent",
-                  borderBottom: "12px solid transparent",
-                  borderLeft: "16px solid #4338ca", // indigo-700 approx
-                }}
-              />
-
-            </div>
-
-            {/* scrolling text */}
-            <div className="flex-1 overflow-hidden relative z-10 py-1">
-              <div className="flex w-max animate-marquee"
-                style={{
-                  animationPlayState: flashPaused ? "paused" : "running",
-                }}
-              >
-                {/* First set */}
-                <div className="flex items-center whitespace-nowrap">
-                  {flashNews.map((item, i) => (
-                    <span
-                      key={`first-${i}`}
-                      className="inline-flex items-center gap-3 text-[#4338ca] text-sm md:text-[16px] font-medium px-8 shrink-0"
+                  <div className="flex-1 overflow-hidden relative z-10 py-1">
+                    <div
+                      className="flex w-max animate-marquee"
+                      style={{ animationPlayState: flashPaused ? "paused" : "running" }}
                     >
-                      {String(item.content ?? "")}
-                      <span className="w-1 h-1 rounded-full bg-white opacity-60" />
-                    </span>
-                  ))}
-                </div>
-
-                {/* Second duplicate */}
-                <div className="flex items-center whitespace-nowrap">
-                  {flashNews.map((item, i) => (
-                    <span
-                      key={`second-${i}`}
-                      className="inline-flex items-center gap-3 text-[#4338ca] text-sm md:text-[16px] font-medium px-8 shrink-0"
-                    >
-                      {String(item.content ?? "")}
-                      <span className="w-1 h-1 rounded-full bg-white opacity-60" />
-                    </span>
-                  ))}
+                      <div className="flex items-center whitespace-nowrap">
+                        {flashNews.map((item, i) => (
+                          <span key={`first-${i}`} className="inline-flex items-center gap-3 text-[#4338ca] text-sm md:text-[16px] font-medium px-8 shrink-0">
+                            {String(item.content ?? "")}
+                            <span className="w-1 h-1 rounded-full bg-white opacity-60" />
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex items-center whitespace-nowrap">
+                        {flashNews.map((item, i) => (
+                          <span key={`second-${i}`} className="inline-flex items-center gap-3 text-[#4338ca] text-sm md:text-[16px] font-medium px-8 shrink-0">
+                            {String(item.content ?? "")}
+                            <span className="w-1 h-1 rounded-full bg-white opacity-60" />
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            {/* pause button */}
-            <button
-              onClick={() => setFlashPaused((p) => !p)}
-              className="shrink-0 mr-3 z-10 w-7 h-7 flex items-center justify-center border border-[#4338ca] rounded text-[#4338ca] hover:bg-white hover:text-[#4338ca] transition-all"
-            >
-              {flashPaused ? (
-                <svg width="9" height="10" viewBox="0 0 9 10" fill="currentColor"><path d="M1.5 1l6 4-6 4V1z"/></svg>
-              ) : (
-                <svg width="9" height="10" viewBox="0 0 9 10" fill="currentColor"><rect x="1" y="1" width="2.5" height="8" rx="1"/><rect x="5.5" y="1" width="2.5" height="8" rx="1"/></svg>
-              )}
-            </button>
-
+            )}
           </div>
-        )}
+        </div>
 
-         <EventCalendar />
+        <EventCalendar />
 
         {/* ABOUT SECTION */}
         <section id="about" className="py-16 bg-gradient-to-r from-pink-100 via-blue-100 to-white shadow">
 
-            {/* heading */}
-            <div className="max-w-7xl mx-auto px-6 text-center">
-                <h2 className="text-4xl font-bold mb-4 text-gray-800">
-                    About <span className="text-red-600">Sathya School</span>
-                </h2>
+          <div className="max-w-7xl mx-auto px-6 text-center">
+            <h2 className="text-4xl font-bold mb-4 text-gray-800">
+              About <span className="text-red-600">Sathya School</span>
+            </h2>
+          </div>
+
+          <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="relative p-3">
+              <img
+                src="/images/home-page-img/about-img-one.png"
+                alt="School Campus"
+                className="rounded-3xl shadow-xl w-full border-4 border-white"
+              />
+              <img
+                src="/images/home-page-img/about-img-two.png"
+                alt="Classroom Learning"
+                className="absolute -bottom-12 -right-6 w-48 md:w-64 rounded-2xl shadow-2xl border-4 border-white hidden sm:block"
+              />
             </div>
 
-            {/* about first content */}
-            <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                {/* Right Image */}
-                 <div className="relative p-3">
-                  <img
-                    src="/images/home-page-img/about-img-one.png"
-                    alt="School Campus"
-                    className="rounded-3xl shadow-xl w-full border-4 border-white"
-                  />
+            <div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-4 text-red-600">
+                Values That Inspire
+              </h3>
+              <p className="text-gray-600 mb-2 leading-relaxed">
+                Sathya School is a value-driven educational institution run by Sathya Agencies, a trusted name known for integrity, quality, and service excellence across South India. Inspired by the belief that strong values create strong futures, Sathya School is dedicated to providing a nurturing and inspiring environment where children feel safe, supported, and motivated to learn. We focus on developing not only academic excellence, but also character, confidence, and compassion in every child.
+              </p>
+            </div>
+          </div>
 
-                  {/* FLOATING IMAGE */}
-                  <img
-                    src="/images/home-page-img/about-img-two.png"
-                    alt="Classroom Learning"
-                    className="absolute -bottom-12 -right-6 w-48 md:w-64 rounded-2xl shadow-2xl border-4 border-white hidden sm:block"
-                  />
+          <div className="mt-16 max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="flex flex-col lg:grid lg:grid-cols-1 gap-4 order-1 lg:order-2">
+              <div className="flex flex-col gap-4 lg:hidden">
+                <img src="/images/home-page-img/about-vertical-img.jpg" className="w-full rounded-3xl shadow-xl border-4 border-white lg:block hidden" alt="" />
+                <img src="/images/home-page-img/about-img-four.png" className="w-full rounded-2xl shadow-lg border-4 border-white lg:block hidden" alt="" />
+                <img src="/images/home-page-img/about-img-five.jpg" className="w-full rounded-2xl shadow-lg border-4 border-white" alt="" />
+              </div>
+              <div className="hidden lg:grid lg:grid-cols-2 lg:gap-4">
+                <div className="row-span-2">
+                  <img src="/images/home-page-img/about-vertical-img.jpg" className="w-full rounded-3xl shadow-xl border-4 border-white" alt="" />
                 </div>
-
-                {/* Left Content */}
                 <div>
-
-                  {/* Small Heading */}
-                  <h3 className="text-xl font-semibold text-gray-800 mb-4 text-red-600">
-                    Values That Inspire
-                  </h3>
-                  {/* Intro Paragraph */}
-                  <p className="text-gray-600 mb-2 leading-relaxed">
-                      Sathya School is a value-driven educational institution run by Sathya Agencies, a trusted name known for integrity, quality, and service excellence across South India. Inspired by the belief that strong values create strong futures, Sathya School is dedicated to providing a nurturing and inspiring environment where children feel safe, supported, and motivated to learn. We focus on developing not only academic excellence, but also character, confidence, and compassion in every child.
-                  </p>
+                  <img src="/images/home-page-img/about-img-four.png" className="w-full rounded-2xl shadow-lg border-4 border-white" alt="" />
                 </div>
-            </div>
-
-            {/* about second content */}
-             <div className="mt-16 max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                {/* Left Content (Images) */}
-                <div className="flex flex-col lg:grid lg:grid-cols-1 gap-4 order-1 lg:order-2">
-
-                  {/* For mobile: show all 3 images in column */}
-                  <div className="flex flex-col gap-4 lg:hidden">
-                    <img
-                      src="/images/home-page-img/about-vertical-img.jpg"
-                      className="w-full rounded-3xl shadow-xl border-4 border-white lg:block hidden"
-                      alt=""
-                    />
-                    <img
-                      src="/images/home-page-img/about-img-four.png"
-                      className="w-full rounded-2xl shadow-lg border-4 border-white lg:block hidden"
-                      alt=""
-                    />
-                    <img
-                      src="/images/home-page-img/about-img-five.jpg"
-                      className="w-full rounded-2xl shadow-lg border-4 border-white"
-                      alt=""
-                    />
-                  </div>
-
-                  {/* For desktop: show grid with row-span */}
-                  <div className="hidden lg:grid lg:grid-cols-2 lg:gap-4">
-                    <div className="row-span-2">
-                      <img
-                        src="/images/home-page-img/about-vertical-img.jpg"
-                        className="w-full rounded-3xl shadow-xl border-4 border-white"
-                        alt=""
-                      />
-                    </div>
-                    <div>
-                      <img
-                        src="/images/home-page-img/about-img-four.png"
-                        className="w-full rounded-2xl shadow-lg border-4 border-white"
-                        alt=""
-                      />
-                    </div>
-                    <div>
-                      <img
-                        src="/images/home-page-img/about-img-five.jpg"
-                        className="w-full rounded-2xl shadow-lg border-4 border-white"
-                        alt=""
-                      />
-                    </div>
-                  </div>
-
-                </div>
-
-                {/* Right Contect (Text) */}
-                <div className="order-2 lg:order-1">
-
-                  {/* Small Heading */}
-                  <h3 className="text-xl font-semibold text-gray-800 mb-4 text-red-600">
-                    Learning Beyond Books
-                  </h3>
-
-                  <p className="text-gray-600 mb-2 leading-relaxed">
-                    Our learning approach combines structured academics with creative thinking, cultural awareness, and life skills. With caring teachers, modern teaching practices, and a student-centric environment, Sathya School helps children grow into responsible individuals who are prepared for both life and learning beyond the classroom. At Sathya School, education is a journey—guided by values, strengthened by knowledge, and shaped by care.
-                  </p>
-                  <p className="text-gray-600 mb-5 leading-relaxed">
-                    At Sathya School, education is a journey—guided by values, strengthened by knowledge, and shaped by care.
-                  </p>
-                </div>
-            </div>
-            {/* VISION & MISSION */}
-            <div className="mt-16 relative mb-10 max-w-7xl mx-auto px-6">
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-                
-                {/* Vision */}
-                <div className="group relative p-8 bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg hover:shadow-2xl transition-all">
-                  <div className="absolute -top-6 left-6 bg-indigo-600 text-white p-4 rounded-2xl shadow-lg">
-                    <FaStar className="text-xl" />
-                  </div>
-
-                  <h3 className="mt-6 text-2xl font-bold text-gray-800 mb-3">
-                    Our Vision
-                  </h3>
-
-                  <p className="text-gray-600 leading-relaxed">
-                    Empowering immediate communities through Quality Educationand Effective Communication, Accessible to All, everywhere.
-                  </p>
-                </div>
-
-                {/* Mission */}
-                <div className="group relative p-8 bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg hover:shadow-2xl transition-all">
-                  <div className="absolute -top-6 left-6 bg-gradient-to-br from-indigo-500 to-indigo-700 text-white p-4 rounded-2xl shadow-lg">
-                    <FaCheckCircle className="text-xl" />
-                  </div>
-
-                  <h3 className="mt-6 text-2xl font-bold text-gray-800 mb-4">
-                    Our Mission
-                  </h3>
-
-                  <ul className="space-y-2 text-gray-600">
-                    {[
-                      "To empower individuals and communities through accessible, quality education and effective communication skills that create opportunities for life long success.",
-                    ].map((item, i) => (
-                      <li key={i} className="flex items-start gap-3">
-                        {/* <span className="mt-1 h-2 w-2 rounded-full bg-indigo-500"></span> */}
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <div>
+                  <img src="/images/home-page-img/about-img-five.jpg" className="w-full rounded-2xl shadow-lg border-4 border-white" alt="" />
                 </div>
               </div>
             </div>
 
-            {/* CORE VALUES */}
-            <div className="relative max-w-7xl mx-auto px-6">
+            <div className="order-2 lg:order-1">
+              <h3 className="text-xl font-semibold text-gray-800 mb-4 text-red-600">
+                Learning Beyond Books
+              </h3>
+              <p className="text-gray-600 mb-2 leading-relaxed">
+                Our learning approach combines structured academics with creative thinking, cultural awareness, and life skills. With caring teachers, modern teaching practices, and a student-centric environment, Sathya School helps children grow into responsible individuals who are prepared for both life and learning beyond the classroom.
+              </p>
+              <p className="text-gray-600 mb-5 leading-relaxed">
+                At Sathya School, education is a journey—guided by values, strengthened by knowledge, and shaped by care.
+              </p>
+            </div>
+          </div>
 
-              {/* Title */}
-              <div className="mb-10">
-                <h3 className="text-3xl font-extrabold text-gray-800">
-                  {/* Our Core Values */}
-                  Our Motto
-                </h3>
-                <p className="text-gray-600 mt-2 max-w-xl">
-                  {/* The principles that guide our teaching, culture, and every child’s journey. */}
-                  Knowledge is Power
+          {/* VISION & MISSION */}
+          <div className="mt-16 relative mb-10 max-w-7xl mx-auto px-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+              <div className="group relative p-8 bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg hover:shadow-2xl transition-all">
+                <div className="absolute -top-6 left-6 bg-indigo-600 text-white p-4 rounded-2xl shadow-lg">
+                  <FaStar className="text-xl" />
+                </div>
+                <h3 className="mt-6 text-2xl font-bold text-gray-800 mb-3">Our Vision</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Empowering immediate communities through Quality Education and Effective Communication, Accessible to All, everywhere.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-                {[
-                  // { icon: <FaCheckCircle />, title: "Integrity", text: "We believe in honesty, ethics, and doing the right thing—always." },
-                  // { icon: <FaHandshake />, title: "Respect", text: "We foster respect for teachers, peers, parents, and the wider community." },
-                  // { icon: <FaStar />, title: "Excellence", text: "We strive for high standards in academics, behaviour, and personal growth." },
-                  // { icon: <FaHeart />, title: "Care & Compassion", text: "Every child matters. We nurture with empathy, patience, and understanding." },
-                  //  { icon: <FaUserCheck />, title: "Responsibility", text: "We encourage students to be accountable, disciplined, and socially aware." },
-                  { icon: <FaGraduationCap />, text: "To empower students and communities through quality education that is accessible to all." },
-                  { icon: <FaComments />, text: "To foster effective communication skills that help learners express themselves with confidence and clarity ." },
-                  { icon: <FaLightbulb />,  text: "To create meaningful learning opportunities that support lifelong success and personal growth." },
-                  { icon: <FaUsers />, text: "To ensure an inclusive and supportive environment where every learner feels valued and encouraged." },
-                   { icon: <FaUserCheck />,text: "To nurture responsible individuals who contribute positively to society through knowledge and values." },
-                ].map((item, i) => (
-                  <div
-                    key={i}
-                    className="group p-6 rounded-3xl bg-white shadow-md hover:shadow-xl transition-all hover:-translate-y-2"
-                  >
-                    <div className="flex items-center justify-center w-14 h-14 mb-4 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white text-2xl group-hover:scale-110 transition">
-                      {item.icon}
-                    </div>
-
-                    {/* <h4 className="font-bold text-gray-800 mb-2">
-                      {item.title}
-                    </h4> */}
-
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      {item.text}
-                    </p>
-                  </div>
-                ))}
+              <div className="group relative p-8 bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg hover:shadow-2xl transition-all">
+                <div className="absolute -top-6 left-6 bg-gradient-to-br from-indigo-500 to-indigo-700 text-white p-4 rounded-2xl shadow-lg">
+                  <FaCheckCircle className="text-xl" />
+                </div>
+                <h3 className="mt-6 text-2xl font-bold text-gray-800 mb-4">Our Mission</h3>
+                <ul className="space-y-2 text-gray-600">
+                  {["To empower individuals and communities through accessible, quality education and effective communication skills that create opportunities for life long success."].map((item, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
+          </div>
 
+          {/* CORE VALUES */}
+          <div className="relative max-w-7xl mx-auto px-6">
+            <div className="mb-10">
+              <h3 className="text-3xl font-extrabold text-gray-800">Our Motto</h3>
+              <p className="text-gray-600 mt-2 max-w-xl">Knowledge is Power</p>
+            </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+              {[
+                { icon: <FaGraduationCap />, text: "To empower students and communities through quality education that is accessible to all." },
+                { icon: <FaComments />, text: "To foster effective communication skills that help learners express themselves with confidence and clarity." },
+                { icon: <FaLightbulb />, text: "To create meaningful learning opportunities that support lifelong success and personal growth." },
+                { icon: <FaUsers />, text: "To ensure an inclusive and supportive environment where every learner feels valued and encouraged." },
+                { icon: <FaUserCheck />, text: "To nurture responsible individuals who contribute positively to society through knowledge and values." },
+              ].map((item, i) => (
+                <div key={i} className="group p-6 rounded-3xl bg-white shadow-md hover:shadow-xl transition-all hover:-translate-y-2">
+                  <div className="flex items-center justify-center w-14 h-14 mb-4 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white text-2xl group-hover:scale-110 transition">
+                    {item.icon}
+                  </div>
+                  <p className="text-sm text-gray-600 leading-relaxed">{item.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
 
         {/* GRADES OFFERED */}
-        <section id="grade" className="relative bg-center bg-cover bg-scroll md:bg-fixed
-                      min-h-[70vh] md:min-h-[70vh]
-                      flex items-center shadow"
-            style={{ backgroundImage: "url('/images/home-page-img/grade-bg.jpeg')" }}
-          >
-            {/* Black overlay */}
-            <div className="absolute inset-0 bg-black/60"></div>
-
-          {/* Content */}
+        <section
+          id="grade"
+          className="relative bg-center bg-cover bg-scroll md:bg-fixed min-h-[70vh] md:min-h-[70vh] flex items-center shadow"
+          style={{ backgroundImage: "url('/images/home-page-img/grade-bg.jpeg')" }}
+        >
+          <div className="absolute inset-0 bg-black/60"></div>
           <div className="relative max-w-7xl mx-auto px-6 w-full py-16">
             <h2 className="text-5xl text-center mb-4 text-white font-serif">
               <span className="text-white">Grades</span> We Offer
             </h2>
-
             <p className="text-center text-gray-200 mb-12 font-sans text-lg">
               A joyful learning journey from foundation to primary education
             </p>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-
-              {/* Pre KG */}
               <div className="bg-white/95 backdrop-blur rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
                 <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-pink-100 text-pink-600 text-2xl">
                   <FaChild />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Pre KG</h3>
-                <p className="text-sm text-gray-600">
-                  Play-based learning to build curiosity and confidence.
-                </p>
+                <p className="text-sm text-gray-600">Play-based learning to build curiosity and confidence.</p>
               </div>
-
-              {/* LKG */}
               <div className="bg-white/95 backdrop-blur rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
                 <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-600 text-2xl">
                   <FaShieldAlt />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">LKG</h3>
-                <p className="text-sm text-gray-600">
-                  Early literacy and joyful classroom experiences.
-                </p>
+                <p className="text-sm text-gray-600">Early literacy and joyful classroom experiences.</p>
               </div>
-
-              {/* UKG */}
               <div className="bg-white/95 backdrop-blur rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
                 <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-green-100 text-green-600 text-2xl">
                   <FaHeadset />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">UKG</h3>
-                <p className="text-sm text-gray-600">
-                  Strong foundation in reading, writing, and numbers.
-                </p>
+                <p className="text-sm text-gray-600">Strong foundation in reading, writing, and numbers.</p>
               </div>
-
-              {/* 1st – 5th Std */}
               <div className="bg-white/95 backdrop-blur rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
                 <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 text-2xl">
                   <FaAward />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">1st – 5th Std</h3>
-                <p className="text-sm text-gray-600">
-                  Academic excellence with creativity and discipline.
-                </p>
+                <p className="text-sm text-gray-600">Academic excellence with creativity and discipline.</p>
               </div>
-
             </div>
           </div>
         </section>
 
-        {/* why choose section */}
-        <section
-          id="Why"
-          className="py-14 bg-gradient-to-r from-pink-100 via-blue-100 to-white shadow"
-        >
+        {/* WHY CHOOSE SECTION */}
+        <section id="Why" className="py-14 bg-gradient-to-r from-pink-100 via-blue-100 to-white shadow">
           <div className="max-w-7xl mx-auto px-6">
             <h2 className="text-4xl font-bold text-center mb-12 text-gray-800">
               Why Parents Trust <span className="text-red-600">Sathya School?</span>
             </h2>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-
               {[
-                 {
-                    icon: <FaAward className="text-indigo-600 text-4xl" />,
-                    title: "Quality Education with strong academic foundation",
-                    description: "We provide high-standard academic learning with experienced teachers and structured curriculum."
-                  },
-                  {
-                    icon: <FaUsers className="text-yellow-600 text-4xl" />,
-                    title: "Individualized Learning Support",
-                    description: "Each student receives personal attention to improve understanding and performance."
-                  },
-                  {
-                    icon: <FaShieldAlt className="text-green-600 text-4xl" />,
-                    title: "Comfort optimized Campus",
-                    description: "A safe, clean, and comfortable environment designed for effective learning."
-                  },
-                  {
-                    icon: <FaSnowflake className="text-indigo-700 text-4xl" />,
-                    title: "Air-Conditioned Classrooms",
-                    description: "Fully air-conditioned classrooms to ensure comfort and focus throughout learning hours."
-                  },
-                  {
-                    icon: <FaHeadset className="text-pink-600 text-4xl" />,
-                    title: "Activity based and experiential learning",
-                    description: "Hands-on learning through activities, projects, and interactive teaching methods."
-                  },
-                  {
-                    icon: <FaRunning className="text-blue-600 text-4xl" />,
-                    title: "Encouraging teamwork, discipline and a spirit of excellence through sports",
-                    description: "Sports activities help build teamwork, discipline, confidence, and overall development."
-                  },
+                { icon: <FaAward className="text-indigo-600 text-4xl" />, title: "Quality Education with strong academic foundation", description: "We provide high-standard academic learning with experienced teachers and structured curriculum." },
+                { icon: <FaUsers className="text-yellow-600 text-4xl" />, title: "Individualized Learning Support", description: "Each student receives personal attention to improve understanding and performance." },
+                { icon: <FaShieldAlt className="text-green-600 text-4xl" />, title: "Comfort optimized Campus", description: "A safe, clean, and comfortable environment designed for effective learning." },
+                { icon: <FaSnowflake className="text-indigo-700 text-4xl" />, title: "Air-Conditioned Classrooms", description: "Fully air-conditioned classrooms to ensure comfort and focus throughout learning hours." },
+                { icon: <FaHeadset className="text-pink-600 text-4xl" />, title: "Activity based and experiential learning", description: "Hands-on learning through activities, projects, and interactive teaching methods." },
+                { icon: <FaRunning className="text-blue-600 text-4xl" />, title: "Encouraging teamwork, discipline and a spirit of excellence through sports", description: "Sports activities help build teamwork, discipline, confidence, and overall development." },
               ].map(({ icon, title, bg, iconColor, description }, i) => (
-                <div
-                  key={i}
-                  className="flex items-start gap-6 bg-white rounded-xl p-6 shadow hover:shadow-lg transition cursor-default"
-                >
-                  <div
-                    className={`w-14 h-14 flex items-center justify-center rounded-full ${bg} ${iconColor} text-2xl flex-shrink-0`}
-                  >
+                <div key={i} className="flex items-start gap-6 bg-white rounded-xl p-6 shadow hover:shadow-lg transition cursor-default">
+                  <div className={`w-14 h-14 flex items-center justify-center rounded-full ${bg} ${iconColor} text-2xl flex-shrink-0`}>
                     {icon}
                   </div>
-
                   <div>
-                    <h3 className="text-base md:text-lg font-medium text-gray-800">
-                      {title}
-                    </h3>
-
-                    {/* DESCRIPTION ADD HERE */}
+                    <h3 className="text-base md:text-lg font-medium text-gray-800">{title}</h3>
                     {description && (
-                      <p className="text-sm text-gray-600 mt-1 leading-relaxed">
-                        {description}
-                      </p>
+                      <p className="text-sm text-gray-600 mt-1 leading-relaxed">{description}</p>
                     )}
                   </div>
                 </div>
@@ -824,73 +694,60 @@ useEffect(() => {
           </div>
         </section>
 
-        {/* ACTIVITIES — only shown when at least one Active activity exists */}
+        {/* ACTIVITIES */}
         {activities.length > 0 && (
-        <section ref={sectionRef} className="py-14 bg-white shadow" id="ACTIVITIES">
-          <div className="max-w-7xl mx-auto px-6">
-            <h2 className="text-4xl font-bold text-center mb-2 text-gray-800">
-              Sports <span className="text-red-600">&</span> Activities
-            </h2>
-            <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
-              Our diverse sports and co-curricular programs help children develop confidence, creativity, and teamwork.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-center">
-              {activities.map((activity, index) => {
-                const animClass = index % 3 === 0
-                  ? "activity-animate-left"
-                  : index % 3 === 1
-                  ? "activity-animate-up"
-                  : "activity-animate-right";
-                return (
-                <Link
-                  key={activity.name}
-                  href={`/activities/${activity.slug}`}
-                  data-key={activity.name}
-                  className={`activity-card group bg-white rounded-3xl shadow-md overflow-hidden cursor-pointer border-2 border-red-600 hover:shadow-xl transition-shadow block ${activitiesVisible ? animClass : "opacity-0"}`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <div className="relative">
-                    <img src={activity.imageSrc} alt={activity.name} className="w-full transition-opacity duration-500" />
-                    <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                    </div>
-                  </div>
-
-                  <div className="px-5 py-2">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">{activity.name}</h3>
-                    <p className="text-gray-600 text-sm">{activity.tagline}</p>
-                  </div>
-                </Link>
-              )})}
+          <section ref={sectionRef} className="py-14 bg-white shadow" id="ACTIVITIES">
+            <div className="max-w-7xl mx-auto px-6">
+              <h2 className="text-4xl font-bold text-center mb-2 text-gray-800">
+                Sports <span className="text-red-600">&</span> Activities
+              </h2>
+              <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+                Our diverse sports and co-curricular programs help children develop confidence, creativity, and teamwork.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-center">
+                {activities.map((activity, index) => {
+                  const animClass = index % 3 === 0 ? "activity-animate-left" : index % 3 === 1 ? "activity-animate-up" : "activity-animate-right";
+                  return (
+                    <Link
+                      key={activity.name}
+                      href={`/activities/${activity.slug}`}
+                      data-key={activity.name}
+                      className={`activity-card group bg-white rounded-3xl shadow-md overflow-hidden cursor-pointer border-2 border-red-600 hover:shadow-xl transition-shadow block ${activitiesVisible ? animClass : "opacity-0"}`}
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                      <div className="relative">
+                        <img src={activity.imageSrc} alt={activity.name} className="w-full transition-opacity duration-500" />
+                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center"></div>
+                      </div>
+                      <div className="px-5 py-2">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1">{activity.name}</h3>
+                        <p className="text-gray-600 text-sm">{activity.tagline}</p>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
         )}
 
-        {/* gallery section  */}
+        {/* GALLERY */}
         <IndexGalleryPreview />
-        {/*end gallery section */}
 
         {/* CTA SECTION */}
-        <section className="relative bg-center bg-cover bg-scroll md:bg-fixed
-             min-h-[60vh] sm:min-h-[40vh] md:min-h-[60vh] lg:min-h-[80vh]
-             flex items-center shadow"
-            style={{ backgroundImage: "url('/images/home-page-img/admission-bg.jpeg')" }}
-          >
-          {/* Black overlay */}
+        <section
+          className="relative bg-center bg-cover bg-scroll md:bg-fixed min-h-[60vh] sm:min-h-[40vh] md:min-h-[60vh] lg:min-h-[80vh] flex items-center shadow"
+          style={{ backgroundImage: "url('/images/home-page-img/admission-bg.jpeg')" }}
+        >
           <div className="absolute inset-0 bg-black/60"></div>
-
-          {/* Content */}
           <div className="relative max-w-4xl mx-auto px-6 text-center text-white">
             <h2 className="md:text-5xl text-4xl mb-4 drop-shadow-md font-serif">
               Admission 2026 - 2027 Open Now!
             </h2>
-
             <p className="md:text-xl text-lg mb-6 drop-shadow-sm font-sans">
               Rajapalayam, Melalangarathattu, Thoothukudi <br />
               Air Conditioned Campus | Quality Education
             </p>
-
             <div className="flex justify-center gap-6 flex-wrap">
               <Link
                 href="/admission"
@@ -902,30 +759,23 @@ useEffect(() => {
           </div>
         </section>
 
-         {/* blog section */}
+        {/* BLOG SECTION */}
         {!blogLoading && blogs.length > 0 && (
           <section className="py-14 bg-gradient-to-r from-pink-100 via-blue-100 to-white shadow">
             <div className="relative max-w-7xl mx-auto px-6">
+              <h2 className="text-4xl font-bold text-center mb-2 text-gray-800">
+                Latest <span className="text-red-600">Blogs</span>
+              </h2>
+              <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+                Insights, updates, and stories from Sathya School
+              </p>
 
- 
-                <h2 className="text-4xl font-bold text-center mb-2 text-gray-800">
-                  Latest <span className="text-red-600">Blogs</span>
-                </h2>
-                <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
-                  Insights, updates, and stories from Sathya School
-                </p>
-              
-
- 
               <Swiper
                 modules={[Navigation, Autoplay]}
                 spaceBetween={30}
                 slidesPerView={1}
                 autoplay={{ delay: 4000, disableOnInteraction: false }}
-                navigation={{
-                  prevEl: prevRef.current,
-                  nextEl: nextRef.current,
-                }}
+                navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
                 breakpoints={{
                   640: { slidesPerView: 1 },
                   768: { slidesPerView: 2 },
@@ -936,122 +786,83 @@ useEffect(() => {
                 {blogs.slice(0, 10).map((blog) => (
                   <SwiperSlide key={blog._id}>
                     <div className="bg-white rounded-3xl overflow-hidden shadow hover:shadow-xl transition-all h-full">
-
                       <Link href={`/blog/${blog.blog_slug}`}>
-                        <img
-                          src={blog.image || "/images/placeholder.jpg"}
-                          alt={blog.blog_name}
-                          className="w-full h-56 object-cover"
-                        />
+                        <img src={blog.image || "/images/placeholder.jpg"} alt={blog.blog_name} className="w-full h-56 object-cover" />
                       </Link>
-
                       <div className="p-4">
                         <div className="mb-3">
                           <span className="text-red-500 text-xs bg-red-100 px-3 py-1 rounded-full w-max">
                             {new Date(blog.createdAt).toLocaleDateString("en-GB")}
                           </span>
                         </div>
-
-                
                         <Link href={`/blog/${blog.blog_slug}`} className="group-hover:text-red-500 transition-colors">
                           <h3 className="text-lg font-semibold text-gray-800 mb-2 hover:underline hover:text-red-500">
                             {blog.blog_name}
                           </h3>
                         </Link>
-
                         <p className="text-gray-600 flex-1 mb-4 text-sm">
                           {stripHtml(blog.description).slice(0, 100)}...
                         </p>
-
- 
                         <div className="mt-auto">
                           <Link
                             href={`/blog/${blog.blog_slug}`}
-                            className="relative inline-block overflow-hidden text-red-500 text-sm font-medium py-2 px-3 rounded-lg underline
-                                      transition-colors duration-300
-                                      before:absolute before:inset-0 before:bg-red-600
-                                      before:origin-left before:scale-x-0 before:transition-transform before:duration-300
-                                      hover:text-white hover:before:scale-x-100"
+                            className="relative inline-block overflow-hidden text-red-500 text-sm font-medium py-2 px-3 rounded-lg underline transition-colors duration-300 before:absolute before:inset-0 before:bg-red-600 before:origin-left before:scale-x-0 before:transition-transform before:duration-300 hover:text-white hover:before:scale-x-100"
                           >
                             <span className="relative z-10">Read More</span>
                           </Link>
                         </div>
                       </div>
-
                     </div>
                   </SwiperSlide>
                 ))}
-
               </Swiper>
 
-      
-                <button
-                  ref={prevRef}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 
-                            bg-red-500 text-white p-2 rounded-full shadow-lg 
-                            hover:bg-white hover:text-red-500 transition z-50"
-                >
-                  <FiChevronLeft size={22} />
-                </button>
-
-                <button
-                  ref={nextRef}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 
-                            bg-red-500 text-white p-2 rounded-full shadow-lg 
-                            hover:bg-white hover:text-red-500 transition z-50"
-                >
-                  <FiChevronRight size={22} />
-                </button>
+              <button ref={prevRef} className="absolute left-0 top-1/2 -translate-y-1/2 bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-white hover:text-red-500 transition z-50">
+                <FiChevronLeft size={22} />
+              </button>
+              <button ref={nextRef} className="absolute right-0 top-1/2 -translate-y-1/2 bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-white hover:text-red-500 transition z-50">
+                <FiChevronRight size={22} />
+              </button>
 
               <div className="pt-6 text-center">
-                 <Link
+                <Link
                   href="/blog"
                   className="mt-4 md:mt-0 inline-flex items-center gap-2 bg-red-600 hover:bg-red-400 text-white font-semibold hover:gap-3 transition-all border border-red-500 rounded-full py-2 px-3 transition transform hover:scale-105"
                 >
-                  View All Blogs 
+                  View All Blogs
                 </Link>
               </div>
             </div>
           </section>
         )}
 
-        {/*insta stories */}
+        {/* INSTAGRAM STORIES */}
         <section className="bg-white shadow">
           <div className="max-w-7xl mx-auto px-4 py-14 text-center">
-            {/* Heading */}
             <h2 className="text-3xl font-bold mb-6"><span className="text-red-600">Instagram</span> Stories</h2>
-           <div className="insta-swiper pb-[40px] mx-2 relative">
-              {/* Navigation & Pagination wrapper above slides */}
+            <div className="insta-swiper pb-[40px] mx-2 relative">
               <div className="flex justify-between items-center mb-4">
                 <div className="swiper-pagination" />
               </div>
-
               <Swiper
                 modules={[Navigation, Autoplay, Pagination]}
                 navigation={{
                   prevEl: ".insta-swiper .swiper-prev",
                   nextEl: ".insta-swiper .swiper-next",
                 }}
-                pagination={{
-                  el: ".insta-swiper .swiper-pagination",
-                  clickable: true,
-                }}
-                spaceBetween={20} // spacing between slides
+                pagination={{ el: ".insta-swiper .swiper-pagination", clickable: true }}
+                spaceBetween={20}
                 slidesPerView={1}
                 breakpoints={{
                   640: { slidesPerView: 2, spaceBetween: 20 },
                   768: { slidesPerView: 2, spaceBetween: 20 },
-                  1024: { slidesPerView: 3, spaceBetween: 20 }, // 4 slides on desktop
+                  1024: { slidesPerView: 3, spaceBetween: 20 },
                 }}
-                autoplay={{
-                  delay: 3000,
-                  disableOnInteraction: false,
-                  pauseOnMouseEnter: false, // continue autoplay even if user hovers/plays
-                }}
-                loop={true} // loop infinitely
+                autoplay={{ delay: 3000, disableOnInteraction: false, pauseOnMouseEnter: false }}
+                loop={true}
                 preventClicks={false}
                 preventClicksPropagation={false}
-                onSwiper={() => window.instgrm?.Embeds.process()} // render Instagram embeds
+                onSwiper={() => window.instgrm?.Embeds.process()}
               >
                 {reels.map((url, i) => (
                   <SwiperSlide key={i} className="flex justify-center">
@@ -1059,22 +870,19 @@ useEffect(() => {
                       className="instagram-media max-w-[300px] w-full"
                       data-instgrm-permalink={url}
                       data-instgrm-version="14"
-                      style={{ margin: "0 auto" }} strategy="lazyOnload"
+                      style={{ margin: "0 auto" }}
+                      strategy="lazyOnload"
                     />
                   </SwiperSlide>
                 ))}
               </Swiper>
-
             </div>
-
           </div>
         </section>
 
-        {/* faq section */}
+        {/* FAQ SECTION */}
         <section id="faq" className="py-14 bg-gradient-to-r from-pink-100 via-blue-100 to-white shadow">
           <div className="max-w-5xl mx-auto px-6">
-
-            {/* Heading */}
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-gray-800 mb-3">
                 Frequently Asked <span className="text-red-600">Questions</span>
@@ -1083,30 +891,13 @@ useEffect(() => {
                 Find answers to common questions about admissions, curriculum, and campus facilities.
               </p>
             </div>
-
-
             <div className="space-y-6">
               {[
-                {
-                  q: "What curriculum does Sathya School follow?",
-                  a: "Sathya School follows the CBSE pattern, focusing on strong academics, values, and holistic development.",
-                },
-                {
-                  q: "Which grades are offered at Sathya School?",
-                  a: "We offer classes from Pre KG to 5th Standard with age-appropriate learning approaches.",
-                },
-                {
-                  q: "Is the campus fully air-conditioned?",
-                  a: "Yes, our entire campus is fully air-conditioned to ensure a comfortable learning environment for students.",
-                },
-                {
-                  q: "What facilities are available for students?",
-                  a: "We provide modern classrooms, computer lab, activity-based learning spaces, sports facilities, and a safe campus.",
-                },
-                {
-                  q: "How can I apply for admission?",
-                  a: "You can apply online through our Admission page or visit the school campus for direct assistance.",
-                },
+                { q: "What curriculum does Sathya School follow?", a: "Sathya School follows the CBSE pattern, focusing on strong academics, values, and holistic development." },
+                { q: "Which grades are offered at Sathya School?", a: "We offer classes from Pre KG to 5th Standard with age-appropriate learning approaches." },
+                { q: "Is the campus fully air-conditioned?", a: "Yes, our entire campus is fully air-conditioned to ensure a comfortable learning environment for students." },
+                { q: "What facilities are available for students?", a: "We provide modern classrooms, computer lab, activity-based learning spaces, sports facilities, and a safe campus." },
+                { q: "How can I apply for admission?", a: "You can apply online through our Admission page or visit the school campus for direct assistance." },
               ].map((item, index) => (
                 <FaqItem key={index} question={item.q} answer={item.a} />
               ))}
@@ -1114,88 +905,115 @@ useEffect(() => {
           </div>
         </section>
 
-        {/* contact section */}
+        {/* CONTACT SECTION */}
         <section className="py-14 bg-white shadow">
           <div className="max-w-7xl mx-auto px-6">
-            {/* Heading */}
+            
             <div className="mb-10">
               <h2 className="text-4xl font-bold text-gray-900">
                 Contact <span className="text-red-600">Us</span>
               </h2>
-              <p className="text-gray-600 mt-2">10am – 7pm weekdays</p>
+              <p className="text-gray-600 mt-2">
+                10am – 7pm weekdays
+              </p>
             </div>
 
-            {/* Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-              {/* Admission Enquiry */}
-              <div className="flex items-center justify-between bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition">
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                    Admission Enquiry
+              {/* SAT HYA PREPARATORY SCHOOL */}
+              <div className="flex items-center justify-between bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition duration-300 border border-gray-100">
+                
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-1">
+                    Sathya Preparatory School
                   </h3>
-                  <p className="text-sm text-gray-500 mb-4">
-                    (Admissions & general enquiries)
+
+                  <p className="text-sm text-gray-500 mb-5">
+                    (Admissions & General Enquiries)
                   </p>
 
-                  <div className="flex items-center gap-3 text-green-600 font-medium mb-2">
-                    <FaPhoneAlt />
-                    <Link href="tel:+919944899771" className="hover:underline">
-                      +91 99448 99771
-                    </Link>
-                  </div>
+                  <div className="space-y-3">
 
-                  <div className="flex items-center gap-3 text-green-600 font-medium">
-                    <FaEnvelope  />
-                    <Link href="mailto:info@sathya.school" className="hover:underline">
-                      info@sathya.school
-                    </Link>
-                  </div>
+                    <div className="flex items-center gap-3 text-green-600 font-medium">
+                      <FaPhoneAlt className="shrink-0" />
+                      <Link
+                        href="tel:+919944899771"
+                        className="hover:underline"
+                      >
+                        +91 99448 99771
+                      </Link>
+                    </div>
 
+                    <div className="flex items-center gap-3 text-green-600 font-medium break-all">
+                      <FaEnvelope className="shrink-0" />
+                      <Link
+                        href="mailto:sathyaschoolmkpuram@gmail.com"
+                        className="hover:underline"
+                      >
+                        sathyaschoolmkpuram@gmail.com
+                      </Link>
+                    </div>
+
+                    <div className="flex items-start gap-3 text-gray-700 font-medium">
+                      <FaMapMarkerAlt className="mt-1 shrink-0 text-red-500" />
+                      <span>
+                        Muthu Krishnapuram, Tuticorin
+                      </span>
+                    </div>
+
+                  </div>
                 </div>
-                
-                {/* Right FA Icon */}
-                <div className="ml-6 flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600 text-3xl">
+
+                <div className="ml-6 flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600 text-3xl shrink-0">
                   <FaUserGraduate />
                 </div>
               </div>
 
-              {/* School Office */}
-              <div className="flex items-center justify-between bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition">
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                    School Office
+              {/* SATHYA CBSE SCHOOL */}
+              <div className="flex items-center justify-between bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition duration-300 border border-gray-100">
+                
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-1">
+                    Sathya CBSE School
                   </h3>
-                  <p className="text-sm text-gray-500 mb-4">
-                    (Office & academic support)
+
+                  <p className="text-sm text-gray-500 mb-5">
+                    (Admissions & General Enquiries)
                   </p>
 
-                  <div className="flex items-center gap-3 text-green-600 font-medium mb-2">
-                    <FaPhoneAlt />
-                    <a href="tel:+919597701985" className="hover:underline">
-                      +91 95977 01985
-                    </a>
+                  <div className="space-y-3">
+
+                    <div className="flex items-center gap-3 text-green-600 font-medium">
+                      <FaPhoneAlt className="shrink-0" />
+                      <Link
+                        href="tel:+919597701985"
+                        className="hover:underline"
+                      >
+                        +91 95977 01985
+                      </Link>
+                    </div>
+
+                    <div className="flex items-center gap-3 text-green-600 font-medium break-all">
+                      <FaEnvelope className="shrink-0" />
+                      <Link
+                        href="mailto:info@sathya.school"
+                        className="hover:underline"
+                      >
+                        info@sathya.school
+                      </Link>
+                    </div>
+
+                    <div className="flex items-start gap-3 text-gray-700 font-medium">
+                      <FaMapMarkerAlt className="mt-1 shrink-0 text-red-500" />
+                      <span>
+                        Rajapalayam, Melalangaarathattu, Thoothukudi
+                      </span>
+                    </div>
+
                   </div>
-
-                  <div className="flex items-center gap-3 text-green-600 font-medium mb-2">
-                    <FaEnvelope  />
-                    <a href="mailto:info@sathya.school" className="hover:underline">
-                      info@sathya.school
-                    </a>
-                  </div>
-
-                 <div className="flex items-center gap-3 text-green-600 font-medium flex-wrap">
-                    <FaMapMarkerAlt />
-                    <span className="break-words">
-                      Rajapalayam, Melalangaarathattu, Thoothukudi
-                    </span>
-                  </div>
-
-
                 </div>
 
-                {/* Right FA Icon */}
-                <div className="ml-6 flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 text-3xl">
+                <div className="ml-6 flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 text-3xl shrink-0">
                   <FaSchool />
                 </div>
               </div>

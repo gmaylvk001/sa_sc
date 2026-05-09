@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Masonry from "react-masonry-css";
 import Lightbox from "./Lightbox";
 
 export default function GalleryPage() {
@@ -122,6 +123,13 @@ export default function GalleryPage() {
 
   const noGalleryData = categories.length === 0 || images.length === 0;
 
+  const breakpointColumns = {
+    default: 5,
+    1280: 4,
+    1024: 3,
+    640: 2,
+  };
+
 
   return (
     <>
@@ -173,25 +181,22 @@ export default function GalleryPage() {
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
               </div>
             ) : (
-              <div className="columns-2 sm:columns-3 md:columns-3 lg:columns-4 xl:columns-5 gap-6 space-y-6 max-w-[1200px]">
-                {paginatedImages.length === 0 ? (
-                  <p className="col-span-full text-center text-gray-500 italic">
-                    No images available in this category.
-                  </p>
-                ) : (
-                  paginatedImages.map((img, index) => (
-                    <div key={img._id} className="cursor-pointer transition-transform hover:scale-105 rounded-xl">
-                      <img
-                        src={img.imageUrl}
-                        alt={img.title || "Gallery image"}
-                        onClick={() => setActiveImage(index)}
-                        className="block mx-auto rounded-xl"
-                      />
-                      {/* <h6 className="py-1 text-center text-md">{img.title}</h6> */}
-                    </div>
-                  ))
-                )}
-              </div>
+              <Masonry
+                breakpointCols={breakpointColumns}
+                className="flex gap-4"
+                columnClassName="flex flex-col gap-4"
+              >
+                {paginatedImages.map((img, index) => (
+                  <div key={img._id} className="cursor-pointer transition-transform hover:scale-105 rounded-xl overflow-hidden">
+                    <img
+                      src={img.imageUrl}
+                      alt={img.title || "Gallery image"}
+                      onClick={() => setActiveImage(index)}
+                      className="w-full rounded-xl"
+                    />
+                  </div>
+                ))}
+              </Masonry>
             )}
           </div>
 
