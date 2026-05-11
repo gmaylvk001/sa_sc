@@ -957,7 +957,7 @@ export default function HomeComponent() {
                     <div className="flex items-start gap-3 text-gray-700 font-medium">
                       <FaMapMarkerAlt className="mt-1 shrink-0 text-red-500" />
                       <span>
-                        Muthu Krishnapuram, Tuticorin
+                        MuthuKrishnapuram, Thoothukudi
                       </span>
                     </div>
 
