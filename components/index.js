@@ -6,7 +6,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { ToastContainer, toast } from "react-toastify";
 import "../styles/slick-custom.css";
-import { motion, useAnimation, AnimatePresence  } from "framer-motion";
+// import { motion, useAnimation, AnimatePresence  } from "framer-motion";
 import { X } from "lucide-react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 import Link from "next/link";
@@ -96,7 +96,7 @@ export default function HomeComponent() {
   const [isSectionLoading, setIsSectionLoading] = useState(false);
   const [blogs, setBlogs] = useState([]);
   const [blogLoading, setBlogLoading] = useState(true);
-  const [showAdmissionPopup, setShowAdmissionPopup] = useState(false);
+  // const [showAdmissionPopup, setShowAdmissionPopup] = useState(false);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const scroll = (direction) => {
@@ -132,7 +132,7 @@ export default function HomeComponent() {
     checkAuthStatus();
   }, [hasMounted]);
 
-  const controls = useAnimation();
+  // const controls = useAnimation();
 
   const checkAuthStatus = async () => {
     try {
@@ -253,125 +253,27 @@ export default function HomeComponent() {
     fetchFlashNews();
   }, []);
 
-  useEffect(() => {
-    if (!hasMounted) return;
+  // useEffect(() => {
+  //   if (!hasMounted) return;
 
-    const initialTimeout = setTimeout(() => {
-      setShowAdmissionPopup(true);
-    }, 20000);
+  //   const initialTimeout = setTimeout(() => {
+  //     setShowAdmissionPopup(true);
+  //   }, 20000);
 
-    const interval = setInterval(() => {
-      setShowAdmissionPopup(true);
-    }, 20000);
+  //   const interval = setInterval(() => {
+  //     setShowAdmissionPopup(true);
+  //   }, 20000);
 
-    return () => {
-      clearTimeout(initialTimeout);
-      clearInterval(interval);
-    };
+  //   return () => {
+  //     clearTimeout(initialTimeout);
+  //     clearInterval(interval);
+  //   };
 
-  }, [hasMounted]);
+  // }, [hasMounted]);
 
 
   return (
     <>
-      {/* ── ADMISSION NOTIFICATION — bottom-right slide-in ── */}
-      <AnimatePresence>
-        {showAdmissionPopup && (
-          <div className="fixed bottom-6 right-4 md:bottom-6 md:right-24 z-[9999]">
-            {/* ✅ FIX: motion.div is now the border wrapper itself */}
-            <motion.div
-              initial={{ opacity: 0, y: 40, scale: 0.94 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 30, scale: 0.94 }}
-              transition={{
-                opacity: { duration: 0.25 },
-                scale: { duration: 0.25 },
-                y: { duration: 0.25 },
-              }}
-              className="relative rounded-[22px] p-[1px] overflow-hidden shadow-2xl"
-            >
-              {/* Animated Gradient Border — inside motion.div so it fades with it */}
-              <div className="absolute inset-0 animated-border rounded-[22px]" />
-
-              {/* Card */}
-              <div
-                className="relative w-[340px] bg-white overflow-hidden rounded-[20px]"
-                style={{
-                  boxShadow:
-                    "0 24px 48px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.06)",
-                }}
-              >
-                {/* Shine Effect */}
-                <span className="absolute inset-0 popup-shine pointer-events-none z-10" />
-
-                {/* HEADER */}
-                <div className="relative flex items-center gap-3 px-4 pt-4 z-20">
-
-                  {/* ICON */}
-                  <div className="relative flex-shrink-0">
-                    <span className="absolute inset-[-3px] rounded-[16px] border-2 border-red-500 animate-ping opacity-40" />
-                    <div className="relative w-[42px] h-[42px] rounded-xl bg-red-600 flex items-center justify-center text-white text-lg shadow-lg">
-                      <FaGraduationCap />
-                    </div>
-                  </div>
-
-                  {/* TITLE */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <p className="text-[15px] font-semibold text-slate-900 leading-snug">
-                        Admissions Open 2026–2027
-                      </p>
-                      {/* Live Dot */}
-                      <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-400 mt-0.5">
-                      Sathya School
-                    </p>
-                  </div>
-
-                  {/* CLOSE */}
-                  <button
-                    onClick={() => setShowAdmissionPopup(false)}
-                    className="w-6 h-6 rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 flex items-center justify-center text-slate-400 text-[11px] transition-all duration-300 flex-shrink-0 border border-red-600"
-                  >
-                    <X size={12} className="text-red-600" />
-                  </button>
-
-                </div>
-
-                {/* BODY */}
-                <div className="relative px-4 pt-3 pb-0 z-20">
-                  <p className="text-xs text-slate-500 leading-relaxed">
-                    Applications are now being accepted. Give your child the best
-                    start — secure your seat today.
-                  </p>
-                </div>
-
-                {/* ACTIONS */}
-                <div className="relative flex border-t border-slate-100 mt-4 z-20">
-                  <Link
-                    href="/admission"
-                    onClick={() => setShowAdmissionPopup(false)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 border-r border-slate-100 transition-all duration-300 group hover:tracking-wide apply-btn"
-                  >
-                    Apply Now
-                    <FaArrowRight className="text-[10px] group-hover:translate-x-1 transition-transform duration-300" />
-                  </Link>
-                  <button
-                    onClick={() => setShowAdmissionPopup(false)}
-                    className="flex-1 py-3 text-xs text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all duration-300"
-                  >
-                    Dismiss
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
       <main className="w-full">
 

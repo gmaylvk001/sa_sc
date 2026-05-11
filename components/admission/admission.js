@@ -165,9 +165,9 @@ export default function ContactForm() {
 
   return (
     <>
-      <section className="relative bg-cover bg-center py-16">
+      {/* <section className="relative bg-cover bg-center py-16">
         <div className="absolute inset-0"></div>
-      </section>
+      </section> */}
 
       <div className="max-w-4xl mx-auto pt-4 pb-8 mt-2">
         <div className="p-10 py-5">

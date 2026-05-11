@@ -133,10 +133,10 @@ export default function GalleryPage() {
 
   return (
     <>
-      <section className="relative bg-cover bg-center py-16">
-        {/* Overlay */}
+      {/* <section className="relative bg-cover bg-center py-16">
+        Overlay
         <div className="absolute inset-0"></div>
-      </section>
+      </section> */}
 
       <section className="pb-10 mt-4 min-h-screen bg-gradient-to-r from-pink-100 via-blue-100 to-white">
 

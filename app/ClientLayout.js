@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import CustomHeader from "@/components/Headernew";
+import OtherHeader from "@/components/OtherHeader";
 import CustomFooter from "@/components/Footer";
 import GlobalModals from "@/components/GlobalModals";
 import { AuthProvider } from "@/context/AuthContext";
@@ -12,6 +13,7 @@ import { HeaderProvider } from "@/context/HeaderContext";
 
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
+  const isHomePage = pathname === "/";
 
   return (
     <HeaderProvider>
@@ -19,7 +21,9 @@ export default function ClientLayout({ children }) {
         <WishlistProvider>
           <CartProvider>
             <AuthProvider>
-              {!pathname?.startsWith("/admin") && <CustomHeader />}
+              {!pathname?.startsWith("/admin") && (
+                isHomePage ? <CustomHeader /> : <OtherHeader />
+              )}
               <main className="relative">{children}</main>
               {!pathname?.startsWith("/admin") && <CustomFooter />}
               <GlobalModals />

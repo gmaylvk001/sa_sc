@@ -17,7 +17,7 @@ export const metadata = {
   title: "Sathya School | CBSE Pattern | PreKG to 5th Std | Quality Education & Co-curricular Activities",
   description: "Sathya School, a CBSE pattern air-conditioned school in Rajapalayam, Melalangaarathattu, offering quality education from PreKG to 5th Std. Nurturing minds with interactive atmosphere, limited strength for individual attention, activity-based learning, and computer lab facilities. Admission open for sports and co-curricular activities including Karate, Silambam, Bharatha Naatiyam, Western Dance, Art & Craft, Singing & Music, and Cookery.",
   icons: {
-    icon: "/user/sathya-school-logo.png",
+    icon: "/user/",
   },
 };
 

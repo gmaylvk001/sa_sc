@@ -123,9 +123,9 @@ export default function BlogComponent() {
 
   return (
     <>
-      <section className="relative bg-cover bg-center py-16">
+      {/* <section className="relative bg-cover bg-center py-16">
         <div className="absolute inset-0"></div>
-      </section>
+      </section> */}
 
       <section className="pt-2 pb-8 min-h-screen bg-gradient-to-r from-pink-100 via-blue-100 to-white">
         {/* Hero */}
@@ -240,6 +240,7 @@ export default function BlogComponent() {
           </div>
 
         </div>
+        
         {loading && blogs.length > 0 && (
           <div className="col-span-full flex justify-center py-10">
             <div className="flex items-center gap-3 text-red-500 font-medium">
