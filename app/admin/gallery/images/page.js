@@ -139,6 +139,7 @@ export default function GalleryImagesPage() {
         setSaving(false);
         setSaveProgress(0);
         alert(data.message || "Something went wrong");
+        // alert("Something went wrong");
         return;
       }
 

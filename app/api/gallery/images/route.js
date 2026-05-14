@@ -61,9 +61,9 @@ export async function POST(req) {
     const statusStr = formData.get("status"); // "active"/"inactive"
     const file = formData.get("image");
 
-    if (!title || !category) {
+    if (!category) {
       return NextResponse.json(
-        { success: false, message: "Title and category required" },
+        { success: false, message: "category required" },
         { status: 400 }
       );
     }
@@ -79,7 +79,7 @@ export async function POST(req) {
     const imagePath = await saveFile(file);
 
     const image = await GalleryImage.create({
-      title,
+      title: title?.trim() || "",
       category,
       status: statusStr === "active",
       imageUrl: imagePath,
@@ -144,7 +144,8 @@ export async function PUT(req) {
     }
 
     // Update fields
-    if (title) image.title = title;
+    // if (title) image.title = title;
+    if (title !== null) image.title = title?.trim() || "";
     if (category) image.category = category;
     if (statusStr) image.status = statusStr === "active";
 

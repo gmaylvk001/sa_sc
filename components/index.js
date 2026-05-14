@@ -6,7 +6,6 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { ToastContainer, toast } from "react-toastify";
 import "../styles/slick-custom.css";
-// import { motion, useAnimation, AnimatePresence  } from "framer-motion";
 import { X } from "lucide-react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 import Link from "next/link";
@@ -32,8 +31,6 @@ import { v4 as uuidv4 } from "uuid";
 import IndexGalleryPreview from "@/components/gallery/Indexgallery";
 import EventCalendar from "@/components/events/EventCalendar";
 
-
-
 // Shuffle function
 function shuffleArray(array) {
   const newArr = [...array];
@@ -57,7 +54,6 @@ export default function HomeComponent() {
 
   function FaqItem({ question, answer }) {
     const [open, setOpen] = useState(false);
-
     return (
       <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all overflow-hidden">
         <button
@@ -96,7 +92,6 @@ export default function HomeComponent() {
   const [isSectionLoading, setIsSectionLoading] = useState(false);
   const [blogs, setBlogs] = useState([]);
   const [blogLoading, setBlogLoading] = useState(true);
-  // const [showAdmissionPopup, setShowAdmissionPopup] = useState(false);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const scroll = (direction) => {
@@ -131,8 +126,6 @@ export default function HomeComponent() {
     if (!hasMounted) return;
     checkAuthStatus();
   }, [hasMounted]);
-
-  // const controls = useAnimation();
 
   const checkAuthStatus = async () => {
     try {
@@ -183,14 +176,20 @@ export default function HomeComponent() {
     };
   }, []);
 
+  // ✅ FIX: activitiesLoading state தனியா add பண்ணினேன்
   const [activities, setActivities] = useState([]);
+  const [activitiesLoading, setActivitiesLoading] = useState(true);
   const [activitiesVisible, setActivitiesVisible] = useState(false);
 
   useEffect(() => {
     fetch("/api/activities/get")
       .then((r) => r.json())
-      .then((data) => { if (data.success) setActivities(data.data); })
-      .catch(console.error);
+      .then((data) => {
+        if (data.success) setActivities(data.data);
+      })
+      .catch(console.error)
+      // ✅ FIX: finally add பண்ணினேன் — fetch success/fail எதுவா இருந்தாலும் loading false ஆகும்
+      .finally(() => setActivitiesLoading(false));
   }, []);
 
   const sectionRef = useRef(null);
@@ -203,7 +202,8 @@ export default function HomeComponent() {
     );
     observer.observe(sectionRef.current);
     return () => { observer.disconnect(); };
-  }, [activities.length]);
+  }, []);
+  // ✅ FIX: activities.length dependency நீக்கினேன் — section எப்பவும் DOM-ல இருக்கும்
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -225,7 +225,6 @@ export default function HomeComponent() {
     fetchBlogs();
   }, []);
 
-  // flash news
   useEffect(() => {
     const fetchFlashNews = async () => {
       try {
@@ -253,28 +252,8 @@ export default function HomeComponent() {
     fetchFlashNews();
   }, []);
 
-  // useEffect(() => {
-  //   if (!hasMounted) return;
-
-  //   const initialTimeout = setTimeout(() => {
-  //     setShowAdmissionPopup(true);
-  //   }, 20000);
-
-  //   const interval = setInterval(() => {
-  //     setShowAdmissionPopup(true);
-  //   }, 20000);
-
-  //   return () => {
-  //     clearTimeout(initialTimeout);
-  //     clearInterval(interval);
-  //   };
-
-  // }, [hasMounted]);
-
-
   return (
     <>
-
       <main className="w-full">
 
         {/* HERO SECTION */}
@@ -303,21 +282,18 @@ export default function HomeComponent() {
             >
               Sathya School
             </h1>
-
             <p
               className={`text-xl md:text-2xl mb-6 font-extralight fade-up font-sans ${isVisible ? "show" : ""}`}
               style={{ transitionDelay: "300ms" }}
             >
               Nurturing Minds • Shaping Futures
             </p>
-
             <p
               className={`max-w-2xl mx-auto mb-8 text-sm md:text-base fade-up font-extralight font-sans ${isVisible ? "show" : ""}`}
               style={{ transitionDelay: "500ms" }}
             >
               CBSE Pattern | Air Conditioned Campus | PreKG to 5th Standard
             </p>
-
             <Link
               href="/admission"
               className={`inline-block bg-red-600 hover:bg-red-400 text-white px-8 py-3 rounded-full font-semibold transform hover:scale-105 transition-transform duration-300 ease-in-out fade-up ${isVisible ? "show" : ""}`}
@@ -325,7 +301,6 @@ export default function HomeComponent() {
             >
               Admission Open 2026 -2027
             </Link>
-
             <div
               className={`mt-5 text-sm md:text-base font-medium fade-up ${isVisible ? "show" : ""}`}
               style={{ transitionDelay: "900ms" }}
@@ -344,7 +319,6 @@ export default function HomeComponent() {
             {flashNews.length > 0 && (
               <div className="md:max-w-7xl md:mx-auto md:px-6">
                 <div className="relative flex items-center bg-white overflow-hidden border-2 border-[#4338ca] md:rounded-full shadow-lg">
-
                   <div className="relative flex-shrink-0 flex items-center">
                     <div className="relative overflow-hidden bg-[#4338ca] px-1 py-2 md:px-2 md:py-2 flex items-center gap-2 z-10">
                       <span className="absolute inset-0 shine-effect pointer-events-none"></span>
@@ -365,7 +339,6 @@ export default function HomeComponent() {
                       }}
                     />
                   </div>
-
                   <div className="flex-1 overflow-hidden relative z-10 py-1">
                     <div
                       className="flex w-max animate-marquee"
@@ -399,13 +372,11 @@ export default function HomeComponent() {
 
         {/* ABOUT SECTION */}
         <section id="about" className="py-16 bg-gradient-to-r from-pink-100 via-blue-100 to-white shadow">
-
           <div className="max-w-7xl mx-auto px-6 text-center">
             <h2 className="text-4xl font-bold mb-4 text-gray-800">
               About <span className="text-red-600">Sathya School</span>
             </h2>
           </div>
-
           <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="relative p-3">
               <img
@@ -419,7 +390,6 @@ export default function HomeComponent() {
                 className="absolute -bottom-12 -right-6 w-48 md:w-64 rounded-2xl shadow-2xl border-4 border-white hidden sm:block"
               />
             </div>
-
             <div>
               <h3 className="text-xl font-semibold text-gray-800 mb-4 text-red-600">
                 Values That Inspire
@@ -429,7 +399,6 @@ export default function HomeComponent() {
               </p>
             </div>
           </div>
-
           <div className="mt-16 max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="flex flex-col lg:grid lg:grid-cols-1 gap-4 order-1 lg:order-2">
               <div className="flex flex-col gap-4 lg:hidden">
@@ -449,7 +418,6 @@ export default function HomeComponent() {
                 </div>
               </div>
             </div>
-
             <div className="order-2 lg:order-1">
               <h3 className="text-xl font-semibold text-gray-800 mb-4 text-red-600">
                 Learning Beyond Books
@@ -462,7 +430,6 @@ export default function HomeComponent() {
               </p>
             </div>
           </div>
-
           {/* VISION & MISSION */}
           <div className="mt-16 relative mb-10 max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
@@ -475,7 +442,6 @@ export default function HomeComponent() {
                   Empowering immediate communities through Quality Education and Effective Communication, Accessible to All, everywhere.
                 </p>
               </div>
-
               <div className="group relative p-8 bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg hover:shadow-2xl transition-all">
                 <div className="absolute -top-6 left-6 bg-gradient-to-br from-indigo-500 to-indigo-700 text-white p-4 rounded-2xl shadow-lg">
                   <FaCheckCircle className="text-xl" />
@@ -491,14 +457,12 @@ export default function HomeComponent() {
               </div>
             </div>
           </div>
-
           {/* CORE VALUES */}
           <div className="relative max-w-7xl mx-auto px-6">
             <div className="mb-10">
               <h3 className="text-3xl font-extrabold text-gray-800">Our Motto</h3>
               <p className="text-gray-600 mt-2 max-w-xl">Knowledge is Power</p>
             </div>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
               {[
                 { icon: <FaGraduationCap />, text: "To empower students and communities through quality education that is accessible to all." },
@@ -596,42 +560,100 @@ export default function HomeComponent() {
           </div>
         </section>
 
-        {/* ACTIVITIES */}
-        {activities.length > 0 && (
-          <section ref={sectionRef} className="py-14 bg-white shadow" id="ACTIVITIES">
-            <div className="max-w-7xl mx-auto px-6">
-              <h2 className="text-4xl font-bold text-center mb-2 text-gray-800">
-                Sports <span className="text-red-600">&</span> Activities
-              </h2>
-              <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
-                Our diverse sports and co-curricular programs help children develop confidence, creativity, and teamwork.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-center">
-                {activities.map((activity, index) => {
-                  const animClass = index % 3 === 0 ? "activity-animate-left" : index % 3 === 1 ? "activity-animate-up" : "activity-animate-right";
-                  return (
-                    <Link
-                      key={activity.name}
-                      href={`/activities/${activity.slug}`}
-                      data-key={activity.name}
-                      className={`activity-card group bg-white rounded-3xl shadow-md overflow-hidden cursor-pointer border-2 border-red-600 hover:shadow-xl transition-shadow block ${activitiesVisible ? animClass : "opacity-0"}`}
-                      style={{ animationDelay: `${index * 0.1}s` }}
-                    >
-                      <div className="relative">
-                        <img src={activity.imageSrc} alt={activity.name} className="w-full transition-opacity duration-500" />
-                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center"></div>
+        {/* ============================================
+            ACTIVITIES SECTION — FULLY FIXED
+            - Section எப்பவும் DOM-ல இருக்கும் (#ACTIVITIES anchor works)
+            - activitiesLoading = true  → Skeleton cards
+            - activitiesLoading = false, activities = [] → Empty message
+            - activitiesLoading = false, activities > 0  → Real cards
+        =============================================== */}
+        <section
+          ref={sectionRef}
+          id="ACTIVITIES"
+          className="py-14 bg-white shadow scroll-mt-24"
+        >
+          <div className="max-w-7xl mx-auto px-6">
+
+            {activitiesLoading ? (
+              // ✅ STATE 1: Loading — Skeleton
+              <>
+                <div className="h-10 bg-gray-200 rounded-full w-64 mx-auto mb-3 animate-pulse" />
+                <div className="h-4 bg-gray-100 rounded-full w-96 mx-auto mb-8 animate-pulse" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                  {[...Array(8)].map((_, i) => (
+                    <div key={i} className="bg-white rounded-3xl shadow-md overflow-hidden border-2 border-red-100 animate-pulse">
+                      <div className="w-full h-48 bg-gray-200" />
+                      <div className="px-5 py-4 space-y-2">
+                        <div className="h-4 bg-gray-200 rounded w-3/4" />
+                        <div className="h-3 bg-gray-100 rounded w-full" />
+                        <div className="h-3 bg-gray-100 rounded w-2/3" />
                       </div>
-                      <div className="px-5 py-2">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-1">{activity.name}</h3>
-                        <p className="text-gray-600 text-sm">{activity.tagline}</p>
-                      </div>
-                    </Link>
-                  );
-                })}
+                    </div>
+                  ))}
+                </div>
+              </>
+
+            ) : activities.length === 0 ? (
+              // ✅ STATE 2: Empty — Admin எல்லாத்தையும் delete பண்ணினா
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className="w-20 h-20 mb-6 rounded-full bg-red-50 flex items-center justify-center">
+                  <FaRunning className="text-red-300 text-3xl" />
+                </div>
+                <h2 className="text-4xl font-bold text-center mb-2 text-gray-800">
+                  Sports <span className="text-red-600">&</span> Activities
+                </h2>
+                <p className="text-gray-400 mt-3 text-base">No activities available right now.</p>
+                <p className="text-gray-300 text-sm mt-1">Please check back later.</p>
               </div>
-            </div>
-          </section>
-        )}
+
+            ) : (
+              // ✅ STATE 3: Data இருக்கு — Real cards
+              <>
+                <h2 className="text-4xl font-bold text-center mb-2 text-gray-800">
+                  Sports <span className="text-red-600">&</span> Activities
+                </h2>
+                <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+                  Our diverse sports and co-curricular programs help children develop confidence, creativity, and teamwork.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-center">
+                  {activities.map((activity, index) => {
+                    const animClass =
+                      index % 3 === 0
+                        ? "activity-animate-left"
+                        : index % 3 === 1
+                        ? "activity-animate-up"
+                        : "activity-animate-right";
+                    return (
+                      <Link
+                        key={activity.name}
+                        href={`/activities/${activity.slug}`}
+                        data-key={activity.name}
+                        className={`activity-card group bg-white rounded-3xl shadow-md overflow-hidden cursor-pointer border-2 border-red-600 hover:shadow-xl transition-shadow block ${
+                          activitiesVisible ? animClass : "opacity-0"
+                        }`}
+                        style={{ animationDelay: `${index * 0.1}s` }}
+                      >
+                        <div className="relative">
+                          <img
+                            src={activity.imageSrc}
+                            alt={activity.name}
+                            className="w-full transition-opacity duration-500"
+                          />
+                          <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center"></div>
+                        </div>
+                        <div className="px-5 py-2">
+                          <h3 className="text-lg font-semibold text-gray-900 mb-1">{activity.name}</h3>
+                          <p className="text-gray-600 text-sm">{activity.tagline}</p>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
+          </div>
+        </section>
 
         {/* GALLERY */}
         <IndexGalleryPreview />
@@ -671,7 +693,6 @@ export default function HomeComponent() {
               <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
                 Insights, updates, and stories from Sathya School
               </p>
-
               <Swiper
                 modules={[Navigation, Autoplay]}
                 spaceBetween={30}
@@ -718,14 +739,12 @@ export default function HomeComponent() {
                   </SwiperSlide>
                 ))}
               </Swiper>
-
               <button ref={prevRef} className="absolute left-0 top-1/2 -translate-y-1/2 bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-white hover:text-red-500 transition z-50">
                 <FiChevronLeft size={22} />
               </button>
               <button ref={nextRef} className="absolute right-0 top-1/2 -translate-y-1/2 bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-white hover:text-red-500 transition z-50">
                 <FiChevronRight size={22} />
               </button>
-
               <div className="pt-6 text-center">
                 <Link
                   href="/blog"
@@ -810,116 +829,59 @@ export default function HomeComponent() {
         {/* CONTACT SECTION */}
         <section className="py-14 bg-white shadow">
           <div className="max-w-7xl mx-auto px-6">
-            
             <div className="mb-10">
               <h2 className="text-4xl font-bold text-gray-900">
                 Contact <span className="text-red-600">Us</span>
               </h2>
-              <p className="text-gray-600 mt-2">
-                10am – 7pm weekdays
-              </p>
+              <p className="text-gray-600 mt-2">10am – 7pm weekdays</p>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-              {/* SAT HYA PREPARATORY SCHOOL */}
               <div className="flex items-center justify-between bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition duration-300 border border-gray-100">
-                
                 <div className="flex-1">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-1">
-                    Sathya Preparatory School
-                  </h3>
-
-                  <p className="text-sm text-gray-500 mb-5">
-                    (Admissions & General Enquiries)
-                  </p>
-
+                  <h3 className="text-2xl font-bold text-gray-900 mb-1">Sathya Preparatory School</h3>
+                  <p className="text-sm text-gray-500 mb-5">(Admissions & General Enquiries)</p>
                   <div className="space-y-3">
-
                     <div className="flex items-center gap-3 text-green-600 font-medium">
                       <FaPhoneAlt className="shrink-0" />
-                      <Link
-                        href="tel:+919944899771"
-                        className="hover:underline"
-                      >
-                        +91 99448 99771
-                      </Link>
+                      <Link href="tel:+919944899771" className="hover:underline">+91 99448 99771</Link>
                     </div>
-
                     <div className="flex items-center gap-3 text-green-600 font-medium break-all">
                       <FaEnvelope className="shrink-0" />
-                      <Link
-                        href="mailto:sathyaschoolmkpuram@gmail.com"
-                        className="hover:underline"
-                      >
-                        sathyaschoolmkpuram@gmail.com
-                      </Link>
+                      <Link href="mailto:sathyaschoolmkpuram@gmail.com" className="hover:underline">sathyaschoolmkpuram@gmail.com</Link>
                     </div>
-
                     <div className="flex items-start gap-3 text-gray-700 font-medium">
                       <FaMapMarkerAlt className="mt-1 shrink-0 text-red-500" />
-                      <span>
-                        MuthuKrishnapuram, Thoothukudi
-                      </span>
+                      <span>MuthuKrishnapuram, Thoothukudi</span>
                     </div>
-
                   </div>
                 </div>
-
                 <div className="ml-6 flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600 text-3xl shrink-0">
                   <FaUserGraduate />
                 </div>
               </div>
-
-              {/* SATHYA CBSE SCHOOL */}
               <div className="flex items-center justify-between bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition duration-300 border border-gray-100">
-                
                 <div className="flex-1">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-1">
-                    Sathya CBSE School
-                  </h3>
-
-                  <p className="text-sm text-gray-500 mb-5">
-                    (Admissions & General Enquiries)
-                  </p>
-
+                  <h3 className="text-2xl font-bold text-gray-900 mb-1">Sathya CBSE School</h3>
+                  <p className="text-sm text-gray-500 mb-5">(Admissions & General Enquiries)</p>
                   <div className="space-y-3">
-
                     <div className="flex items-center gap-3 text-green-600 font-medium">
                       <FaPhoneAlt className="shrink-0" />
-                      <Link
-                        href="tel:+919597701985"
-                        className="hover:underline"
-                      >
-                        +91 95977 01985
-                      </Link>
+                      <Link href="tel:+919597701985" className="hover:underline">+91 95977 01985</Link>
                     </div>
-
                     <div className="flex items-center gap-3 text-green-600 font-medium break-all">
                       <FaEnvelope className="shrink-0" />
-                      <Link
-                        href="mailto:info@sathya.school"
-                        className="hover:underline"
-                      >
-                        info@sathya.school
-                      </Link>
+                      <Link href="mailto:info@sathya.school" className="hover:underline">info@sathya.school</Link>
                     </div>
-
                     <div className="flex items-start gap-3 text-gray-700 font-medium">
                       <FaMapMarkerAlt className="mt-1 shrink-0 text-red-500" />
-                      <span>
-                        Rajapalayam, Melalangaarathattu, Thoothukudi
-                      </span>
+                      <span>Rajapalayam, Melalangaarathattu, Thoothukudi</span>
                     </div>
-
                   </div>
                 </div>
-
                 <div className="ml-6 flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 text-3xl shrink-0">
                   <FaSchool />
                 </div>
               </div>
-
             </div>
           </div>
         </section>

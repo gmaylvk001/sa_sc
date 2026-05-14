@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const galleryImageSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true },
+    title: { type: String, required: false },
 
     // ✅ THIS FIELD NAME IS IMPORTANT
     imageUrl: { type: String, required: true },
