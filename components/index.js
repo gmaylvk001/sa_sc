@@ -883,6 +883,19 @@ export default function HomeComponent() {
                 </div>
               </div>
             </div>
+            {/* GOOGLE MAP */}
+            <div className="mt-12 rounded-2xl overflow-hidden shadow-lg border border-gray-200">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3290.570314326702!2d78.1566653!3d8.8306904!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b03e59b6b5e5f4f%3A0x2d5841d620d48532!2sSathya%20School!5e1!3m2!1sen!2sin!4v1779691179695!5m2!1sen!2sin"
+                width="100%"
+                height="450"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Sathya School Location"
+              ></iframe>
+            </div>
           </div>
         </section>
 
