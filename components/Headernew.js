@@ -1664,7 +1664,7 @@ const Header = () => {
                     <span className="menu-text text-white">Grade</span>
                   </Link>
                   <Link className="menu-item" href="/#Why" onClick={() => setIsOpen(false)}>
-                    <span className="menu-text text-white">Why Parent Trust Us</span>
+                    <span className="menu-text text-white">Why Parents Trust Us</span>
                   </Link>
                   <Link className="menu-item" href="/#ACTIVITIES" onClick={() => setIsOpen(false)}>
                     <span className="menu-text text-white">Activities</span>
