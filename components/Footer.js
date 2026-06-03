@@ -485,7 +485,7 @@ const capitalizeFirstLetter = (str) =>
             </Link>
             
             <Link
-              href="https://www.facebook.com/sathyaschooltuty/"
+              href = "https://www.facebook.com/profile.php?id=61590211275481"
               target="_blank"
               rel="noopener noreferrer"
               className="pr-4 rounded-full shadow flex items-center justify-center"
