@@ -6,9 +6,9 @@ const CategoryProductSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId, 
       ref: "ecom_category_info", 
       required: true,
-      unique: true // Ensure one entry per subcategory
+      unique: true
     },
-    subcategoryName: { // Add this field to store category name
+    subcategoryName: {
       type: String,
       required: true
     },
@@ -29,7 +29,6 @@ const CategoryProductSchema = new mongoose.Schema(
 );
 
 // Add index for better performance
-CategoryProductSchema.index({ subcategoryId: 1 });
 CategoryProductSchema.index({ status: 1 });
 CategoryProductSchema.index({ position: 1 });
 
