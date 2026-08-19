@@ -13,12 +13,21 @@ export default function BlogComponent() {
   const [blogs, setBlogs] = useState([]);
   const [categories, setCategories] = useState([{ _id: "all", name: "All" }]);
   const [searchTerm, setSearchTerm] = useState("");
+  // ✅ NEW: debounced copy of searchTerm. Typing updates `searchTerm`
+  // instantly (so the input feels responsive), but `debouncedSearchTerm`
+  // only updates 500ms after the user stops typing — and THAT is what
+  // drives fetching. This is the only thing that gets debounced now.
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
-  const limit = 2;
-  const debounceRef = useRef(null);
+  const limit = 6;
+  // ✅ Tracks the last debouncedSearchTerm/selectedCategory we actually
+  // reacted to. Comparing real values (instead of a one-shot boolean flag)
+  // makes this immune to React Strict Mode's double-invoked effects in dev.
+  const prevFilters = useRef({ debouncedSearchTerm: "", selectedCategory: initialCategory });
+
   const stripHtml = (html) => {
     const tmp = document.createElement("div");
     tmp.innerHTML = html;
@@ -32,7 +41,7 @@ export default function BlogComponent() {
       const categoryParam = selectedCategory === "all" ? "" : selectedCategory;
 
       const res = await fetch(
-        `/api/blogs/frontend?search=${searchTerm}&category=${categoryParam}&page=${page}&limit=${limit}`
+        `/api/blogs/frontend?search=${debouncedSearchTerm}&category=${categoryParam}&page=${page}&limit=${limit}`
       );
 
       const json = await res.json();
@@ -44,10 +53,7 @@ export default function BlogComponent() {
         // Update categories dynamically
         const uniqueCategoriesMap = new Map();
         json.data.forEach((blog) => {
-          if (
-            blog.category?._id &&
-            blog.category?.status === true
-          ) {
+          if (blog.category?._id && blog.category?.status === true) {
             uniqueCategoriesMap.set(blog.category._id, blog.category);
           }
         });
@@ -68,28 +74,40 @@ export default function BlogComponent() {
     }
   };
 
-  // ✅ Initial Load
+  // ✅ STAGE 1: Debounce raw typing into `debouncedSearchTerm`.
+  // This is the ONLY delayed thing in the whole flow — it never touches
+  // `blogs` directly, so it can never race with an already-completed fetch.
   useEffect(() => {
-    fetchBlogs(true);
-  }, []);
-
-  // ✅ Handle search & category change (debounced)
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-
-    debounceRef.current = setTimeout(() => {
-      setBlogs([]);
-      setPage(1);
-      setHasMore(true);
+    const t = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
     }, 500);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
 
-    return () => clearTimeout(debounceRef.current);
-  }, [searchTerm, selectedCategory]);
+  // ✅ STAGE 2: The moment debouncedSearchTerm or selectedCategory
+  // genuinely changes (typing settled, or a category was clicked), reset
+  // pagination synchronously — no setTimeout involved here at all.
+  useEffect(() => {
+    const changed =
+      prevFilters.current.debouncedSearchTerm !== debouncedSearchTerm ||
+      prevFilters.current.selectedCategory !== selectedCategory;
 
-  // ✅ Fetch blogs on page/search/category change
+    if (!changed) return;
+    prevFilters.current = { debouncedSearchTerm, selectedCategory };
+
+    setBlogs([]);
+    setHasMore(true);
+    setPage(1);
+  }, [debouncedSearchTerm, selectedCategory]);
+
+  // ✅ STAGE 3: Single source of truth for fetching. Fires on mount, on
+  // page change (infinite scroll), and whenever debouncedSearchTerm /
+  // selectedCategory change. Because STAGE 2 already reset `page` to 1
+  // and cleared `blogs` synchronously (no delay), there's no window where
+  // a completed fetch's data can get wiped out afterward.
   useEffect(() => {
     fetchBlogs(page === 1);
-  }, [page, searchTerm, selectedCategory]);
+  }, [page, debouncedSearchTerm, selectedCategory]);
 
   // ✅ Infinite Scroll
   useEffect(() => {
@@ -123,10 +141,6 @@ export default function BlogComponent() {
 
   return (
     <>
-      {/* <section className="relative bg-cover bg-center py-16">
-        <div className="absolute inset-0"></div>
-      </section> */}
-
       <section className="pt-2 pb-8 min-h-screen bg-gradient-to-r from-pink-100 via-blue-100 to-white">
         {/* Hero */}
         <div className="bg-gradient-to-r from-red-600 to-red-500 py-14 text-center text-white">
@@ -154,7 +168,6 @@ export default function BlogComponent() {
             <div>
               <h3 className="font-semibold text-lg mb-5 border-b">Categories</h3>
 
-              {/* Scrollable container */}
               <div className="flex flex-col max-h-72 overflow-y-auto scrollbar-hide">
                 {categories.map((cat) => (
                   <div key={cat._id} className="w-full border-b">
@@ -178,7 +191,6 @@ export default function BlogComponent() {
 
             </div>
           </div>
-
 
           <div className="lg:col-span-3">
             {blogs.length > 0 ? (
@@ -206,7 +218,7 @@ export default function BlogComponent() {
                         className="group-hover:text-red-500 transition-colors"
                       >
                         <h3 className="text-lg font-semibold text-gray-800 hover:text-red-500 mb-2 hover:underline">
-                          {blog.blog_name.slice(0,25)}
+                          {blog.blog_name.slice(0, 25)}
                         </h3>
                       </Link>
 
@@ -240,7 +252,7 @@ export default function BlogComponent() {
           </div>
 
         </div>
-        
+
         {loading && blogs.length > 0 && (
           <div className="col-span-full flex justify-center py-10">
             <div className="flex items-center gap-3 text-red-500 font-medium">
